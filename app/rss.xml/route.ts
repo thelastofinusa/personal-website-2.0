@@ -10,7 +10,7 @@ export async function GET() {
     .getPages()
     .map((page) => {
       const data = page.data
-      const date = page.date?.toUTCString() ?? new Date().toUTCString()
+      const date = new Date().toUTCString()
       const link = `${siteConfig.url}/docs/${page.slugs.join("/")}`
 
       return `    <item>
