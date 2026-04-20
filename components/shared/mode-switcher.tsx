@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useTheme } from "next-themes"
+import { IoInvertMode } from "react-icons/io5"
 import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { buttonVariants } from "../ui/button"
@@ -34,10 +35,10 @@ export function ModeSwitcher() {
         >
           {theme === "light" ? (
             <MdOutlineDarkMode className="size-4 cursor-pointer" />
+          ) : theme === "dark" ? (
+            <MdOutlineLightMode className="size-4 cursor-pointer" />
           ) : (
-            theme === "dark" && (
-              <MdOutlineLightMode className="size-4 cursor-pointer" />
-            )
+            <IoInvertMode className="size-4 cursor-pointer" />
           )}
           <span className="sr-only capitalize">Toggle theme</span>
         </div>
