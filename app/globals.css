@@ -1,113 +1,96 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-@theme {
-  --font-family-sans: 'Inter', sans-serif;
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-  --sh-class: #7aa2f7;
-  --sh-sign: #89ddff;
-  --sh-string: #9ece6a;
-  --sh-keyword: #bb9af7;
-  --sh-comment: #565f89;
-  --sh-jsxliterals: #7aa2f7;
-  --sh-property: #73daca;
-  --sh-entity: #e0af68;
+  --radius: 0.625rem;
+  --background: oklch(1 0 180);
+  --foreground: oklch(0.276 0.013 253.491);
+  --muted: oklch(94.309% 0.00011 271.152);
+  --muted-foreground: #59636e;
+  --popover: oklch(0.977 0 180);
+  --popover-foreground: oklch(0.168 0.005 253.418);
+  --card: oklch(0.985 0 180);
+  --card-foreground: oklch(0.223 0.009 253.466);
+  --border: #d1d9e0;
+  --input: oklch(0.939 0 180);
+  --primary: #0969da;
+  --primary-foreground: oklch(0.808 0.015 253.337);
+  --secondary: oklch(0.804 0.004 253.249);
+  --secondary-foreground: oklch(0.269 0.003 253.289);
+  --accent: oklch(0.885 0 180);
+  --accent-foreground: oklch(0.371 0 168.69);
+  --destructive: oklch(0.52 0.19 31.483);
+  --destructive-foreground: oklch(1 0 180);
+  --ring: #0969da;
 }
 
-html {
-  min-width: 360px;
-  scrollbar-gutter: stable;
+.dark {
+  --background: oklch(0.176 0.014 258.357);
+  --foreground: #f0fcf6;
+  --muted: oklch(0.264 0.012 258.372);
+  --muted-foreground: #9198a1;
+  --popover: oklch(0.142 0.009 256.104);
+  --popover-foreground: oklch(0.937 0.006 247.889);
+  --card: oklch(0.153 0.01 258.219);
+  --card-foreground: oklch(0.897 0.01 247.936);
+  --border: #252a31;
+  --input: oklch(0.262 0.017 258.367);
+  --primary: #4493f8;
+  --primary-foreground: oklch(0.336 0.021 248.458);
+  --secondary: oklch(40.225% 0.00944 242.016);
+  --secondary-foreground: oklch(0.883 0.005 247.877);
+  --accent: oklch(0.326 0.038 258.319);
+  --accent-foreground: oklch(0.85 0.024 258.364);
+  --destructive: oklch(0.624 0.221 27.17);
+  --destructive-foreground: oklch(1 0 180);
+  --ring: #4493f8;
 }
 
-body {
-  text-rendering: optimizeLegibility;
-}
-
-h1,
-h2,
-h3,
-h4 {
-  text-wrap: balance;
-}
-
-pre {
-  background-color: #16161e;
-  border-radius: 0.5rem;
-  overflow-x: auto;
-  padding: 1rem;
-  margin: 1.5rem 0;
-  line-height: 1;
-}
-
-pre::-webkit-scrollbar {
-  display: none;
-}
-
-pre {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-code {
-  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: 14px;
-  padding: 0.2em 0.4em;
-  border-radius: 0.3em;
-  background-color: var(--color-gray-100);
-}
-
-pre code {
-  background-color: transparent;
-  padding: 0;
-  border: none;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-pre code > span .sh__token--identifier {
-  color: white !important;
-}
-
-code:not(pre code) span {
-  font-weight: 500;
-  color: black !important;
-}
-
-@media (prefers-color-scheme: dark) {
-  code {
-    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-    font-size: 14px;
-    padding: 0.2em 0.4em;
-    border-radius: 0.3em;
-    background-color: var(--color-zinc-800);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-
-  code:not(pre code) span {
-    color: var(--color-zinc-100) !important;
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }
 
-pre code span {
-  font-weight: 500;
-}
-
-hr {
-  color: var(--color-gray-200);
-}
-
-/* Remove Safari input shadow on mobile */
-input[type='text'],
-input[type='email'] {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-table {
-  display: block;
-  max-width: fit-content;
-  overflow-x: auto;
-  white-space: nowrap;
-  text-align: left;
+@utility squircle {
+  corner-shape: squircle;
 }

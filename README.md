@@ -1,35 +1,21 @@
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fleerob%2Fnext-mdx-blog)
+# Next.js template
 
-# next-mdx-blog
+This is a Next.js template with shadcn/ui.
 
-This is a blog template built with:
+## Adding components
 
-- **Framework**: [Next.js](https://nextjs.org)
-- **Deployment**: [Vercel](https://vercel.com)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com)
-- **Analytics**: [Vercel Analytics](https://vercel.com/analytics)
-- **Database** (Optional): [Postgres](https://vercel.com/postgres)
-
-## Running Locally
-
-This application requires Node.js v18.17+.
+To add components to your app, run the following command:
 
 ```bash
-git clone https://github.com/leerob/next-mdx-blog.git
-cd next-mdx-blog
-pnpm install
-pnpm dev
+npx shadcn@latest add button
 ```
 
-## Database (Optional)
+This will place the ui components in the `components` directory.
 
-Create a `.env.local` file with your `POSTGRES_URL` environment variable to store redirects.
+## Using components
 
-```sql
-CREATE TABLE redirects (
-  id SERIAL PRIMARY KEY,
-  source VARCHAR(255) NOT NULL,
-  destination VARCHAR(255) NOT NULL,
-  permanent BOOLEAN NOT NULL
-);
+To use the components in your app, import them as follows:
+
+```tsx
+import { Button } from "@/components/ui/button";
 ```
