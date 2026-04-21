@@ -68,15 +68,12 @@ export default async function Page(props: PageProps<"/[[...slug]]">) {
   const MDX = doc.body
 
   return (
-    <div
-      suppressHydrationWarning
-      className="flex justify-center gap-4 bg-background sm:bg-secondary/10 sm:p-4 md:gap-6 md:p-6 lg:gap-8 lg:p-8"
-    >
-      <main className="flex max-w-4xl flex-1 flex-col gap-4 bg-background p-5 text-sm sm:rounded-2xl sm:border sm:shadow-xl sm:squircle md:p-6">
+    <div className="flex justify-center gap-4 sm:p-4 md:gap-6 md:p-6 lg:gap-8 lg:p-8">
+      <div className="flex max-w-4xl flex-1 flex-col gap-4 overflow-hidden bg-background p-5 text-sm sm:rounded-2xl sm:border sm:shadow-xl sm:squircle md:p-6">
         <Header title={doc.title} />
         <MDX components={mdxComponents} />
         <Footer />
-      </main>
+      </div>
     </div>
   )
 }

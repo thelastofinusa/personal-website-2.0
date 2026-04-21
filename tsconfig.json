@@ -20,7 +20,8 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "sanity/*": ["./node_modules/sanity/lib/*"]
     }
   },
   "include": [

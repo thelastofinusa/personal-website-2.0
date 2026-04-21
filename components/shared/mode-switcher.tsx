@@ -1,9 +1,12 @@
 "use client"
 
+import {
+  MdOutlineDarkMode,
+  MdOutlineJoinRight,
+  MdOutlineLightMode,
+} from "react-icons/md"
 import * as React from "react"
 import { useTheme } from "next-themes"
-import { IoInvertMode } from "react-icons/io5"
-import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { buttonVariants } from "../ui/button"
 import { Skeleton } from "../ui/skeleton"
@@ -38,7 +41,7 @@ export function ModeSwitcher() {
           ) : theme === "dark" ? (
             <MdOutlineLightMode className="size-4 cursor-pointer" />
           ) : (
-            <IoInvertMode className="size-4 cursor-pointer" />
+            <MdOutlineJoinRight className="size-4 cursor-pointer" />
           )}
           <span className="sr-only capitalize">Toggle theme</span>
         </div>

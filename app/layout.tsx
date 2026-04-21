@@ -11,6 +11,7 @@ import { ActiveThemeProvider } from "@/components/shared/active-theme"
 import { TailwindIndicator } from "@/components/shared/tailwind-indicator"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/sonner"
+import { SanityLive } from "@/sanity/lib/live"
 
 export const metadata: Metadata = {
   title: {
@@ -78,7 +79,7 @@ export default function RootLayout(props: LayoutProps<"/">) {
       </head>
       <body
         className={fontVariable(
-          "group/body overscroll-none bg-background font-sans text-foreground antialiased"
+          "group/body overscroll-none font-sans text-foreground antialiased"
         )}
       >
         <ThemeProvider>
@@ -90,6 +91,7 @@ export default function RootLayout(props: LayoutProps<"/">) {
             </TooltipProvider>
             <TailwindIndicator />
             <Analytics />
+            <SanityLive />
           </ActiveThemeProvider>
         </ThemeProvider>
       </body>

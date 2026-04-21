@@ -19,10 +19,10 @@ import { CodeCollapsibleWrapper } from "./components/shared/code-collapsible-wra
 import Image from "next/image"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs"
 import { getIconForLanguageExtension } from "./components/shared/icons"
-import { AboutIntro } from "./components/shared/about-intro"
 import { NavAction } from "./components/shared/nav-action"
 import { WorkList } from "./components/shared/work-list"
 import { BadgeGroup } from "./components/shared/badge-group"
+import { ImgGallery } from "./components/shared/img-gallery"
 
 type HeadingProps = ComponentPropsWithoutRef<"h1">
 type ParagraphProps = ComponentPropsWithoutRef<"p">
@@ -36,7 +36,7 @@ export const mdxComponents = {
     <h3 className="text-[17px] font-bold" {...props} />
   ),
   h4: (props: HeadingProps) => (
-    <h4 className="text-sm font-medium" {...props} />
+    <h4 className="text-sm font-semibold" {...props} />
   ),
   p: (props: ParagraphProps) => <p className="leading-snug" {...props} />,
   ol: (props: ListProps) => (
@@ -47,7 +47,7 @@ export const mdxComponents = {
   ),
   li: (props: ListItemProps) => <li className="pl-1" {...props} />,
   em: (props: ComponentPropsWithoutRef<"em">) => (
-    <em className="font-medium" {...props} />
+    <em className="font-semibold" {...props} />
   ),
   figure: ({ className, ...props }: React.ComponentProps<"figure">) => {
     return <figure className={cn(className)} {...props} />
@@ -76,7 +76,7 @@ export const mdxComponents = {
     )
   },
   strong: (props: ComponentPropsWithoutRef<"strong">) => (
-    <strong className="font-medium" {...props} />
+    <strong className="font-semibold" {...props} />
   ),
   a: ({ href, children, ...props }: AnchorProps) => {
     const className = "text-primary"
@@ -188,7 +188,7 @@ export const mdxComponents = {
     ...props
   }: React.ComponentProps<"img">) => (
     <Image
-      className={cn("mt-6 border squircle", className)}
+      className={cn("", className)}
       src={(src as string) || ""}
       width={Number(width)}
       height={Number(height)}
@@ -270,6 +270,9 @@ export const mdxComponents = {
       {...props}
     />
   ),
+  hr: ({ ...props }: React.ComponentProps<"hr">) => (
+    <hr className="my-2" {...props} />
+  ),
   pre: ({ className, children, ...props }: React.ComponentProps<"pre">) => {
     return (
       <pre
@@ -301,11 +304,11 @@ export const mdxComponents = {
   CodeTabs,
   CodeCollapsibleWrapper,
   WorkList,
-  AboutIntro,
   KbdGroup,
   Kbd,
   NavAction,
   BadgeGroup,
+  ImgGallery,
   Link: ({ className, ...props }: React.ComponentProps<typeof Link>) => (
     <Link
       className={cn("font-medium underline underline-offset-4", className)}
