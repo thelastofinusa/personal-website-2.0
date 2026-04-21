@@ -21,6 +21,7 @@ import { RxDragHandleDots2 } from "react-icons/rx"
 import { LuListTree } from "react-icons/lu"
 import { IoGridOutline } from "react-icons/io5"
 import { LuBookMarked } from "react-icons/lu"
+import { LayoutGroup, motion } from "framer-motion"
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
@@ -52,8 +53,8 @@ export const WorkListClient = ({
    * ✅ FIX: Sync with Sanity Live updates
    * Preserves order where possible instead of resetting
    */
-  React.useMemo(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-render
+  React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(projects)
   }, [projects])
 
@@ -187,11 +188,11 @@ export const WorkListClient = ({
                 items={items.map((i) => i.slug)}
                 strategy={rectSortingStrategy}
               >
-                <div className="grid gap-4 md:grid-cols-2">
+                <motion.div layout className="grid gap-4 md:grid-cols-2">
                   {items.map((project) => (
                     <SortableCard key={project.slug} project={project} />
                   ))}
-                </div>
+                </motion.div>
               </SortableContext>
             </DndContext>
           </TabsContent>
@@ -202,54 +203,67 @@ export const WorkListClient = ({
 }
 
 export const SortableCard = ({ project }: { project: ProjectType }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: project.slug })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
     transition,
-  }
+    isDragging,
+  } = useSortable({ id: project.slug })
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className="space-y-3 rounded-xl border bg-background p-4 squircle"
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+      }}
+      className="relative h-full"
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <LuBookMarked className="size-4 text-muted-foreground" />
+      <motion.div
+        animate={{
+          scale: isDragging ? 1.05 : 1,
+          opacity: isDragging ? 0.6 : 1,
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        className="h-full space-y-3 rounded-xl border bg-background p-4 squircle"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <LuBookMarked className="size-4 text-muted-foreground" />
 
-          <Tooltip>
-            <TooltipTrigger>
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href={project.url}
-                className="font-semibold text-primary hover:underline"
-              >
-                {siteConfig.username}/{project.slug}
-              </a>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="font-medium">{project.name}</p>
-            </TooltipContent>
-          </Tooltip>
+            <Tooltip>
+              <TooltipTrigger>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={project.url}
+                  className="font-semibold text-primary hover:underline"
+                >
+                  {siteConfig.username}/{project.slug}
+                </a>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="font-medium">{project.name}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+
+          {/* Drag Handle */}
+          <RxDragHandleDots2
+            {...attributes}
+            {...listeners}
+            className="size-4 cursor-grab active:cursor-grabbing"
+          />
         </div>
 
-        {/* Drag Handle */}
-        <RxDragHandleDots2
-          {...attributes}
-          {...listeners}
-          className="size-4 cursor-grab active:cursor-grabbing"
-        />
-      </div>
-
-      {project.description && (
-        <p className="text-sm text-muted-foreground">
-          {stripMarkdown(project.description)}
-        </p>
-      )}
+        {project.description && (
+          <p className="text-sm text-muted-foreground">
+            {stripMarkdown(project.description)}
+          </p>
+        )}
+      </motion.div>
     </div>
   )
 }
