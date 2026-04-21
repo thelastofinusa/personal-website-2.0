@@ -24,6 +24,7 @@ export type Project = {
   description?: string
   featured?: boolean
   url?: string
+  order?: number
 }
 
 export type Slug = {
@@ -49,7 +50,6 @@ export type Gallery = {
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
     alt?: string
-    caption?: string
     _type: "image"
     _key: string
   }>
@@ -184,29 +184,32 @@ export type AllSanitySchemaTypes =
 export declare const internalGroqTypeReferenceTo: unique symbol
 // Source: ./sanity/lib/queries.ts
 // Variable: QUERY_FEATURED_PROJECTS
-// Query: *[_type == "project" && featured == true] | order(_createdAt asc){    name,    "slug": slug.current,    description,    featured,    url  }
+// Query: *[_type == "project" && featured == true] | order(_createdAt asc){    _id,    name,    "slug": slug.current,    description,    featured,    url,    order  }
 export type QUERY_FEATURED_PROJECTSResult = Array<{
+  _id: string
   name: string | null
   slug: string | null
   description: string | null
   featured: true
   url: string | null
+  order: number | null
 }>
 // Variable: QUERY_ALL_PROJECTS
-// Query: *[_type == "project"] | order(_createdAt asc){    name,    "slug": slug.current,    description,    featured,    url  }
+// Query: *[_type == "project"] | order(order asc){    _id,    name,    "slug": slug.current,    description,    featured,    url,    order  }
 export type QUERY_ALL_PROJECTSResult = Array<{
+  _id: string
   name: string | null
   slug: string | null
   description: string | null
   featured: boolean | null
   url: string | null
+  order: number | null
 }>
 // Variable: QUERY_GALLERY
-// Query: *[_type == "gallery"][0]{    images[]{      _key,      caption,      "image": asset->url,      alt    }  }
+// Query: *[_type == "gallery"][0]{    images[]{      _key,      "image": asset->url,      alt    }  }
 export type QUERY_GALLERYResult = {
   images: Array<{
     _key: string
-    caption: string | null
     image: string | null
     alt: string | null
   }> | null
@@ -216,8 +219,8 @@ export type QUERY_GALLERYResult = {
 import "@sanity/client"
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_type == "project" && featured == true] | order(_createdAt asc){\n    name,\n    "slug": slug.current,\n    description,\n    featured,\n    url\n  }\n': QUERY_FEATURED_PROJECTSResult
-    '\n  *[_type == "project"] | order(_createdAt asc){\n    name,\n    "slug": slug.current,\n    description,\n    featured,\n    url\n  }\n': QUERY_ALL_PROJECTSResult
-    '\n  *[_type == "gallery"][0]{\n    images[]{\n      _key,\n      caption,\n      "image": asset->url,\n      alt\n    }\n  }\n': QUERY_GALLERYResult
+    '\n  *[_type == "project" && featured == true] | order(_createdAt asc){\n    _id,\n    name,\n    "slug": slug.current,\n    description,\n    featured,\n    url,\n    order\n  }\n': QUERY_FEATURED_PROJECTSResult
+    '\n  *[_type == "project"] | order(order asc){\n    _id,\n    name,\n    "slug": slug.current,\n    description,\n    featured,\n    url,\n    order\n  }\n': QUERY_ALL_PROJECTSResult
+    '\n  *[_type == "gallery"][0]{\n    images[]{\n      _key,\n      "image": asset->url,\n      alt\n    }\n  }\n': QUERY_GALLERYResult
   }
 }

@@ -69,6 +69,13 @@
           "type": "string"
         },
         "optional": true
+      },
+      "order": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
       }
     }
   },
@@ -198,13 +205,6 @@
                 "optional": true
               },
               "alt": {
-                "type": "objectAttribute",
-                "value": {
-                  "type": "string"
-                },
-                "optional": true
-              },
-              "caption": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "string"

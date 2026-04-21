@@ -52,6 +52,14 @@ export const projectType = defineType({
           scheme: ["http", "https"],
         }),
     }),
+    defineField({
+      name: "order",
+      title: "Order",
+      type: "number",
+      description: "Controls the display order of projects.",
+      initialValue: 0,
+      readOnly: true,
+    }),
   ],
   preview: {
     select: {

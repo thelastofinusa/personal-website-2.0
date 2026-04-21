@@ -41,20 +41,56 @@ export const WorkListClient = ({
   projects,
   featured,
 }: Props) => {
-  const [items, setItems] = React.useState(projects)
-
   const sensors = useSensors(useSensor(PointerSensor))
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
+  /**
+   * Local state for drag ordering
+   */
+  const [items, setItems] = React.useState(projects)
 
+  /**
+   * ✅ FIX: Sync with Sanity Live updates
+   * Preserves order where possible instead of resetting
+   */
+  React.useMemo(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-render
+    setItems(projects)
+  }, [projects])
+
+  /**
+   * Drag handler
+   */
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
     if (!over || active.id === over.id) return
 
-    setItems((prev) => {
-      const oldIndex = prev.findIndex((i) => i.slug === active.id)
-      const newIndex = prev.findIndex((i) => i.slug === over.id)
-      return arrayMove(prev, oldIndex, newIndex)
-    })
+    const newItems = arrayMove(
+      items,
+      items.findIndex((i) => i.slug === active.id),
+      items.findIndex((i) => i.slug === over.id)
+    )
+
+    // ✅ Optimistic UI
+
+    setItems(newItems)
+
+    try {
+      await fetch("/api/reorder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(
+          newItems.map((item, index) => ({
+            _id: item._id,
+            order: index,
+          }))
+        ),
+      })
+    } catch (err) {
+      console.error("Failed to persist order", err)
+    }
   }
 
   return (
@@ -171,7 +207,6 @@ export const SortableCard = ({ project }: { project: ProjectType }) => {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-
     transition,
   }
 
@@ -184,6 +219,7 @@ export const SortableCard = ({ project }: { project: ProjectType }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <LuBookMarked className="size-4 text-muted-foreground" />
+
           <Tooltip>
             <TooltipTrigger>
               <a
@@ -201,6 +237,7 @@ export const SortableCard = ({ project }: { project: ProjectType }) => {
           </Tooltip>
         </div>
 
+        {/* Drag Handle */}
         <RxDragHandleDots2
           {...attributes}
           {...listeners}

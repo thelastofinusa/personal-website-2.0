@@ -28,13 +28,6 @@ export const galleryType = defineType({
               description:
                 "Short description of the image for accessibility and SEO.",
             }),
-            defineField({
-              name: "caption",
-              title: "Caption",
-              type: "string",
-              description:
-                "Optional caption displayed below the image in the gallery.",
-            }),
           ],
         }),
       ],
@@ -44,8 +37,8 @@ export const galleryType = defineType({
 
   preview: {
     select: {
-      title: "title",
-      media: "images.0",
+      title: "images.0.alt",
+      media: "images.0.image",
       imagesCount: "images",
     },
     prepare({ title, media, imagesCount }) {
