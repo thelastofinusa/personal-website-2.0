@@ -48,7 +48,7 @@ function TabsList({
       data-slot="tabs-list"
       data-variant={variant}
       className={cn(
-        "rounded-2xl squircle",
+        "rounded-lg squircle sm:rounded-xl md:rounded-2xl",
         tabsListVariants({ variant }),
         className
       )}
