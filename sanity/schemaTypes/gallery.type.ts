@@ -14,12 +14,9 @@ export const galleryType = defineType({
       description:
         "Upload images for this gallery. These will be displayed in a masonry-style layout on the frontend.",
       of: [
-        defineField({
+        {
           type: "image",
-          name: "image",
-          options: {
-            hotspot: true,
-          },
+          options: { hotspot: true },
           fields: [
             defineField({
               name: "alt",
@@ -29,16 +26,15 @@ export const galleryType = defineType({
                 "Short description of the image for accessibility and SEO.",
             }),
           ],
-        }),
+        },
       ],
       validation: (Rule) => Rule.min(1).warning("Add at least one image"),
     }),
   ],
-
   preview: {
     select: {
       title: "images.0.alt",
-      media: "images.0.image",
+      media: "images.0",
       imagesCount: "images",
     },
     prepare({ title, media, imagesCount }) {
