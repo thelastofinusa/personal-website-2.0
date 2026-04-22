@@ -21,7 +21,7 @@ import { RxDragHandleDots2 } from "react-icons/rx"
 import { LuListTree } from "react-icons/lu"
 import { IoGridOutline } from "react-icons/io5"
 import { LuBookMarked } from "react-icons/lu"
-import { LayoutGroup, motion } from "framer-motion"
+import { motion } from "framer-motion"
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
@@ -43,24 +43,13 @@ export const WorkListClient = ({
   featured,
 }: Props) => {
   const sensors = useSensors(useSensor(PointerSensor))
-
-  /**
-   * Local state for drag ordering
-   */
   const [items, setItems] = React.useState(projects)
 
-  /**
-   * ✅ FIX: Sync with Sanity Live updates
-   * Preserves order where possible instead of resetting
-   */
   React.useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(projects)
   }, [projects])
 
-  /**
-   * Drag handler
-   */
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event
     if (!over || active.id === over.id) return
@@ -70,8 +59,6 @@ export const WorkListClient = ({
       items.findIndex((i) => i.slug === active.id),
       items.findIndex((i) => i.slug === over.id)
     )
-
-    // ✅ Optimistic UI
 
     setItems(newItems)
 
@@ -222,17 +209,21 @@ export const SortableCard = ({ project }: { project: ProjectType }) => {
       className="relative h-full"
     >
       <motion.div
+        layout={!isDragging}
         animate={{
           scale: isDragging ? 1.05 : 1,
           opacity: isDragging ? 0.6 : 1,
         }}
-        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        transition={{
+          type: "spring",
+          stiffness: 400,
+          damping: 30,
+        }}
         className="h-full space-y-3 rounded-xl border bg-background p-4 squircle"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <LuBookMarked className="size-4 text-muted-foreground" />
-
             <Tooltip>
               <TooltipTrigger>
                 <a
@@ -249,17 +240,14 @@ export const SortableCard = ({ project }: { project: ProjectType }) => {
               </TooltipContent>
             </Tooltip>
           </div>
-
-          {/* Drag Handle */}
           <RxDragHandleDots2
             {...attributes}
             {...listeners}
             className="size-4 cursor-grab active:cursor-grabbing"
           />
         </div>
-
         {project.description && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[13px] text-muted-foreground">
             {stripMarkdown(project.description)}
           </p>
         )}
