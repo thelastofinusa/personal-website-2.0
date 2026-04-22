@@ -15,8 +15,8 @@ import { SanityLive } from "@/sanity/lib/live"
 
 export const metadata: Metadata = {
   title: {
-    default: `${siteConfig.name} - ${siteConfig.description}`,
-    template: `%s - ${siteConfig.name}`,
+    default: `${siteConfig.username} (${siteConfig.nickname})`,
+    template: `%s - ${siteConfig.username} (${siteConfig.nickname})`,
   },
   description: siteConfig.description,
   metadataBase: new URL(CONST_SITE_URL as string),

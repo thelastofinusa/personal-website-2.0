@@ -28,6 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { stripMarkdown } from "@/lib/utils"
 import { siteConfig } from "@/config/site.config"
 import { ProjectType } from "./work-list"
+import { CONST_STORAGE_KEY } from "@/lib/constants"
 
 type Props = {
   title?: string
@@ -44,11 +45,21 @@ export const WorkListClient = ({
 }: Props) => {
   const sensors = useSensors(useSensor(PointerSensor))
   const [items, setItems] = React.useState(projects)
+  const [activeTab, setActiveTab] = React.useState("grid")
 
   React.useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(projects)
   }, [projects])
+
+  // Load saved tab on mount
+  React.useEffect(() => {
+    const savedTab = localStorage.getItem(CONST_STORAGE_KEY)
+    if (savedTab && (savedTab === "list" || savedTab === "grid")) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setActiveTab(savedTab)
+    }
+  }, [])
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event
@@ -81,9 +92,14 @@ export const WorkListClient = ({
     }
   }
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value)
+    localStorage.setItem(CONST_STORAGE_KEY, value)
+  }
+
   return (
     <div className="space-y-4">
-      {title && <p className="font-semibold">{title}</p>}
+      {title && <p className="font-medium">{title}</p>}
       {description && <p>{description}</p>}
 
       {featured && (
@@ -94,7 +110,7 @@ export const WorkListClient = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 href={project.url}
-                className="font-semibold text-primary underline underline-offset-4"
+                className="font-medium text-primary underline underline-offset-4"
               >
                 {project.name}
               </a>{" "}
@@ -103,7 +119,7 @@ export const WorkListClient = ({
                 components={{
                   p: ({ children }) => <span>{children}</span>,
                   strong: ({ children }) => (
-                    <strong className="font-semibold">{children}</strong>
+                    <strong className="font-medium">{children}</strong>
                   ),
                   code: ({ children }) => (
                     <code className="rounded bg-muted px-1 py-0.5 text-xs">
@@ -120,7 +136,11 @@ export const WorkListClient = ({
       )}
 
       {!featured && (
-        <Tabs key={featured ? "featured" : "all"} defaultValue="grid">
+        <Tabs
+          key={featured ? "featured" : "all"}
+          value={activeTab}
+          onValueChange={handleTabChange}
+        >
           <TabsList className="ml-auto">
             <TabsTrigger value="list">
               <LuListTree className="size-4" />
@@ -139,7 +159,7 @@ export const WorkListClient = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     href={project.url}
-                    className="font-semibold text-primary underline underline-offset-4"
+                    className="font-medium text-primary underline underline-offset-4"
                   >
                     {project.name}
                   </a>{" "}
@@ -148,7 +168,7 @@ export const WorkListClient = ({
                     components={{
                       p: ({ children }) => <span>{children}</span>,
                       strong: ({ children }) => (
-                        <strong className="font-semibold">{children}</strong>
+                        <strong className="font-medium">{children}</strong>
                       ),
                       code: ({ children }) => (
                         <code className="rounded bg-muted px-1 py-0.5 text-xs">
@@ -219,7 +239,7 @@ export const SortableCard = ({ project }: { project: ProjectType }) => {
           stiffness: 400,
           damping: 30,
         }}
-        className="h-full space-y-3 rounded-xl border bg-background p-4 squircle"
+        className="h-full space-y-3 rounded-xl border bg-background p-4 shadow-sm squircle sm:rounded-2xl md:rounded-3xl dark:bg-muted/40"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
@@ -230,7 +250,7 @@ export const SortableCard = ({ project }: { project: ProjectType }) => {
                   target="_blank"
                   rel="noopener noreferrer"
                   href={project.url}
-                  className="font-semibold text-primary hover:underline"
+                  className="font-semibold text-primary underline-offset-4 hover:underline"
                 >
                   {siteConfig.username}/{project.slug}
                 </a>
@@ -243,7 +263,7 @@ export const SortableCard = ({ project }: { project: ProjectType }) => {
           <RxDragHandleDots2
             {...attributes}
             {...listeners}
-            className="size-4 cursor-grab active:cursor-grabbing"
+            className="size-4 cursor-grab border-0 ring-0 outline-0 active:cursor-grabbing"
           />
         </div>
         {project.description && (

@@ -73,7 +73,7 @@ export default async function Page(props: PageProps<"/[[...slug]]">) {
 
   return (
     <div className="flex justify-center gap-4 sm:p-4 md:gap-6 md:p-6 lg:gap-8 lg:p-8">
-      <div className="flex max-w-4xl flex-1 flex-col gap-4 overflow-hidden bg-background p-5 text-sm sm:rounded-2xl sm:border sm:shadow-xl sm:squircle md:p-6">
+      <div className="flex max-w-4xl flex-1 flex-col gap-4 overflow-hidden bg-background p-5 text-sm sm:rounded-2xl sm:border sm:shadow-xl sm:squircle md:rounded-3xl md:p-6 lg:rounded-4xl">
         <Header title={doc.title} />
         <MDX components={mdxComponents} />
         <Footer />

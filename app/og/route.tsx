@@ -19,10 +19,12 @@ export async function GET(request: Request) {
             style={{
               textWrap: "balance",
               fontWeight: 600,
-              fontSize: title && title.length > 20 ? 64 : 80,
+              fontSize: title && title.length > 20 ? 60 : 70,
             }}
           >
-            {title?.toLowerCase() === "readme" ? siteConfig.nickname : title}
+            {title?.toLowerCase() === "readme"
+              ? `${siteConfig.username} (${siteConfig.nickname})`
+              : title}
           </div>
           <div
             tw="text-[36px] text-[#9198a1]"
