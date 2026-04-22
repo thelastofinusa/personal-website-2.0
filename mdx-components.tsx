@@ -36,7 +36,7 @@ export const mdxComponents = {
     <h3 className="text-[17px] font-bold" {...props} />
   ),
   h4: (props: HeadingProps) => (
-    <h4 className="text-sm font-semibold" {...props} />
+    <h4 className="text-sm font-medium" {...props} />
   ),
   p: (props: ParagraphProps) => <p className="leading-snug" {...props} />,
   ol: (props: ListProps) => (
@@ -47,7 +47,7 @@ export const mdxComponents = {
   ),
   li: (props: ListItemProps) => <li className="pl-1" {...props} />,
   em: (props: ComponentPropsWithoutRef<"em">) => (
-    <em className="font-semibold" {...props} />
+    <em className="font-medium" {...props} />
   ),
   figure: ({ className, ...props }: React.ComponentProps<"figure">) => {
     return <figure className={cn(className)} {...props} />
@@ -76,7 +76,7 @@ export const mdxComponents = {
     )
   },
   strong: (props: ComponentPropsWithoutRef<"strong">) => (
-    <strong className="font-semibold" {...props} />
+    <strong className="font-medium" {...props} />
   ),
   a: ({ href, children, ...props }: AnchorProps) => {
     const className = "text-primary"
