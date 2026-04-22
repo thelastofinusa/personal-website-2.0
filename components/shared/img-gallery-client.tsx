@@ -38,7 +38,7 @@ export const ImgGalleryClient = ({ images }: ImgGalleryClientProps) => {
         {images.map((img, index) => (
           <div
             key={img._key}
-            className="group mb-4 cursor-pointer break-inside-avoid overflow-hidden border bg-background text-foreground sm:rounded-xl sm:shadow-xl sm:squircle dark:bg-muted"
+            className="group mb-4 cursor-pointer break-inside-avoid-column overflow-hidden border bg-background text-foreground sm:rounded-xl sm:shadow-xl sm:squircle dark:bg-muted"
             onClick={() => {
               setPhotoIndex(index)
               setLightboxOpen(true)
