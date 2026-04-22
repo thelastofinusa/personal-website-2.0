@@ -28,7 +28,7 @@ export async function generateMetadata(
   if (!doc.title || !doc.description) return notFound()
 
   return {
-    title: doc.title.toLowerCase() === "readme" ? siteConfig.name : doc.title,
+    title: doc.title,
     description: doc.description,
     openGraph: {
       title: doc.title,

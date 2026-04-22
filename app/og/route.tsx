@@ -1,3 +1,4 @@
+import { siteConfig } from "@/config/site.config"
 import { ImageResponse } from "next/og"
 
 export async function GET(request: Request) {
@@ -39,7 +40,7 @@ export async function GET(request: Request) {
             letterSpacing: "-0.04em",
           }}
         >
-          {title}
+          {title?.toLowerCase() === "readme" ? siteConfig.name : title}
         </div>
         <div
           tw="text-[40px] leading-[1.5] flex-grow-1 text-stone-400"
