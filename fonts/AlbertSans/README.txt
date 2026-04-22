@@ -1,36 +1,36 @@
-Google Sans Variable Font
+Albert Sans Variable Font
 =========================
 
-This download contains Google Sans as both variable fonts and static fonts.
+This download contains Albert Sans as both variable fonts and static fonts.
 
-Google Sans is a variable font with these axes:
-  GRAD
-  opsz
+Albert Sans is a variable font with this axis:
   wght
 
 This means all the styles are contained in these files:
-  GoogleSans-VariableFont_GRAD,opsz,wght.ttf
-  GoogleSans-Italic-VariableFont_GRAD,opsz,wght.ttf
+  AlbertSans-VariableFont_wght.ttf
+  AlbertSans-Italic-VariableFont_wght.ttf
 
 If your app fully supports variable fonts, you can now pick intermediate styles
 that aren’t available as static fonts. Not all apps support variable fonts, and
-in those cases you can use the static font files for Google Sans:
-  static/GoogleSans_17pt-Regular.ttf
-  static/GoogleSans_17pt-Medium.ttf
-  static/GoogleSans_17pt-SemiBold.ttf
-  static/GoogleSans_17pt-Bold.ttf
-  static/GoogleSans-Regular.ttf
-  static/GoogleSans-Medium.ttf
-  static/GoogleSans-SemiBold.ttf
-  static/GoogleSans-Bold.ttf
-  static/GoogleSans_17pt-Italic.ttf
-  static/GoogleSans_17pt-MediumItalic.ttf
-  static/GoogleSans_17pt-SemiBoldItalic.ttf
-  static/GoogleSans_17pt-BoldItalic.ttf
-  static/GoogleSans-Italic.ttf
-  static/GoogleSans-MediumItalic.ttf
-  static/GoogleSans-SemiBoldItalic.ttf
-  static/GoogleSans-BoldItalic.ttf
+in those cases you can use the static font files for Albert Sans:
+  static/AlbertSans-Thin.ttf
+  static/AlbertSans-ExtraLight.ttf
+  static/AlbertSans-Light.ttf
+  static/AlbertSans-Regular.ttf
+  static/AlbertSans-Medium.ttf
+  static/AlbertSans-SemiBold.ttf
+  static/AlbertSans-Bold.ttf
+  static/AlbertSans-ExtraBold.ttf
+  static/AlbertSans-Black.ttf
+  static/AlbertSans-ThinItalic.ttf
+  static/AlbertSans-ExtraLightItalic.ttf
+  static/AlbertSans-LightItalic.ttf
+  static/AlbertSans-Italic.ttf
+  static/AlbertSans-MediumItalic.ttf
+  static/AlbertSans-SemiBoldItalic.ttf
+  static/AlbertSans-BoldItalic.ttf
+  static/AlbertSans-ExtraBoldItalic.ttf
+  static/AlbertSans-BlackItalic.ttf
 
 Get started
 -----------

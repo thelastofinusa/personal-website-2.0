@@ -3,7 +3,7 @@ import localFont from "next/font/local"
 import { cn } from "@/lib/utils"
 
 const fontSans = localFont({
-  src: "./GoogleSans/GoogleSans-VariableFont_GRAD,opsz,wght.ttf",
+  src: "./AlbertSans/AlbertSans-VariableFont_wght.ttf",
   variable: "--font-sans",
   preload: true,
 })
