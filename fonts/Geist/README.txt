@@ -1,36 +1,26 @@
-Albert Sans Variable Font
-=========================
+Geist Variable Font
+===================
 
-This download contains Albert Sans as both variable fonts and static fonts.
+This download contains Geist as both a variable font and static fonts.
 
-Albert Sans is a variable font with this axis:
+Geist is a variable font with this axis:
   wght
 
-This means all the styles are contained in these files:
-  AlbertSans-VariableFont_wght.ttf
-  AlbertSans-Italic-VariableFont_wght.ttf
+This means all the styles are contained in a single file:
+  Geist/Geist-VariableFont_wght.ttf
 
 If your app fully supports variable fonts, you can now pick intermediate styles
 that aren’t available as static fonts. Not all apps support variable fonts, and
-in those cases you can use the static font files for Albert Sans:
-  static/AlbertSans-Thin.ttf
-  static/AlbertSans-ExtraLight.ttf
-  static/AlbertSans-Light.ttf
-  static/AlbertSans-Regular.ttf
-  static/AlbertSans-Medium.ttf
-  static/AlbertSans-SemiBold.ttf
-  static/AlbertSans-Bold.ttf
-  static/AlbertSans-ExtraBold.ttf
-  static/AlbertSans-Black.ttf
-  static/AlbertSans-ThinItalic.ttf
-  static/AlbertSans-ExtraLightItalic.ttf
-  static/AlbertSans-LightItalic.ttf
-  static/AlbertSans-Italic.ttf
-  static/AlbertSans-MediumItalic.ttf
-  static/AlbertSans-SemiBoldItalic.ttf
-  static/AlbertSans-BoldItalic.ttf
-  static/AlbertSans-ExtraBoldItalic.ttf
-  static/AlbertSans-BlackItalic.ttf
+in those cases you can use the static font files for Geist:
+  Geist/static/Geist-Thin.ttf
+  Geist/static/Geist-ExtraLight.ttf
+  Geist/static/Geist-Light.ttf
+  Geist/static/Geist-Regular.ttf
+  Geist/static/Geist-Medium.ttf
+  Geist/static/Geist-SemiBold.ttf
+  Geist/static/Geist-Bold.ttf
+  Geist/static/Geist-ExtraBold.ttf
+  Geist/static/Geist-Black.ttf
 
 Get started
 -----------
