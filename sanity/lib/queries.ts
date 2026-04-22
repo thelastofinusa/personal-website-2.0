@@ -25,11 +25,13 @@ export const QUERY_ALL_PROJECTS = defineQuery(`
 `)
 
 export const QUERY_GALLERY = defineQuery(`
-  *[_type == "gallery"][0]{
+ *[_type == "gallery"][0]{
     images[]{
       _key,
       "image": asset->url,
-      alt
+      alt,
+      "width": asset->metadata.dimensions.width,
+      "height": asset->metadata.dimensions.height,
     }
   }
 `)

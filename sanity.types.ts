@@ -206,12 +206,14 @@ export type QUERY_ALL_PROJECTSResult = Array<{
   order: number | null
 }>
 // Variable: QUERY_GALLERY
-// Query: *[_type == "gallery"][0]{    images[]{      _key,      "image": asset->url,      alt    }  }
+// Query: *[_type == "gallery"][0]{    images[]{      _key,      "image": asset->url,      alt,      "width": asset->metadata.dimensions.width,      "height": asset->metadata.dimensions.height,    }  }
 export type QUERY_GALLERYResult = {
   images: Array<{
     _key: string
     image: string | null
     alt: string | null
+    width: number | null
+    height: number | null
   }> | null
 } | null
 
@@ -221,6 +223,6 @@ declare module "@sanity/client" {
   interface SanityQueries {
     '\n  *[_type == "project" && featured == true] | order(_createdAt asc){\n    _id,\n    name,\n    "slug": slug.current,\n    description,\n    featured,\n    url,\n    order\n  }\n': QUERY_FEATURED_PROJECTSResult
     '\n  *[_type == "project"] | order(order asc){\n    _id,\n    name,\n    "slug": slug.current,\n    description,\n    featured,\n    url,\n    order\n  }\n': QUERY_ALL_PROJECTSResult
-    '\n  *[_type == "gallery"][0]{\n    images[]{\n      _key,\n      "image": asset->url,\n      alt\n    }\n  }\n': QUERY_GALLERYResult
+    '\n *[_type == "gallery"][0]{\n    images[]{\n      _key,\n      "image": asset->url,\n      alt,\n      "width": asset->metadata.dimensions.width,\n      "height": asset->metadata.dimensions.height,\n    }\n  }\n': QUERY_GALLERYResult
   }
 }
