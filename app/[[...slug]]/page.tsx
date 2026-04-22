@@ -28,7 +28,7 @@ export async function generateMetadata(
   if (!doc.title || !doc.description) return notFound()
 
   const title =
-    doc.title.toLowerCase() === "readme" ? `@${siteConfig.username}` : doc.title
+    doc.title.toLowerCase() === "readme" ? siteConfig.nickname : doc.title
 
   return {
     title,

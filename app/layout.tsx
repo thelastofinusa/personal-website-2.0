@@ -22,8 +22,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(CONST_SITE_URL as string),
   authors: [
     {
-      name: "Holiday",
-      url: "https://x.com/thelastofinusa",
+      name: siteConfig.nickname,
+      url: `https://x.com/${siteConfig.username}`,
     },
   ],
   openGraph: {

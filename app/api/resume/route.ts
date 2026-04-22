@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server"
 import fs from "fs"
 import path from "path"
+import { siteConfig } from "@/config/site.config"
 
 export async function GET() {
   const filePath = path.join(process.cwd(), "public/resume.pdf")
@@ -10,7 +11,7 @@ export async function GET() {
   return new NextResponse(file, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": 'attachment; filename="Holiday_Resume.pdf"',
+      "Content-Disposition": `attachment; filename="${siteConfig.name.split(" ").join("_")}_Resume.pdf"`,
     },
   })
 }

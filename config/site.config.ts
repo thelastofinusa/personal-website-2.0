@@ -6,4 +6,5 @@ export const siteConfig = {
   ogImage: `${CONST_SITE_URL}/og.jpg`,
   description: "iBuild. iEducate. iContribute. iLearn",
   username: "thelastofinusa",
+  nickname: "Holiday",
 }
