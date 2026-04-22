@@ -6,6 +6,7 @@ import { absoluteUrl } from "@/lib/utils"
 import { mdxComponents } from "@/mdx-components"
 import { Header } from "../../components/shared/header"
 import { Footer } from "../../components/shared/footer"
+import { siteConfig } from "@/config/site.config"
 
 export const revalidate = false
 export const dynamic = "force-static"
@@ -27,7 +28,7 @@ export async function generateMetadata(
   if (!doc.title || !doc.description) return notFound()
 
   return {
-    title: doc.title,
+    title: doc.title.toLowerCase() === "readme" ? siteConfig.name : doc.title,
     description: doc.description,
     openGraph: {
       title: doc.title,
