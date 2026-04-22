@@ -36,6 +36,7 @@ export const DownloadResume = () => {
           className={buttonVariants({
             size: "icon-sm",
             variant: "ghost",
+            className: isLoading && "pointer-events-none opacity-50",
           })}
         >
           {isLoading ? (
@@ -43,11 +44,15 @@ export const DownloadResume = () => {
           ) : (
             <RiDownload2Line />
           )}
-          <span className="sr-only">Download Resume</span>
+          <span className="sr-only">
+            {isLoading ? "Downloading..." : "Download Resume"}
+          </span>
         </div>
       </TooltipTrigger>
       <TooltipContent align="end" side="bottom">
-        <p className="font-medium">Download Resume</p>
+        <p className="font-medium">
+          {isLoading ? "Downloading..." : "Download Resume"}
+        </p>
       </TooltipContent>
     </Tooltip>
   )
