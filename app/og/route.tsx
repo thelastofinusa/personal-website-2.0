@@ -2,7 +2,7 @@ import { siteConfig } from "@/config/site.config"
 import { ImageResponse } from "next/og"
 
 export async function GET(request: Request) {
-  const { searchParams, host, pathname } = new URL(request.url)
+  const { searchParams, host } = new URL(request.url)
   const title = searchParams.get("title")
   const description = searchParams.get("description")
 
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
         </div>
 
         <div tw="flex flex-col text-[#4493f8] underline text-[24px]">
-          {`${host}${pathname}`}
+          {host}
         </div>
       </div>
     </div>,
