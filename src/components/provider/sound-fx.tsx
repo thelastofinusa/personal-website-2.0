@@ -20,7 +20,7 @@ type SoundFxContextValue = {
 const SoundFxContext = React.createContext<SoundFxContextValue | null>(null);
 
 export function SoundFxProvider({ children }: { children: React.ReactNode }) {
-  const [enabled, setEnabledState] = React.useState(true);
+  const [enabled, setEnabledState] = React.useState(false);
   const [pack, setPackState] = React.useState<SoundPackName>(packNames[0]);
 
   const soundFxRef = React.useRef<UISFXPlayer | null>(null);
@@ -30,7 +30,7 @@ export function SoundFxProvider({ children }: { children: React.ReactNode }) {
     soundFxRef.current = createUISFX({
       pack: packNames[0],
       volume: 1,
-      enabled: true,
+      enabled: false,
     });
   }
 
@@ -71,7 +71,7 @@ export function SoundFxProvider({ children }: { children: React.ReactNode }) {
       setEnabledState(true);
     } else {
       // Play the turn-off sound while the player is still enabled
-      soundFxRef.current?.play("sleep");
+      soundFxRef.current?.play("remove-from-cart");
       setEnabledState(false);
 
       // Delay disabling the engine so the audio clip finishes playing
@@ -102,7 +102,7 @@ export function SoundFxProvider({ children }: { children: React.ReactNode }) {
     setEnabled(nextEnabled);
 
     if (nextEnabled) {
-      soundFxRef.current?.play("achievement");
+      soundFxRef.current?.play("add-to-cart");
     }
   }, [enabled, setEnabled]);
 
