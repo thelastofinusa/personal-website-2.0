@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { useWebHaptics } from "web-haptics/react";
-import { soundFx } from "../lib/uisfx";
+import { useSoundFx } from "@/components/provider/sound-fx";
 
 export type CopyState = "idle" | "done" | "error";
 
@@ -17,6 +17,7 @@ export function useCopyToClipboard({
   onCopyError,
   resetDelay = 1500,
 }: UseCopyToClipboardOptions = {}) {
+  const { play } = useSoundFx();
   const [state, setState] = useState<CopyState>("idle");
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -36,14 +37,14 @@ export function useCopyToClipboard({
         setState("done");
 
         haptic("success");
-        soundFx.play("copy");
+        play("copy");
 
         onCopySuccess?.(finalText);
       } catch (error) {
         setState("error");
 
         haptic("error");
-        soundFx.play("error");
+        play("error");
 
         onCopyError?.(
           error instanceof Error ? error : new Error("Copy failed"),
@@ -55,7 +56,7 @@ export function useCopyToClipboard({
         }, resetDelay);
       }
     },
-    [onCopySuccess, onCopyError, haptic, resetDelay],
+    [onCopySuccess, onCopyError, haptic, resetDelay, play],
   );
 
   return { state, copy } as const;

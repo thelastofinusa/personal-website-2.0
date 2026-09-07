@@ -8,8 +8,8 @@ import { CheckSquare, Clipboard3 } from "reicon-react";
 import { siteConfig } from "@/config/site.config";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { resolveIcon } from "@/lib/icons";
-import { soundFx } from "@/lib/uisfx";
 import { decodeString } from "@/lib/utils";
+import { useSoundFx } from "../provider/sound-fx";
 import { Button } from "../reusable/shadcn/button";
 import {
   Tooltip,
@@ -28,6 +28,7 @@ const shouldInclude: string[] = [
 ];
 
 export const Footer = () => {
+  const { play } = useSoundFx();
   const { state, copy } = useCopyToClipboard();
   const email = decodeString(siteConfig.author.email);
 
@@ -89,7 +90,7 @@ export const Footer = () => {
                             className="group"
                             title={social.platform}
                             aria-description={social.platform}
-                            onClick={() => soundFx.play("forward")}
+                            onClick={() => play("forward")}
                           >
                             <Icon className="size-4.5 group-hover:text-primary" />
                           </Link>

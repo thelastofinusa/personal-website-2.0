@@ -2,6 +2,7 @@
 
 import confetti from "canvas-confetti";
 import { motion, useScroll, useTransform } from "motion/react";
+import { useSoundFx } from "@/components/provider/sound-fx";
 import { Highlighter } from "@/components/reusable/magicui/highlighter";
 import {
   Avatar,
@@ -11,10 +12,10 @@ import {
 import { Container } from "@/components/shared/container";
 import { siteConfig } from "@/config/site.config";
 import { itemVariants, parentVariants } from "@/constants/variants";
-import { soundFx } from "@/lib/uisfx";
 import { getInitials } from "@/lib/utils";
 
 export const HomeHero = () => {
+  const { play } = useSoundFx();
   const { scrollYProgress } = useScroll();
 
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
@@ -73,7 +74,7 @@ export const HomeHero = () => {
                   type="button"
                   className="motion-safe:animate-bell-ring"
                   onClick={() => {
-                    soundFx.play("streak");
+                    play("streak");
                     confetti({
                       zIndex: 9999,
                       particleCount: 500,

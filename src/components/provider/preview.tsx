@@ -15,7 +15,6 @@ import {
   Xmark,
 } from "reicon-react";
 import { siteConfig } from "@/config/site.config";
-import { soundFx } from "@/lib/uisfx";
 import type {
   IImagePreviewContextType,
   IImagePreviewPortalProps,
@@ -23,6 +22,7 @@ import type {
 } from "@/types";
 import { Frame, FramePanel } from "../reusable/reui/frame";
 import { LocalImg } from "../shared/image";
+import { useSoundFx } from "./sound-fx";
 
 const ImagePreviewContext = createContext<IImagePreviewContextType | null>(
   null,
@@ -43,6 +43,7 @@ export const ImagePreviewProvider = ({
   images,
   maxWidth = 380,
 }: IImagePreviewProviderProps) => {
+  const { play } = useSoundFx();
   const [mounted, setMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
@@ -96,7 +97,7 @@ export const ImagePreviewProvider = ({
 
   const handleMouseEnter = (index: number) => {
     setActiveIndex(index);
-    soundFx.play("hover");
+    play("hover");
     if (!previewRef.current) return;
 
     gsap.to(previewRef.current, {

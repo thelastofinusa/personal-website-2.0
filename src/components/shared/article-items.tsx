@@ -16,10 +16,10 @@ import {
 } from "@/components/reusable/shadcn/empty";
 import { workItemVariants } from "@/constants/variants";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { soundFx } from "@/lib/uisfx";
 import { formatDate } from "@/lib/utils";
 import type { ArticlesListQueryResult } from "~/sanity.types";
 import { useImagePreview } from "../provider/preview";
+import { useSoundFx } from "../provider/sound-fx";
 import { Frame } from "../reusable/reui/frame";
 import { Button } from "../reusable/shadcn/button";
 import { StackedPagesIllustration } from "./illustration";
@@ -34,6 +34,7 @@ function ArticleSocialLinks({
     url: string | null;
   }[];
 }) {
+  const { play } = useSoundFx();
   const isMobile = useMediaQuery("(max-width: 767px)");
 
   return (
@@ -47,7 +48,7 @@ function ArticleSocialLinks({
               variant="outline"
               size={iconOnly ? "icon" : "sm"}
               className="bg-background!"
-              onClick={() => soundFx.play("select")}
+              onClick={() => play("select")}
             >
               <Icon />
               {!iconOnly && <span>{label}</span>}
@@ -122,10 +123,12 @@ function ArticleItem({
   article: ArticlesListQueryResult[0];
   className: string;
 }) {
+  const { play } = useSoundFx();
+
   return (
     <Link
       href={`/articles/${article.slug}`}
-      onClick={() => soundFx.play("forward")}
+      onClick={() => play("forward")}
       className={`group flex w-full items-start gap-2 bg-card md:hover:bg-background ${className} md:gap-4`}
     >
       <div className="flex flex-1 flex-col gap-2 md:gap-3">

@@ -11,11 +11,11 @@ import { SquareTopDown } from "reicon-react";
 import remarkGfm from "remark-gfm";
 import { tabFilters } from "@/constants/filters";
 import { workItemVariants } from "@/constants/variants";
-import { soundFx } from "@/lib/uisfx";
 import { cn, formatDate } from "@/lib/utils";
 import type { ISearchFilterProps } from "@/types";
 import type { ProjectsListQueryResult } from "~/sanity.types";
 import { useImagePreview } from "../provider/preview";
+import { useSoundFx } from "../provider/sound-fx";
 import { Frame } from "../reusable/reui/frame";
 import { Container } from "./container";
 import { FadeLine } from "./fade-line";
@@ -41,6 +41,7 @@ const ProjectListItem: React.FC<{
   isLast: boolean;
   activeTab?: string;
 }> = ({ item, index, isLast, activeTab }) => {
+  const { play } = useSoundFx();
   const { handleMouseEnter, handleMouseLeave } = useImagePreview();
   const Icon = tabFilters.find((filter) => filter.value === activeTab)?.icon;
 
@@ -58,7 +59,7 @@ const ProjectListItem: React.FC<{
           rel="noreferrer"
           onMouseEnter={() => handleMouseEnter(index)}
           onMouseLeave={handleMouseLeave}
-          onClick={() => soundFx.play("forward")}
+          onClick={() => play("forward")}
         >
           <FadeLine orientation="horizontal" className="top-0" />
           {isLast && <FadeLine orientation="horizontal" className="bottom-0" />}
@@ -170,6 +171,7 @@ const ProjectGridItem: React.FC<{
   index: number;
   activeTab?: string;
 }> = ({ item, index, activeTab }) => {
+  const { play } = useSoundFx();
   const Icon = tabFilters.find((filter) => filter.value === activeTab)?.icon;
 
   return (
@@ -180,7 +182,7 @@ const ProjectGridItem: React.FC<{
       rel="noreferrer"
       custom={index}
       {...MOTION_ITEM_PROPS}
-      onClick={() => soundFx.play("forward")}
+      onClick={() => play("forward")}
       className={cn(
         "group relative flex flex-col transition-all duration-500 ease-out",
       )}
@@ -211,7 +213,7 @@ const ProjectGridItem: React.FC<{
         </div>
       </Frame>
 
-      <div className="flex flex-col gap-0.5 md:px-8 py-5">
+      <div className="flex flex-col gap-0.5 px-4 md:px-8 py-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {Icon && <Icon className="mb-1.25 size-5" />}

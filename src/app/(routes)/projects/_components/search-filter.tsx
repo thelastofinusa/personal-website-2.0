@@ -1,7 +1,7 @@
 import { cn } from "cn";
 import React from "react";
 import { CarouselH, SliderVertical2, Xmark } from "reicon-react";
-
+import { useSoundFx } from "@/components/provider/sound-fx";
 import { Button } from "@/components/reusable/shadcn/button";
 import {
   DropdownMenu,
@@ -19,7 +19,6 @@ import {
   InputGroupText,
 } from "@/components/reusable/shadcn/input-group";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { soundFx } from "@/lib/uisfx";
 import type { ISearchFilterProps, TProjectView } from "@/types";
 
 const views = [
@@ -48,6 +47,7 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
   setView,
   onClear,
 }) => {
+  const { play } = useSoundFx();
   const isMobile = useMediaQuery("(max-width: 767px)");
 
   const [openMenu, setOpenMenu] = React.useState(false);
@@ -55,16 +55,19 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
 
   const ButtonIcon = views.find((item) => item.value === view)?.icon;
 
-  const handleOpenChange = React.useCallback((open: boolean) => {
-    if (!open && isSelectingView.current) {
-      isSelectingView.current = false;
-      setOpenMenu(false);
-      return;
-    }
+  const handleOpenChange = React.useCallback(
+    (open: boolean) => {
+      if (!open && isSelectingView.current) {
+        isSelectingView.current = false;
+        setOpenMenu(false);
+        return;
+      }
 
-    soundFx.play(open ? "toggle-on" : "toggle-off");
-    setOpenMenu(open);
-  }, []);
+      play(open ? "toggle-on" : "toggle-off");
+      setOpenMenu(open);
+    },
+    [play],
+  );
 
   const handleViewChange = React.useCallback(
     (value: string) => {
@@ -72,9 +75,9 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
 
       isSelectingView.current = true;
       setView(value as TProjectView);
-      soundFx.play("select");
+      play("select");
     },
-    [setView],
+    [setView, play],
   );
 
   const resultText = React.useMemo(() => {
@@ -138,7 +141,7 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
                     value={item.value}
                     onClick={() => {
                       isSelectingView.current = true;
-                      soundFx.play("select");
+                      play("select");
                     }}
                   >
                     <Icon />
@@ -175,6 +178,7 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
           variant="destructive"
           size="icon"
           aria-label="Clear filters"
+          className="bg-destructive/30 border border-destructive"
         >
           <Xmark aria-hidden="true" />
         </Button>

@@ -60,8 +60,9 @@ export const ThemeToggle: React.FC<
 
       <TooltipContent align="end" side="bottom" sideOffset={6}>
         <p className="text-xs">
-          Press <span className="font-mono uppercase">{THEME_KEY}</span> to
-          toggle {nextTheme} theme
+          Press{" "}
+          <span className="font-mono uppercase font-[11px]">{THEME_KEY}</span>{" "}
+          to toggle theme
         </p>
       </TooltipContent>
     </Tooltip>

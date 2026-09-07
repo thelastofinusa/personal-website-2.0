@@ -7,7 +7,7 @@ import Link from "next/link";
 import type React from "react";
 import type { IconComponent } from "reicon-react";
 import { itemVariants } from "@/constants/variants";
-import { soundFx } from "@/lib/uisfx";
+import { useSoundFx } from "../provider/sound-fx";
 import { ShimmeringText } from "../reusable/chanhdai/shimmering-text";
 
 const MotionLink = motion.create(Link);
@@ -19,6 +19,8 @@ export const Eyebrow: React.FC<{
   className?: string;
   reverse?: boolean;
 }> = ({ icon: Icon, label, href, className, reverse }) => {
+  const { play } = useSoundFx();
+
   const content = (
     <>
       {Icon && <Icon className="mb-px size-4 motion-safe:animate-bell-ring" />}
@@ -35,7 +37,7 @@ export const Eyebrow: React.FC<{
       <MotionLink
         href={href as Route}
         variants={itemVariants}
-        onClick={() => soundFx.play("back")}
+        onClick={() => play("back")}
         className={cn(
           "flex items-center flex-row gap-2 w-max text-muted-foreground",
           reverse && "flex-row-reverse",

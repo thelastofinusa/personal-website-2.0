@@ -16,22 +16,18 @@ import { navLinks } from "@/constants/navigation";
 import { menuItemVariants, menuVariants } from "@/constants/variants";
 import { useOnClickOutside } from "@/hooks/use-click-outside";
 import { resolveIcon } from "@/lib/icons";
-import { soundFx } from "@/lib/uisfx";
 import { decodeString, getInitials } from "@/lib/utils";
+import { useSoundFx } from "../provider/sound-fx";
 import { IconSwap, IconSwapItem } from "../reusable/chanhdai/icon-swap";
 import { Frame, FramePanel } from "../reusable/reui/frame";
 import { Avatar, AvatarFallback, AvatarImage } from "../reusable/shadcn/avatar";
 import { Button, type buttonVariants } from "../reusable/shadcn/button";
 import { Skeleton } from "../reusable/shadcn/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../reusable/shadcn/tooltip";
 
 export const MenuToggle: React.FC<
   ButtonPrimitive.Props & VariantProps<typeof buttonVariants>
 > = ({ variant = "default", size = "sm", ...props }) => {
+  const { play } = useSoundFx();
   const pathname = usePathname();
 
   const email = decodeString(siteConfig.author.email);
@@ -47,10 +43,16 @@ export const MenuToggle: React.FC<
 
   const toggleOpenMenu = React.useCallback(() => {
     setOpenMenu((prev) => {
-      soundFx.play(prev ? "toggle-off" : "toggle-on");
-      return !prev;
+      const next = !prev;
+      play(next ? "toggle-off" : "toggle-on");
+      if (next) {
+        window.dispatchEvent(
+          new CustomEvent("nav:menu-open", { detail: "menu" }),
+        );
+      }
+      return next;
     });
-  }, []);
+  }, [play]);
 
   useOnClickOutside(containerRef, closeMenu, openMenu);
 
@@ -92,48 +94,30 @@ export const MenuToggle: React.FC<
   }
 
   return (
-    <div ref={containerRef} className="relative inline-block">
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Button
-              type="button"
-              variant={variant}
-              size={size}
-              className={cn(
-                "relative z-50 overflow-hidden transition-all active:scale-95",
-                props.className,
-              )}
-              {...props}
-              onClick={toggleOpenMenu}
-            >
-              <span>Menu</span>
-
-              <IconSwap>
-                <IconSwapItem key={openMenu ? "close" : "open"}>
-                  {openMenu ? (
-                    <Xmark className="size-4" />
-                  ) : (
-                    <Menu4 className="size-4" />
-                  )}
-                </IconSwapItem>
-              </IconSwap>
-            </Button>
-          }
-        />
-
-        {!openMenu && (
-          <TooltipContent align="center" side="bottom" sideOffset={6}>
-            <p className="text-xs">
-              Press{" "}
-              <span className="font-mono uppercase font-[11px]">
-                {MENU_KEY}
-              </span>{" "}
-              to toggle menu
-            </p>
-          </TooltipContent>
+    <div ref={containerRef} className="inline-block">
+      <Button
+        type="button"
+        variant={variant}
+        size={size}
+        className={cn(
+          "relative z-50 overflow-hidden transition-all active:scale-95",
+          props.className,
         )}
-      </Tooltip>
+        {...props}
+        onClick={toggleOpenMenu}
+      >
+        <span>Menu</span>
+
+        <IconSwap>
+          <IconSwapItem key={openMenu ? "close" : "open"}>
+            {openMenu ? (
+              <Xmark className="size-4" />
+            ) : (
+              <Menu4 className="size-4" />
+            )}
+          </IconSwapItem>
+        </IconSwap>
+      </Button>
 
       <AnimatePresence>
         {openMenu && (
@@ -143,7 +127,7 @@ export const MenuToggle: React.FC<
             animate="open"
             exit="closed"
             className={cn(
-              "absolute -right-10 top-full z-40 mt-3 w-80 origin-top-right rounded-[20px]!",
+              "absolute right-0 top-full z-40 mt-3 w-80 origin-top-right rounded-[20px]!",
               "shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)]",
             )}
           >
@@ -162,7 +146,7 @@ export const MenuToggle: React.FC<
                         href={route.href}
                         onClick={() => {
                           closeMenu();
-                          soundFx.play("forward");
+                          play("forward");
                         }}
                         className="group block"
                         title={`${route.eyebrow} - ${route.title}`}
@@ -241,7 +225,7 @@ export const MenuToggle: React.FC<
                           className="group"
                           title={social.platform}
                           aria-label={social.platform}
-                          onClick={() => soundFx.play("forward")}
+                          onClick={() => play("forward")}
                         >
                           <Icon className="size-4.5 group-hover:text-primary" />
                         </Link>
@@ -254,7 +238,7 @@ export const MenuToggle: React.FC<
                   <motion.a
                     variants={menuItemVariants}
                     href={`mailto:${email}`}
-                    onClick={() => soundFx.play("forward")}
+                    onClick={() => play("forward")}
                     className="flex w-max items-center gap-1.5 text-sm font-extralight tracking-[0.03em] hover:text-primary"
                   >
                     {email}
@@ -263,7 +247,7 @@ export const MenuToggle: React.FC<
                   <motion.a
                     variants={menuItemVariants}
                     href={`tel:${phone}`}
-                    onClick={() => soundFx.play("forward")}
+                    onClick={() => play("forward")}
                     className="flex w-max items-center gap-1.5 text-sm font-extralight tracking-[0.03em] hover:text-primary"
                   >
                     {phone}

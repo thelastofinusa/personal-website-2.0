@@ -8,7 +8,7 @@ import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { THEME_KEY } from "@/constants/keys";
-import { soundFx } from "@/lib/uisfx";
+import { useSoundFx } from "./sound-fx";
 
 type Theme = "dark" | "light" | "system";
 type ResolvedTheme = "dark" | "light";
@@ -65,6 +65,7 @@ function ThemeController({
     setTheme: setNextTheme,
   } = useNextTheme();
 
+  const { play } = useSoundFx();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -80,7 +81,7 @@ function ThemeController({
     (nextTheme: Theme) => {
       const updateTheme = () => {
         setNextTheme(nextTheme);
-        soundFx.play("add-to-cart");
+        play("add-to-cart");
       };
 
       if (typeof document.startViewTransition !== "function") {
@@ -90,7 +91,7 @@ function ThemeController({
 
       document.startViewTransition(updateTheme);
     },
-    [setNextTheme],
+    [setNextTheme, play],
   );
 
   const toggleTheme = React.useCallback(() => {

@@ -4,16 +4,18 @@ import Link from "next/link";
 import type React from "react";
 import { Link4Newicons } from "reicon-react";
 import { ImagePreviewProvider } from "@/components/provider/preview";
+import { useSoundFx } from "@/components/provider/sound-fx";
 import { buttonVariants } from "@/components/reusable/shadcn/button";
 import { Container } from "@/components/shared/container";
 import { ProjectsView } from "@/components/shared/projects-view";
-import { soundFx } from "@/lib/uisfx";
 import type { IImagePreviewPortalProps } from "@/types";
 import type { ProjectsListQueryResult } from "~/sanity.types";
 
 export const ProjectsComp: React.FC<{
   projects: ProjectsListQueryResult;
 }> = ({ projects }) => {
+  const { play } = useSoundFx();
+
   if (projects.length === 0) return null;
 
   const projectImages: IImagePreviewPortalProps["images"] = projects.flatMap(
@@ -43,7 +45,7 @@ export const ProjectsComp: React.FC<{
       <Container size="md" className="flex justify-end">
         <Link
           href="/projects"
-          onClick={() => soundFx.play("forward")}
+          onClick={() => play("forward")}
           className={buttonVariants({
             size: "lg",
             variant: "link",

@@ -1,5 +1,6 @@
 "use client";
 import type React from "react";
+import { useSoundFx } from "@/components/provider/sound-fx";
 import { Button } from "@/components/reusable/shadcn/button";
 import {
   Select,
@@ -16,7 +17,6 @@ import {
 } from "@/components/reusable/shadcn/tooltip";
 import { Reicon } from "@/components/shared/reicon";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { soundFx } from "@/lib/uisfx";
 import type { ProjectFiltersListQueryResult } from "~/sanity.types";
 
 export const TabFilter: React.FC<{
@@ -24,6 +24,7 @@ export const TabFilter: React.FC<{
   activeTab: string;
   onTabChange: (value: string) => void;
 }> = (props) => {
+  const { play } = useSoundFx();
   const isMobile = useMediaQuery("(max-width: 767px)");
 
   return !isMobile ? (
@@ -47,7 +48,7 @@ export const TabFilter: React.FC<{
                   variant={isActive ? "default" : "outline"}
                   onClick={() => {
                     props.onTabChange(filter.slug as string);
-                    soundFx.play("select");
+                    play("select");
                   }}
                 >
                   <Reicon name={filter.icon} />
@@ -69,7 +70,7 @@ export const TabFilter: React.FC<{
         value={props.activeTab}
         onValueChange={(e) => {
           props.onTabChange(e as string);
-          soundFx.play("select");
+          play("select");
         }}
       >
         <SelectTrigger className="rounded-full bg-background! hover:bg-background/90!">

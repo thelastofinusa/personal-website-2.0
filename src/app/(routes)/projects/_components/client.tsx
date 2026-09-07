@@ -5,6 +5,7 @@ import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { ImagePreviewProvider } from "@/components/provider/preview";
+import { useSoundFx } from "@/components/provider/sound-fx";
 import {
   Empty,
   EmptyDescription,
@@ -19,7 +20,6 @@ import { ProjectsView } from "@/components/shared/projects-view";
 import { QuickHero } from "@/components/shared/quick-hero";
 import { navLinksData } from "@/constants/navigation";
 import { projectMatchesSearch } from "@/lib/project-search";
-import { soundFx } from "@/lib/uisfx";
 import type { ISearchFilterProps } from "@/types";
 import type {
   ProjectFiltersListQueryResult,
@@ -32,6 +32,7 @@ export const ProjectsPageClient: React.FC<{
   initialProjects: ProjectsListQueryResult;
   filters: ProjectFiltersListQueryResult;
 }> = (props) => {
+  const { play } = useSoundFx();
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,8 +43,7 @@ export const ProjectsPageClient: React.FC<{
   const view =
     (searchParams.get("view") as ISearchFilterProps["view"]) ?? "list";
 
-  const hasActiveFilters =
-    Boolean(query) || Boolean(tab && tab !== "all") || view !== "list";
+  const hasActiveFilters = Boolean(query) || Boolean(tab && tab !== "all");
 
   const tabFilters = React.useMemo(
     () => [
@@ -228,7 +228,7 @@ export const ProjectsPageClient: React.FC<{
 
     router.push("/projects", { scroll: false });
 
-    soundFx.play("back");
+    play("back");
   }, [router]);
 
   // Extract images for preview

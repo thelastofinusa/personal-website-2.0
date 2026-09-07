@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import React from "react";
 import { Pip, Router3 } from "reicon-react";
 import { ImagePreviewProvider } from "@/components/provider/preview";
+import { useSoundFx } from "@/components/provider/sound-fx";
 import {
   GitHubContributions,
   GitHubContributionsFallback,
@@ -22,7 +23,6 @@ import { TextContent } from "@/components/shared/text-content";
 import { siteConfig } from "@/config/site.config";
 import { navLinksData } from "@/constants/navigation";
 import { itemVariants, parentVariants } from "@/constants/variants";
-import { soundFx } from "@/lib/uisfx";
 import type { IImagePreviewPortalProps } from "@/types";
 import type {
   ArticlesListQueryResult,
@@ -42,6 +42,7 @@ export const AboutPageClient: React.FC<{
   contributions: GitHubContributionsResult;
   articles: ArticlesListQueryResult;
 }> = ({ timeline, contributions, articles }) => {
+  const { play } = useSoundFx();
   const pathname = usePathname();
   const githubProfileUrl = siteConfig.socials.find(
     (social) => social.platform.toLowerCase() === "github",
@@ -115,10 +116,7 @@ export const AboutPageClient: React.FC<{
                 <Eyebrow label="Latest Articles" icon={Pip} />
 
                 <motion.div variants={itemVariants}>
-                  <Link
-                    href="/articles"
-                    onClick={() => soundFx.play("forward")}
-                  >
+                  <Link href="/articles" onClick={() => play("forward")}>
                     <Button variant="outline" size="sm">
                       Explore the rest
                     </Button>

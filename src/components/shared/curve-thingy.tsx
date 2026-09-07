@@ -4,7 +4,7 @@ import { cn } from "cn";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import type React from "react";
-import { soundFx } from "@/lib/uisfx";
+import { useSoundFx } from "../provider/sound-fx";
 import { FadeLine } from "./fade-line";
 
 type Props = {
@@ -18,6 +18,7 @@ type Props = {
 
 export const CurveThingy: React.FC<Props> = (props) => {
   const router = useRouter();
+  const { play } = useSoundFx();
 
   return (
     <div
@@ -40,7 +41,7 @@ export const CurveThingy: React.FC<Props> = (props) => {
             name="quick scroll button"
             onClick={() => {
               router.push(`#${props.hash}` as Route);
-              soundFx.play("swipe");
+              play("swipe");
             }}
             disabled={!props.hash}
             className="h-2 md:h-2.5 w-10 rounded-full bg-muted-foreground/50 transition-[width] duration-300 ease-in-out hover:w-16 disabled:hover:w-10 disabled:opacity-50 disabled:cursor-not-allowed"

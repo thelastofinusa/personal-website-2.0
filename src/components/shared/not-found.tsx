@@ -7,8 +7,8 @@ import React from "react";
 import { type IconComponent, SquareTopDown } from "reicon-react";
 import { siteConfig } from "@/config/site.config";
 import { navLinks } from "@/constants/navigation";
-import { soundFx } from "@/lib/uisfx";
 import { getInitials } from "@/lib/utils";
+import { useSoundFx } from "../provider/sound-fx";
 import {
   Autocomplete,
   AutocompleteContent,
@@ -40,6 +40,7 @@ type PageItem = {
 };
 
 export const NotFoundComp = () => {
+  const { play } = useSoundFx();
   const router = useRouter();
 
   const [query, setQuery] = React.useState("");
@@ -235,14 +236,14 @@ export const NotFoundComp = () => {
                 type="button"
                 onClick={() => {
                   router.back();
-                  soundFx.play("back");
+                  play("back");
                 }}
                 className="cursor-pointer underline underline-offset-4 hover:text-primary"
               >
                 Take me back
               </button>{" "}
               or{" "}
-              <Link href="/" onClick={() => soundFx.play("forward")}>
+              <Link href="/" onClick={() => play("forward")}>
                 Pretend this never happened
               </Link>
               .
