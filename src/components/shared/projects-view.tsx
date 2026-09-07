@@ -180,7 +180,6 @@ const ProjectGridItem: React.FC<{
       rel="noreferrer"
       custom={index}
       {...MOTION_ITEM_PROPS}
-      onMouseEnter={() => soundFx.play("hover")}
       onClick={() => soundFx.play("forward")}
       className={cn(
         "group relative flex flex-col transition-all duration-500 ease-out",
@@ -212,7 +211,7 @@ const ProjectGridItem: React.FC<{
         </div>
       </Frame>
 
-      <div className="flex flex-col gap-0.5 px-8 py-5">
+      <div className="flex flex-col gap-0.5 md:px-8 py-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {Icon && <Icon className="mb-1.25 size-5" />}

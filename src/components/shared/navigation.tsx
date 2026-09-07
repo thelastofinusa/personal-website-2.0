@@ -20,7 +20,6 @@ export const Navigation = () => {
           href="/"
           className="pointer-events-auto"
           onClick={() => soundFx.play("forward")}
-          onMouseEnter={() => soundFx.play("hover")}
         >
           <Avatar size="sm" className="border">
             <AvatarImage

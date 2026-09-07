@@ -172,7 +172,7 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
         <Button
           type="button"
           onClick={onClear}
-          variant="outline"
+          variant="destructive"
           size="icon"
           aria-label="Clear filters"
         >
