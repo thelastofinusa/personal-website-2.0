@@ -6,7 +6,7 @@ export const siteConfig = {
   author: {
     name: "Abdullahi Salihu",
     username: "thelastofinusa",
-    nickname: "Holiday",
+    nickname: "Osilama",
     nicknameAcronym: "Humble Optimistic Learner Inspiring Dreams And Youth",
     email: "dGhlbGFzdG9maW51c2FAZ21haWwuY29t",
     phone: "KzIzNDgxMjgxNTc1MTA=",
