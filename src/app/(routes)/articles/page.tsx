@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { siteConfig } from "@/config/site.config";
 import { navLinksData } from "@/constants/navigation";
 import { getOgImage } from "@/lib/og";
 import { fetchAllArticles } from "@/sanity/queries/article.query";
@@ -12,30 +13,31 @@ export const metadata: Metadata = {
   description: nav?.description,
 
   openGraph: {
-    title: nav?.eyebrow,
+    title: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
     description: nav?.description,
-    url: "/articles",
+    url: nav?.href,
+    siteName: siteConfig.title,
     images: [
       {
         url: getOgImage({
-          title: nav?.eyebrow ?? "Articles",
+          title: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
           description: nav?.description,
           category: "Articles",
         }),
         width: 1200,
         height: 630,
-        alt: nav?.eyebrow ?? "Articles",
+        alt: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: nav?.eyebrow,
+    title: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
     description: nav?.description,
     images: [
       getOgImage({
-        title: nav?.eyebrow ?? "Articles",
+        title: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
         description: nav?.description,
         category: "Articles",
       }),

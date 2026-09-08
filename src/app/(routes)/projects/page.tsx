@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { siteConfig } from "@/config/site.config";
 import { navLinksData } from "@/constants/navigation";
 import { getOgImage } from "@/lib/og";
 import { fetchAllProjects } from "@/sanity/queries/project.query";
@@ -13,30 +14,31 @@ export const metadata: Metadata = {
   description: nav?.description,
 
   openGraph: {
-    title: nav?.eyebrow,
+    title: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
     description: nav?.description,
-    url: "/projects",
+    url: nav?.href,
+    siteName: siteConfig.title,
     images: [
       {
         url: getOgImage({
-          title: nav?.eyebrow ?? "Projects",
+          title: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
           description: nav?.description,
           category: "Projects",
         }),
         width: 1200,
         height: 630,
-        alt: nav?.eyebrow ?? "Projects",
+        alt: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: nav?.eyebrow,
+    title: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
     description: nav?.description,
     images: [
       getOgImage({
-        title: nav?.eyebrow ?? "Projects",
+        title: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
         description: nav?.description,
         category: "Projects",
       }),

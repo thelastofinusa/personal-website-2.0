@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { siteConfig } from "@/config/site.config";
 import { getOgImage } from "@/lib/og";
 import { fetchArticleBySlug } from "@/sanity/queries/article.query";
 import { ArticleDetailsClient } from "./_components/client";
@@ -27,22 +28,23 @@ export async function generateMetadata(
 
     openGraph: {
       type: "article",
-      title: article.title as string,
+      title: `${article.title} - ${siteConfig.author.nickname}`,
       description: article.description as string,
       url: `/articles/${slug}`,
+      siteName: siteConfig.title,
       images: [
         {
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: article.title as string,
+          alt: `${article.title} - ${siteConfig.author.nickname}`,
         },
       ],
     },
 
     twitter: {
       card: "summary_large_image",
-      title: article.title as string,
+      title: `${article.title} - ${siteConfig.author.nickname}`,
       description: article.description as string,
       images: [ogImage],
     },

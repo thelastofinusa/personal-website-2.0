@@ -13,25 +13,26 @@ export const metadata: Metadata = {
   title: nav?.eyebrow,
   description: nav?.description,
   openGraph: {
-    title: nav?.eyebrow,
+    title: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
     description: nav?.description,
-    url: "/about",
+    url: nav?.href,
+    siteName: siteConfig.title,
     images: [
       {
         url: getOgImage({
-          title: nav?.eyebrow ?? "About",
+          title: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
           description: nav?.description,
           category: "About",
         }),
         width: 1200,
         height: 630,
-        alt: nav?.eyebrow ?? "About",
+        alt: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: nav?.eyebrow,
+    title: `${nav?.eyebrow} - ${siteConfig.author.nickname}`,
     description: nav?.description,
     images: [
       getOgImage({
