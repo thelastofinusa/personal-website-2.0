@@ -6,7 +6,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import React from "react";
 import type { IconType } from "react-icons";
-import { AlarmClock, SquareTopDown, Thumbtack } from "reicon-react";
+import { Clock, SquareTopDown, Thumbtack } from "reicon-react";
 import {
   Empty,
   EmptyDescription,
@@ -16,7 +16,7 @@ import {
 } from "@/components/reusable/shadcn/empty";
 import { workItemVariants } from "@/constants/variants";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import type { ArticlesListQueryResult } from "~/sanity.types";
 import { useImagePreview } from "../provider/preview";
 import { useSoundFx } from "../provider/sound-fx";
@@ -129,33 +129,42 @@ function ArticleItem({
     <Link
       href={`/articles/${article.slug}`}
       onClick={() => play("forward")}
-      className={`group flex w-full items-start gap-2 bg-card md:hover:bg-background ${className} md:gap-4`}
+      className={cn(
+        "group relative bg-card flex flex-col gap-6 transition-colors duration-300 md:hover:bg-background",
+        className,
+      )}
     >
-      <div className="flex flex-1 flex-col gap-2 md:gap-3">
-        <div className="flex items-start gap-2">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2 text-muted-foreground">
           {article.pinned && (
-            <Thumbtack className="mt-0.5 size-4.5 shrink-0 group-hover:text-primary md:mt-1" />
+            <>
+              <Thumbtack className="size-3.5 transition-colors group-hover:text-primary" />
+              <span className="text-xs font-light uppercase tracking-[0.12em]">
+                Pinned
+              </span>
+              <span className="size-1.25 rounded-full bg-secondary" />
+            </>
           )}
 
-          <p className="text-base font-light transition-all duration-200 ease-out group-hover:translate-x-2 group-hover:text-primary md:text-lg">
-            {article.title}
-          </p>
-        </div>
+          <Clock className="size-3.5 shrink-0 motion-safe:animate-bell-ring" />
 
-        <p className="line-clamp-3 text-sm font-extralight text-muted-foreground md:text-base">
-          {article.description}
-        </p>
-
-        <div className="flex items-center gap-1.5">
-          <AlarmClock className="size-3.5 motion-safe:animate-bell-ring" />
-
-          <p className="text-sm font-light">
+          <span className="text-xs font-light uppercase tracking-[0.12em]">
             {formatDate(article.publishedAt as string)}
-          </p>
+          </span>
         </div>
+
+        <SquareTopDown className="size-4 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:text-primary group-hover:translate-x-0.5" />
       </div>
 
-      <SquareTopDown className="hidden size-4.5 md:block" />
+      <div className="flex flex-col gap-2">
+        <h2 className="text-base font-normal leading-snug tracking-tight transition-all duration-300 ease-out group-hover:translate-x-1 group-hover:text-primary md:text-xl">
+          {article.title}
+        </h2>
+
+        <p className="line-clamp-2 text-sm font-extralight leading-relaxed text-muted-foreground md:text-base">
+          {article.description}
+        </p>
+      </div>
     </Link>
   );
 }

@@ -59,20 +59,10 @@ export const ProjectsPageClient: React.FC<{
     [props.filters],
   );
 
-  // Local search input state. This is the single source of truth for what's
-  // typed and for what's filtered — the URL is just a (debounced) mirror of
-  // it, not the other way around.
   const [searchValue, setSearchValue] = React.useState(query);
 
-  // Tracks the last URL search string *we* pushed, so the "external nav"
-  // sync effect below can tell the difference between "the URL changed
-  // because we just pushed it" and "the URL changed because the user hit
-  // back/forward or landed on a link with a query param".
   const lastParamsRef = React.useRef<string>(searchParams.toString());
 
-  // Filter projects based on tab + the live input value (not the URL).
-  // This is what makes typing feel instant instead of waiting on a
-  // debounced router.push + re-render round trip.
   const filteredProjects = React.useMemo(() => {
     return props.initialProjects.filter((project) => {
       const matchesTab =
@@ -82,13 +72,6 @@ export const ProjectsPageClient: React.FC<{
     });
   }, [props.initialProjects, tab, searchValue]);
 
-  // Imperative smooth scroll to the showcase section. We deliberately don't
-  // rely on pushing a `#showcase` URL hash for this: Next's own hash
-  // navigation snaps the page to the fragment as part of the route commit,
-  // which either races with or completely overrides any CSS
-  // (`scroll-behavior: smooth`) animation already in progress — that's the
-  // "jumps instead of scrolling" symptom. Calling scrollIntoView ourselves
-  // guarantees the animation actually plays.
   const scrollToShowcase = React.useCallback(() => {
     document
       .getElementById("showcase")
@@ -152,9 +135,6 @@ export const ProjectsPageClient: React.FC<{
     [router, searchParams, tab, searchValue, scrollToShowcase],
   );
 
-  // Debounced: mirror the live searchValue into the URL after 250ms of
-  // inactivity, so the search is shareable/bookmarkable without making
-  // every keystroke fight a navigation.
   React.useEffect(() => {
     const timeout = setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString());
@@ -175,16 +155,8 @@ export const ProjectsPageClient: React.FC<{
     }, 250);
 
     return () => clearTimeout(timeout);
-    // Only re-arm the debounce on searchValue changes — tab/view pushes
-    // happen immediately via their own handlers above.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue, scrollToShowcase]);
 
-  // Sync searchValue FROM the URL only on genuine external navigation
-  // (back/forward, or landing on a link with ?query=...) — never as a
-  // reaction to local typing. The guard against lastParamsRef is what
-  // makes that distinction: if this params string is one we just pushed
-  // ourselves, there's nothing to sync.
   React.useEffect(() => {
     const currentParams = searchParams.toString();
     if (currentParams === lastParamsRef.current) return;

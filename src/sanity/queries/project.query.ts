@@ -31,7 +31,7 @@ const featuredProjectsQuery = defineQuery(`
     _type == "project" &&
     "featured" in filters[]->value.current
   ]
-  | order(_createdAt asc)[0...4] {
+  | order(_createdAt asc)[0...3] {
     ${projectsList}
   }
 `);

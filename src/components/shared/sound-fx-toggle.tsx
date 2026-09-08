@@ -281,7 +281,7 @@ export const SoundFXToggle: React.FC<
                           onClick={() => handleSelectPack(packName)}
                           disabled={!enabled}
                           className={cn(
-                            "group flex h-auto w-full flex-col items-center gap-1.5 rounded-xl border p-3 text-center transition-all duration-200",
+                            "group flex h-auto w-full flex-col items-center gap-1.5 rounded-lg border p-3 text-center transition-all duration-200",
                             "hover:bg-transparent",
                             isActive
                               ? [colors.bg, colors.border, "border"]
@@ -331,14 +331,14 @@ export const SoundFXToggle: React.FC<
                     <Button
                       type="button"
                       variant="outline"
-                      disabled={!enabled || page === 0}
+                      disabled={page === 0}
                       onClick={(e) => {
                         e.preventDefault();
                         play("press");
                         setPage((prev) => Math.max(0, prev - 1));
                       }}
                       className={cn(
-                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-xl border-border/50 bg-muted/20 py-2.5 text-xs font-medium text-muted-foreground transition-all duration-200",
+                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-lg border-border/50 bg-muted/20 py-2.5 text-xs font-medium text-muted-foreground transition-all duration-200",
                         "hover:border-muted-foreground/30 hover:bg-muted/30 hover:text-foreground active:scale-[0.98]",
                       )}
                     >
@@ -353,14 +353,14 @@ export const SoundFXToggle: React.FC<
                     <Button
                       type="button"
                       variant="outline"
-                      disabled={!enabled || page === totalPages - 1}
+                      disabled={page === totalPages - 1}
                       onClick={(e) => {
                         e.preventDefault();
                         play("press");
                         setPage((prev) => Math.min(totalPages - 1, prev + 1));
                       }}
                       className={cn(
-                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-xl border-border/50 bg-muted/20 py-2.5 text-xs font-medium text-muted-foreground transition-all duration-200",
+                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-lg border-border/50 bg-muted/20 py-2.5 text-xs font-medium text-muted-foreground transition-all duration-200",
                         "hover:border-muted-foreground/30 hover:bg-muted/30 hover:text-foreground active:scale-[0.98]",
                       )}
                     >

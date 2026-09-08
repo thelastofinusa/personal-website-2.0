@@ -40,25 +40,31 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
       setAttempt(0);
     }, [src, ogUrl]);
 
+    const resolvedKeyRef = React.useRef<string | null>(null);
+
     React.useEffect(() => {
       let cancelled = false;
+      const key = `${src ?? ""}|${ogUrl ?? ""}`;
 
-      // Helper: test if an image URL loads successfully
-      const testImage = (url: string): Promise<boolean> => {
-        return new Promise((resolve) => {
+      const testImage = (url: string): Promise<boolean> =>
+        new Promise((resolve) => {
           const img = new window.Image();
           img.onload = () => resolve(true);
           img.onerror = () => resolve(false);
           img.src = url;
         });
-      };
 
       const resolveImage = async () => {
         if (cancelled) return;
+
+        // Already resolved this exact src/ogUrl pair — don't flash the loader again.
+        if (resolvedKeyRef.current === key && imageSrc !== loadingGif) {
+          return;
+        }
+
         setIsLoading(true);
         setImageSrc(loadingGif);
 
-        // 1. Try Open Graph image via API first
         if (ogUrl) {
           try {
             const response = await fetch(
@@ -70,6 +76,7 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
                 const works = await testImage(data.image);
                 if (cancelled) return;
                 if (works) {
+                  resolvedKeyRef.current = key;
                   setImageSrc(data.image);
                   setIsLoading(false);
                   return;
@@ -81,19 +88,19 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
           }
         }
 
-        // 2. Fall back to direct src
         if (src) {
           const works = await testImage(src);
           if (cancelled) return;
           if (works) {
+            resolvedKeyRef.current = key;
             setImageSrc(src);
             setIsLoading(false);
             return;
           }
         }
 
-        // 3. Fallback to broken image
         if (!cancelled) {
+          resolvedKeyRef.current = key;
           setImageSrc(fallbackSrc);
           setIsLoading(false);
         }
@@ -104,7 +111,7 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
       return () => {
         cancelled = true;
       };
-    }, [src, ogUrl, fallbackSrc, loadingGif, attempt]); // attempt triggers re-run on error
+    }, [src, ogUrl, fallbackSrc, loadingGif, attempt]);
 
     const handleError: React.ReactEventHandler<HTMLImageElement> = (event) => {
       // If the current image is not the fallback, retry the entire chain once

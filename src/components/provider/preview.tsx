@@ -3,7 +3,13 @@
 import gsap from "gsap";
 import { EllipsisVerticalIcon } from "lucide-react";
 import { motion, useMotionValue, useSpring } from "motion/react";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import {
   ArrowRotate,
@@ -95,23 +101,32 @@ export const ImagePreviewProvider = ({
     });
   }, [activeIndex]);
 
-  const handleMouseEnter = (index: number) => {
-    setActiveIndex(index);
-    play("hover");
-    if (!previewRef.current) return;
+  const handleMouseEnter = React.useCallback(
+    (index: number) => {
+      setActiveIndex(index);
+      play("hover");
 
-    gsap.to(previewRef.current, {
-      opacity: 1,
-      scale: 1,
-      duration: 0.35,
-      ease: "power3.out",
-      overwrite: true,
-    });
-  };
+      if (!previewRef.current) return;
 
-  const handleMouseLeave = () => {
+      gsap.killTweensOf(previewRef.current);
+
+      gsap.to(previewRef.current, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.35,
+        ease: "power3.out",
+        overwrite: true,
+      });
+    },
+    [play],
+  );
+
+  const handleMouseLeave = React.useCallback(() => {
     setActiveIndex(null);
+
     if (!previewRef.current) return;
+
+    gsap.killTweensOf(previewRef.current);
 
     gsap.to(previewRef.current, {
       opacity: 0,
@@ -120,7 +135,7 @@ export const ImagePreviewProvider = ({
       ease: "power2.out",
       overwrite: true,
     });
-  };
+  }, []);
 
   const portalProps: IImagePreviewPortalProps = {
     images,

@@ -7,13 +7,14 @@ import type { Route } from "next";
 import Link from "next/link";
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import { SquareTopDown } from "reicon-react";
 import remarkGfm from "remark-gfm";
 import { tabFilters } from "@/constants/filters";
 import { workItemVariants } from "@/constants/variants";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn, formatDate } from "@/lib/utils";
 import type { ISearchFilterProps } from "@/types";
 import type { ProjectsListQueryResult } from "~/sanity.types";
+import { useLivePreview } from "../provider/live-preview";
 import { useImagePreview } from "../provider/preview";
 import { useSoundFx } from "../provider/sound-fx";
 import { Frame } from "../reusable/reui/frame";
@@ -31,7 +32,6 @@ const MOTION_ITEM_PROPS = {
   viewport: { once: true, margin: "-50px" },
 };
 
-// Create a motion-enhanced Link component
 const MotionLink = motion.create(Link);
 
 // 2. Extracted List Item Component (unchanged)
@@ -42,6 +42,8 @@ const ProjectListItem: React.FC<{
   activeTab?: string;
 }> = ({ item, index, isLast, activeTab }) => {
   const { play } = useSoundFx();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const { openPreview } = useLivePreview();
   const { handleMouseEnter, handleMouseLeave } = useImagePreview();
   const Icon = tabFilters.find((filter) => filter.value === activeTab)?.icon;
 
@@ -50,6 +52,16 @@ const ProjectListItem: React.FC<{
       key={item.url}
       custom={index}
       {...MOTION_ITEM_PROPS}
+      onClick={(event) => {
+        play("forward");
+        if (isDesktop) {
+          event.preventDefault();
+          openPreview(
+            { name: item.name as string, url: item.url as string },
+            event.currentTarget.getBoundingClientRect(),
+          );
+        }
+      }}
       className="group relative transition-all duration-500 ease-out hover:bg-muted dark:hover:bg-black"
     >
       <Container className="px-0!">
@@ -122,40 +134,32 @@ const ProjectListItem: React.FC<{
                 </div>
               </div>
 
-              <div className="mt-1 flex shrink-0 items-center gap-4 md:mt-0">
-                <div className="hidden max-w-xs text-right text-sm font-light leading-relaxed text-muted-foreground lg:block">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      p: ({ children }) => <>{children}</>,
-                      strong: ({ children }) => (
-                        <strong className="font-medium text-foreground">
-                          {children}
-                        </strong>
-                      ),
-                      em: ({ children }) => <em>{children}</em>,
-                      a: ({ children, href }) => (
-                        <a
-                          href={href}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="underline underline-offset-4 transition-colors hover:text-primary"
-                          onClick={(event) => event.stopPropagation()}
-                        >
-                          {children}
-                        </a>
-                      ),
-                    }}
-                  >
-                    {item.description}
-                  </ReactMarkdown>
-                </div>
-                <SquareTopDown
-                  style={{
-                    animationDelay: `${index * 1000}ms`,
+              <div className="hidden max-w-xs text-right text-sm font-light leading-relaxed text-muted-foreground lg:block">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    p: ({ children }) => <>{children}</>,
+                    strong: ({ children }) => (
+                      <strong className="font-medium text-foreground">
+                        {children}
+                      </strong>
+                    ),
+                    em: ({ children }) => <em>{children}</em>,
+                    a: ({ children, href }) => (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="underline underline-offset-4 transition-colors hover:text-primary"
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        {children}
+                      </a>
+                    ),
                   }}
-                  className="size-4 animate-bell-ring text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary"
-                />
+                >
+                  {item.description}
+                </ReactMarkdown>
               </div>
             </div>
           </Container>
@@ -172,6 +176,8 @@ const ProjectGridItem: React.FC<{
   activeTab?: string;
 }> = ({ item, index, activeTab }) => {
   const { play } = useSoundFx();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const { openPreview } = useLivePreview();
   const Icon = tabFilters.find((filter) => filter.value === activeTab)?.icon;
 
   return (
@@ -182,7 +188,16 @@ const ProjectGridItem: React.FC<{
       rel="noreferrer"
       custom={index}
       {...MOTION_ITEM_PROPS}
-      onClick={() => play("forward")}
+      onClick={(event) => {
+        play("forward");
+        if (isDesktop) {
+          event.preventDefault();
+          openPreview(
+            { name: item.name as string, url: item.url as string },
+            event.currentTarget.getBoundingClientRect(),
+          );
+        }
+      }}
       className={cn(
         "group relative flex flex-col transition-all duration-500 ease-out",
       )}
@@ -265,14 +280,27 @@ export const ProjectsView: React.FC<{
   projects: ProjectsListQueryResult;
   activeTab?: string;
 }> = ({ view = "list", projects, activeTab }) => {
-  // Helper to split projects into columns for true Left-to-Right Masonry
-  // We attach originalIndex so Framer Motion's staggered entrance doesn't break
+  const { handleMouseLeave } = useImagePreview();
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  React.useLayoutEffect(() => {
+    handleMouseLeave();
+  }, [view, handleMouseLeave]);
+
   const cols2 = React.useMemo(() => {
     const cols: {
       item: ProjectsListQueryResult[0];
+
       originalIndex: number;
     }[][] = [[], []];
-    projects.forEach((item, i) => cols[i % 2].push({ item, originalIndex: i }));
+
+    projects.forEach((item, i) =>
+      cols[i % 2].push({
+        item,
+        originalIndex: i,
+      }),
+    );
+
     return cols;
   }, [projects]);
 

@@ -27,8 +27,8 @@ export const ProjectsComp: React.FC<{
       return [
         {
           alt: project.name ?? undefined,
-          ogUrl: image.image,
           url: image.image,
+          ogUrl: project.url ?? undefined,
           width: image.width,
           height: image.height,
         },

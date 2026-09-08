@@ -44,8 +44,7 @@ export const TabFilter: React.FC<{
             <TooltipTrigger
               render={
                 <Button
-                  size="sm"
-                  variant={isActive ? "default" : "outline"}
+                  variant={isActive ? "default" : "secondary"}
                   onClick={() => {
                     props.onTabChange(filter.slug as string);
                     play("select");

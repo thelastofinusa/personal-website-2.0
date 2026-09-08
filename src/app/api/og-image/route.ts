@@ -56,11 +56,18 @@ export async function GET(request: NextRequest) {
     const image = getOgImage(html, response.url);
 
     return NextResponse.json(
-      { image },
+      {
+        image: image
+          ? `/api/og-image/proxy?url=${encodeURIComponent(image)}`
+          : null,
+      },
       {
         headers: {
-          "Cache-Control":
-            "public, s-maxage=3600, stale-while-revalidate=86400",
+          // shorter TTL when nothing was found, so a transient miss
+          // doesn't get locked in for an hour like it does now
+          "Cache-Control": image
+            ? "public, s-maxage=3600, stale-while-revalidate=86400"
+            : "public, s-maxage=60, stale-while-revalidate=300",
         },
       },
     );
