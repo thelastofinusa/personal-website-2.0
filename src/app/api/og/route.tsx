@@ -341,7 +341,7 @@ export async function GET(req: NextRequest) {
               fontSize: "20px",
               lineHeight: 1.5,
               color: c.muted,
-              maxWidth: "654px",
+              maxWidth: "554px",
               fontWeight: 300,
               display: "flex",
               flexWrap: "wrap",

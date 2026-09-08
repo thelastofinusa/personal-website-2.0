@@ -2,7 +2,7 @@ export const siteConfig = {
   title: "Osilama",
   slogan: "Your friendly neighborhood developer",
   description:
-    "Somewhere between a portfolio, a playground, and an excuse to keep building things.",
+    "A friendly corner of the internet where I build things, chase ideas and see where curiosity takes me.",
   author: {
     name: "Abdullahi Salihu",
     username: "thelastofinusa",
