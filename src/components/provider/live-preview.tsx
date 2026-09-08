@@ -303,8 +303,48 @@ export const LivePreviewProvider: React.FC<React.PropsWithChildren> = ({
                   {/* Browser Viewport */}
                   <div className="relative flex-1 bg-card">
                     {!iframeLoaded && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Loader className="size-6 animate-spin text-muted-foreground" />
+                      <div className="absolute inset-0 z-10 flex flex-col bg-background/90 backdrop-blur-xs transition-opacity duration-300">
+                        {/* Top Browser Loading Bar */}
+                        <div className="h-0.5 w-full overflow-hidden bg-muted">
+                          <div className="h-full w-1/3 animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-primary to-transparent" />
+                        </div>
+
+                        {/* Webpage Wireframe Skeleton */}
+                        <div className="flex-1 space-y-5 p-6 opacity-60">
+                          {/* Mock Nav Header */}
+                          <div className="flex items-center justify-between border-b border-border/40 pb-4">
+                            <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+                            <div className="flex gap-3">
+                              <div className="h-3 w-10 animate-pulse rounded bg-muted" />
+                              <div className="h-3 w-10 animate-pulse rounded bg-muted" />
+                              <div className="h-3 w-10 animate-pulse rounded bg-muted" />
+                            </div>
+                          </div>
+
+                          {/* Mock Hero Title & Subtitle */}
+                          <div className="space-y-3 pt-2">
+                            <div className="h-7 w-2/3 animate-pulse rounded-lg bg-muted" />
+                            <div className="h-4 w-1/2 animate-pulse rounded-md bg-muted/80" />
+                          </div>
+
+                          {/* Mock Hero Banner */}
+                          <div className="h-36 w-full animate-pulse rounded-xl border border-border/30 bg-muted/50" />
+
+                          {/* Mock Cards Grid */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="h-20 animate-pulse rounded-lg bg-muted/40" />
+                            <div className="h-20 animate-pulse rounded-lg bg-muted/40" />
+                          </div>
+                        </div>
+
+                        {/* Bottom Browser Status Indicator */}
+                        <div className="absolute bottom-3 left-4 flex items-center gap-2 rounded-full border border-border/50 bg-background/80 px-2.5 py-1 text-[11px] text-muted-foreground shadow-xs">
+                          <Loader className="size-3 animate-spin text-primary" />
+                          <span className="truncate max-w-50">
+                            Waiting for{" "}
+                            {project.url.replace(/^https?:\/\//, "")}...
+                          </span>
+                        </div>
                       </div>
                     )}
 
