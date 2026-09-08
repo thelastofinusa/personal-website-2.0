@@ -193,7 +193,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
       setIsDragging(false);
 
       if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
-      slowTimerRef.current = setTimeout(() => setIframeSlow(true), 4000);
+      slowTimerRef.current = setTimeout(() => setIframeSlow(true), 10000);
     },
     [isDesktop, projects],
   );
@@ -579,8 +579,8 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                         </div>
 
                         {/* Subtle loading message */}
-                        {expanded && (
-                          <div className="absolute bottom-12 left-1/2 -translate-x-1/2">
+                        {expanded && !iframeSlow && (
+                          <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
                             <motion.div
                               animate={{ opacity: [0.45, 1, 0.45] }}
                               transition={{
