@@ -1,5 +1,5 @@
 export const siteConfig = {
-  title: "Holiday",
+  title: "Osilama",
   slogan: "Your friendly neighborhood developer",
   description:
     "Somewhere between a portfolio, a playground, and an excuse to keep building things.",
