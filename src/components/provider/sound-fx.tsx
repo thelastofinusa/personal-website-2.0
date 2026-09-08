@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { createUISFX, packNames, type UISFXPlayer } from "uisfx";
+import { createUISFX, type PackName, packNames, type UISFXPlayer } from "uisfx";
 
 export type SoundPackName = (typeof packNames)[number];
 
@@ -10,7 +10,7 @@ const STORAGE_KEY_PACK = "uisfx_pack";
 
 type SoundFxContextValue = {
   enabled: boolean;
-  pack: string;
+  pack: PackName;
   toggle: () => void;
   setEnabled: (enabled: boolean) => void;
   setPack: (pack: SoundPackName) => void;

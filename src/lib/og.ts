@@ -13,7 +13,7 @@ export function getOgImage({
   title,
   description,
   category = "Portfolio",
-  theme = "light",
+  theme = "dark",
 }: OGOptions) {
   const url = new URL("/api/og", siteConfig.url);
 

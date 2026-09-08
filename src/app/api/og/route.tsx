@@ -215,7 +215,7 @@ export async function GET(req: NextRequest) {
         <div
           style={{
             position: "absolute",
-            left: "72px",
+            left: "84px",
             top: "56px",
             display: "flex",
             alignItems: "center",
@@ -277,7 +277,7 @@ export async function GET(req: NextRequest) {
         <div
           style={{
             position: "absolute",
-            right: "72px",
+            right: "84px",
             top: "60px",
             display: "flex",
             alignItems: "center",
@@ -308,8 +308,8 @@ export async function GET(req: NextRequest) {
         <div
           style={{
             position: "absolute",
-            left: "72px",
-            right: "72px",
+            left: "84px",
+            right: "84px",
             top: "42px",
             bottom: "104px",
             display: "flex",
@@ -341,7 +341,7 @@ export async function GET(req: NextRequest) {
               fontSize: "20px",
               lineHeight: 1.5,
               color: c.muted,
-              maxWidth: "764px",
+              maxWidth: "654px",
               fontWeight: 300,
               display: "flex",
               flexWrap: "wrap",
@@ -356,8 +356,8 @@ export async function GET(req: NextRequest) {
         <div
           style={{
             position: "absolute",
-            left: "72px",
-            right: "72px",
+            left: "84px",
+            right: "84px",
             bottom: "48px",
             display: "flex",
             alignItems: "center",
@@ -406,7 +406,7 @@ export async function GET(req: NextRequest) {
         <div
           style={{
             position: "absolute",
-            left: "72px",
+            left: "84px",
             bottom: "38px",
             width: "48px",
             height: "2px",

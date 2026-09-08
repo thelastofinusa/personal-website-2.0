@@ -18,6 +18,7 @@ import { useOnClickOutside } from "@/hooks/use-click-outside";
 import { resolveIcon } from "@/lib/icons";
 import { decodeString, getInitials } from "@/lib/utils";
 import { useSoundFx } from "../provider/sound-fx";
+import { useToggle } from "../provider/toggle";
 import { IconSwap, IconSwapItem } from "../reusable/chanhdai/icon-swap";
 import { Frame, FramePanel } from "../reusable/reui/frame";
 import { Avatar, AvatarFallback, AvatarImage } from "../reusable/shadcn/avatar";
@@ -29,30 +30,19 @@ export const MenuToggle: React.FC<
 > = ({ variant = "default", size = "sm", ...props }) => {
   const { play } = useSoundFx();
   const pathname = usePathname();
+  const { isOpen: openMenu, toggle, close: closeMenu } = useToggle("menu");
 
   const email = decodeString(siteConfig.author.email);
   const phone = decodeString(siteConfig.author.phone);
 
   const [mounted, setMounted] = React.useState(false);
-  const [openMenu, setOpenMenu] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  const closeMenu = React.useCallback(() => {
-    setOpenMenu(false);
-  }, []);
-
   const toggleOpenMenu = React.useCallback(() => {
-    setOpenMenu((prev) => {
-      const next = !prev;
-      play(next ? "toggle-off" : "toggle-on");
-      if (next) {
-        window.dispatchEvent(
-          new CustomEvent("nav:menu-open", { detail: "menu" }),
-        );
-      }
-      return next;
-    });
-  }, [play]);
+    const next = !openMenu;
+    play(next ? "toggle-on" : "toggle-off");
+    toggle();
+  }, [play, openMenu, toggle]);
 
   useOnClickOutside(containerRef, closeMenu, openMenu);
 
@@ -66,7 +56,7 @@ export const MenuToggle: React.FC<
     if (!openMenu) return;
 
     const handleScroll = () => {
-      setOpenMenu(false);
+      closeMenu();
     };
 
     window.addEventListener("scroll", handleScroll, {
@@ -76,7 +66,7 @@ export const MenuToggle: React.FC<
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [openMenu]);
+  }, [openMenu, closeMenu]);
 
   const isRouteActive = React.useCallback(
     (to: string) => {

@@ -7,7 +7,7 @@ import { useSoundFx } from "../provider/sound-fx";
 import { Avatar, AvatarFallback, AvatarImage } from "../reusable/shadcn/avatar";
 import { containerVariants } from "./container";
 import { MenuToggle } from "./menu-toggle";
-import { SoundFXSheet } from "./sound-fx-sheet";
+import { SoundFXToggle } from "./sound-fx-toggle";
 import { ThemeToggle } from "./theme-toggle";
 
 export const Navigation = () => {
@@ -38,7 +38,7 @@ export const Navigation = () => {
         </Link>
 
         <div className="pointer-events-auto wrapper flex relative items-center rounded-full">
-          <SoundFXSheet className="bg-background text-foreground hover:bg-background/90" />
+          <SoundFXToggle className="bg-background text-foreground hover:bg-background/90" />
           <MenuToggle className="bg-background text-foreground hover:bg-background/90" />
           <ThemeToggle className="bg-background text-foreground hover:bg-background/90" />
         </div>
