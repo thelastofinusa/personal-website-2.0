@@ -37,13 +37,13 @@ import type {
   TimelineListQueryResult,
 } from "~/sanity.types";
 
-const introduction = `My name is **${siteConfig.author.name}**, though most people call me **${siteConfig.author.nickname}**. It comes from **${siteConfig.author.nicknameAcronym}** — a rather ambitious acronym for one person.
+const introduction = `Hey, I’m **${siteConfig.author.name}**, though most people call me **${siteConfig.author.nickname}**.
 
-I found my way into software through the web, and that curiosity eventually led me into **Web3**, **open source**, **AI**, and developer tooling. I enjoy learning how things work, taking ideas apart, and putting them back together in ways that make sense.
+${siteConfig.author.nickname} is my tribal name, pronounced **oh-see-LAH-ma**, and apparently it means **“requesting something from God.”** I say “apparently” because I have never personally witnessed the naming meeting where my parents decided this was the one.
 
-I care about software that feels good to use and code that feels good to work with. I enjoy thoughtful interfaces, simple solutions, and projects that give me an excuse to learn something new.
+But I’ve grown into it. It’s a pretty meaningful name, even if it sounds like my parents were submitting a support ticket to heaven.
 
-These days, I’m usually building something, exploring an idea, or following a technical question further than I originally planned.`;
+Anyway, that’s me — ${siteConfig.author.name.split(" ")[0]} on official documents, ${siteConfig.author.nickname} everywhere else, and somewhere in between is where I spend most of my time building things for the web.`;
 
 export const AboutPageClient: React.FC<{
   timeline: TimelineListQueryResult;
