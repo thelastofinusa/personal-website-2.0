@@ -4,6 +4,7 @@
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
+import { LivePreviewProvider } from "@/components/provider/live-preview";
 import { ImagePreviewProvider } from "@/components/provider/preview";
 import { useSoundFx } from "@/components/provider/sound-fx";
 import {
@@ -211,79 +212,83 @@ export const ProjectsPageClient: React.FC<{
   }));
 
   return (
-    <div className="flex-1 overflow-x-clip">
-      <QuickHero
-        eyebrow={{
-          icon: navLinksData(pathname as Route)?.icon,
-          label: navLinksData(pathname as Route)?.eyebrow as string,
-        }}
-        title={navLinksData(pathname as Route)?.title as string}
-        description={navLinksData(pathname as Route)?.description as string}
-        component={
-          props.filters.length > 0
-            ? {
-                content: (
-                  <TabFilter
-                    activeTab={tab || "all"}
-                    filters={tabFilters}
-                    onTabChange={handleTabChange}
-                  />
-                ),
-              }
-            : undefined
-        }
-      />
-      <CurveThingy tCurve hash="showcase">
-        <div
-          id="showcase"
-          className="pt-20 sm:pt-30 md:pt-36 flex flex-col gap-8 md:gap-12"
-        >
-          <Container size={view === "list" ? "sm" : "md"}>
-            <SearchFilter
-              query={query}
-              tab={tab}
-              hasActiveFilters={hasActiveFilters}
-              projects={filteredProjects}
-              searchValue={searchValue}
-              setSearchValue={setSearchValue}
-              view={view}
-              setView={handleViewChange}
-              onClear={handleClearFilters}
-            />
-          </Container>
-
-          {filteredProjects.length > 0 ? (
-            <ImagePreviewProvider images={images}>
-              <ProjectsView
+    <LivePreviewProvider projects={filteredProjects}>
+      <div className="flex-1 overflow-x-clip">
+        <QuickHero
+          eyebrow={{
+            icon: navLinksData(pathname as Route)?.icon,
+            label: navLinksData(pathname as Route)?.eyebrow as string,
+          }}
+          title={navLinksData(pathname as Route)?.title as string}
+          description={navLinksData(pathname as Route)?.description as string}
+          component={
+            props.filters.length > 0
+              ? {
+                  content: (
+                    <TabFilter
+                      activeTab={tab || "all"}
+                      filters={tabFilters}
+                      onTabChange={handleTabChange}
+                    />
+                  ),
+                }
+              : undefined
+          }
+        />
+        <CurveThingy tCurve hash="showcase">
+          <div
+            id="showcase"
+            className="pt-20 sm:pt-30 md:pt-36 flex flex-col gap-8 md:gap-12"
+          >
+            <Container size={view === "list" ? "sm" : "md"}>
+              <SearchFilter
+                query={query}
+                tab={tab}
+                hasActiveFilters={hasActiveFilters}
                 projects={filteredProjects}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
                 view={view}
-                activeTab={tab ?? "all"}
+                setView={handleViewChange}
+                onClear={handleClearFilters}
               />
-            </ImagePreviewProvider>
-          ) : (
-            <Container size="sm">
-              <Empty>
-                <EmptyHeader>
-                  <EmptyMedia>
-                    <StackedPagesIllustration />
-                  </EmptyMedia>
-                  <EmptyTitle>{emptyState.title}</EmptyTitle>
-                  <EmptyDescription>{emptyState.description}</EmptyDescription>
-                </EmptyHeader>
-              </Empty>
             </Container>
-          )}
-        </div>
 
-        {filteredProjects.length > 0 && (
-          <div className="flex items-center justify-center gap-2">
-            <p className="text-sm text-center font-extralight italic text-muted-foreground/60 md:text-base">
-              The shelf isn’t full yet. <br />
-              There are a few more things being built and rebuilt.
-            </p>
+            {filteredProjects.length > 0 ? (
+              <ImagePreviewProvider images={images}>
+                <ProjectsView
+                  projects={filteredProjects}
+                  view={view}
+                  activeTab={tab ?? "all"}
+                />
+              </ImagePreviewProvider>
+            ) : (
+              <Container size="sm">
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia>
+                      <StackedPagesIllustration />
+                    </EmptyMedia>
+                    <EmptyTitle>{emptyState.title}</EmptyTitle>
+                    <EmptyDescription>
+                      {emptyState.description}
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              </Container>
+            )}
           </div>
-        )}
-      </CurveThingy>
-    </div>
+
+          {filteredProjects.length > 0 && (
+            <div className="flex items-center justify-center gap-2">
+              <p className="text-sm text-center font-extralight italic text-muted-foreground/60 md:text-base">
+                The shelf isn’t full yet. <br />
+                There are a few more things being built and rebuilt.
+              </p>
+            </div>
+          )}
+        </CurveThingy>
+      </div>
+    </LivePreviewProvider>
   );
 };

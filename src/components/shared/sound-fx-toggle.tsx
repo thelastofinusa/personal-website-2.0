@@ -137,7 +137,7 @@ export const SoundFXToggle: React.FC<
     toggleMenu();
   }, [play, openMenu, toggleMenu]);
 
-  useOnClickOutside(containerRef, closeMenu, openMenu);
+  useOnClickOutside(containerRef, toggleOpenMenu, openMenu);
 
   useHotkeys(SOUND_KEY, toggleOpenMenu);
 
@@ -218,7 +218,7 @@ export const SoundFXToggle: React.FC<
             animate="open"
             exit="closed"
             className={cn(
-              "absolute right-0 top-full z-40 mt-3 w-80 origin-top-right rounded-[20px]!",
+              "absolute right-0 top-full z-40 mt-3 w-72 origin-top-right rounded-[20px]!",
               "shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)]",
             )}
           >
@@ -230,13 +230,13 @@ export const SoundFXToggle: React.FC<
               <FramePanel className="overflow-y-auto overscroll-contain bg-background p-3 flex flex-col gap-4">
                 {/* ─── Header ─────────────────────────── */}
                 <div className="flex items-center justify-between px-2">
-                  <div className="flex items-center gap-2.5">
-                    <Soundwave className="size-4.5 text-muted-foreground" />
-                    <span className="text-sm font-medium">Sound Effects</span>
+                  <div className="flex items-center gap-2">
+                    <Soundwave className="size-4 text-muted-foreground" />
+                    <span className="text-xs font-medium">Sound Effects</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-light w-3 text-muted-foreground">
+                    <span className="text-xs font-light w-5 text-muted-foreground">
                       {enabled ? "On" : "Off"}
                     </span>
                     <button
@@ -281,7 +281,7 @@ export const SoundFXToggle: React.FC<
                           onClick={() => handleSelectPack(packName)}
                           disabled={!enabled}
                           className={cn(
-                            "group flex h-auto w-full flex-col items-center gap-1.5 rounded-lg border p-3 text-center transition-all duration-200",
+                            "group flex h-auto w-full flex-col items-center gap-1.5 rounded-lg border px-3 py-2 text-center transition-all duration-200",
                             "hover:bg-transparent",
                             isActive
                               ? [colors.bg, colors.border, "border"]

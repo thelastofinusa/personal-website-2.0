@@ -34,18 +34,20 @@ const MOTION_ITEM_PROPS = {
 
 const MotionLink = motion.create(Link);
 
-// 2. Extracted List Item Component (unchanged)
+// 2. Extracted List Item Component
 const ProjectListItem: React.FC<{
   item: ProjectsListQueryResult[0];
   index: number;
   isLast: boolean;
   activeTab?: string;
-}> = ({ item, index, isLast, activeTab }) => {
+  projects: ProjectsListQueryResult;
+}> = ({ item, index, isLast, activeTab, projects }) => {
   const { play } = useSoundFx();
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const { openPreview } = useLivePreview();
+  const { openPreview, currentProject } = useLivePreview();
   const { handleMouseEnter, handleMouseLeave } = useImagePreview();
   const Icon = tabFilters.find((filter) => filter.value === activeTab)?.icon;
+  const isActive = currentProject?.url === item.url;
 
   return (
     <motion.div
@@ -53,25 +55,36 @@ const ProjectListItem: React.FC<{
       custom={index}
       {...MOTION_ITEM_PROPS}
       onClick={(event) => {
+        if (isActive) {
+          event.preventDefault();
+          return;
+        }
         play("forward");
         if (isDesktop) {
           event.preventDefault();
           openPreview(
-            { name: item.name as string, url: item.url as string },
+            item,
             event.currentTarget.getBoundingClientRect(),
+            projects,
           );
         }
       }}
-      className="group relative transition-all duration-500 ease-out hover:bg-muted dark:hover:bg-black"
+      className={cn(
+        "group relative transition-all duration-500 ease-out hover:bg-muted dark:hover:bg-black",
+        isActive && "pointer-events-none opacity-50!",
+      )}
     >
       <Container className="px-0!">
         <Link
-          href={item.url as Route}
+          href={(item.url ?? "#") as Route}
           target="_blank"
           rel="noreferrer"
           onMouseEnter={() => handleMouseEnter(index)}
           onMouseLeave={handleMouseLeave}
-          onClick={() => play("forward")}
+          onClick={(e) => {
+            if (isActive) e.preventDefault();
+            else play("forward");
+          }}
         >
           <FadeLine orientation="horizontal" className="top-0" />
           {isLast && <FadeLine orientation="horizontal" className="bottom-0" />}
@@ -83,7 +96,7 @@ const ProjectListItem: React.FC<{
                   <Icon className="mt-1 md:mt-1.5 lg:mt-2 xl:mt-4 size-5" />
                 )}
                 <div className="flex flex-1 flex-col gap-1 md:gap-3">
-                  <h1 className="font-serif text-2xl sm:text-3xl transition-[inherit] ease-[inherit] group-hover:text-primary md:text-4xl lg:text-5xl xl:text-6xl">
+                  <h1 className="font-serif text-3xl transition-[inherit] ease-[inherit] group-hover:text-primary md:text-4xl lg:text-5xl xl:text-6xl">
                     {item.name}
                   </h1>
 
@@ -169,49 +182,57 @@ const ProjectListItem: React.FC<{
   );
 };
 
-// 3. Extracted Grid/Card Item Component – FIXED
+// 3. Extracted Grid/Card Item Component
 const ProjectGridItem: React.FC<{
   item: ProjectsListQueryResult[0];
   index: number;
   activeTab?: string;
-}> = ({ item, index, activeTab }) => {
+  projects: ProjectsListQueryResult;
+}> = ({ item, index, activeTab, projects }) => {
   const { play } = useSoundFx();
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const { openPreview } = useLivePreview();
+  const { openPreview, currentProject } = useLivePreview();
   const Icon = tabFilters.find((filter) => filter.value === activeTab)?.icon;
+  const isActive = currentProject?.url === item.url;
 
   return (
     <MotionLink
       key={item.url}
-      href={item.url as Route}
+      href={(item.url ?? "#") as Route}
       target="_blank"
       rel="noreferrer"
       custom={index}
       {...MOTION_ITEM_PROPS}
       onClick={(event) => {
+        if (isActive) {
+          event.preventDefault();
+          return;
+        }
         play("forward");
         if (isDesktop) {
           event.preventDefault();
           openPreview(
-            { name: item.name as string, url: item.url as string },
+            item,
             event.currentTarget.getBoundingClientRect(),
+            projects,
           );
         }
       }}
       className={cn(
         "group relative flex flex-col transition-all duration-500 ease-out",
+        isActive && "pointer-events-none opacity-50!",
       )}
     >
       <Frame variant="inverse" className="rounded-3xl">
         <div className="relative h-auto overflow-hidden rounded-[20px]! border">
           <LocalImg
-            src={item.mainImage.image as string}
+            src={item.mainImage?.image as string}
             ogUrl={item.url as string}
             alt={item.name as string}
             className="size-auto object-contain transition-all duration-500 ease-initial group-hover:scale-110"
           />
 
-          <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 to-transparent px-6 pb-4 pt-16">
+          <div className="absolute inset-x-0 bottom-0 bg-linear-to-b from-transparent via-black/20 to-black/50 px-6 pb-4 pt-8">
             <div className="flex flex-wrap items-center gap-2">
               {item.tags &&
                 item.tags?.length > 0 &&
@@ -274,7 +295,7 @@ const ProjectGridItem: React.FC<{
   );
 };
 
-// 4. Main View Component (unchanged)
+// 4. Main View Component
 export const ProjectsView: React.FC<{
   view?: ISearchFilterProps["view"];
   projects: ProjectsListQueryResult;
@@ -290,7 +311,6 @@ export const ProjectsView: React.FC<{
   const cols2 = React.useMemo(() => {
     const cols: {
       item: ProjectsListQueryResult[0];
-
       originalIndex: number;
     }[][] = [[], []];
 
@@ -324,6 +344,7 @@ export const ProjectsView: React.FC<{
               index={index}
               isLast={index === projects.length - 1}
               activeTab={activeTab}
+              projects={projects}
             />
           ))}
         </div>
@@ -337,6 +358,7 @@ export const ProjectsView: React.FC<{
                 item={item}
                 index={index}
                 activeTab={activeTab}
+                projects={projects}
               />
             ))}
           </div>
@@ -351,6 +373,7 @@ export const ProjectsView: React.FC<{
                     item={item}
                     index={originalIndex}
                     activeTab={activeTab}
+                    projects={projects}
                   />
                 ))}
               </div>
@@ -367,6 +390,7 @@ export const ProjectsView: React.FC<{
                     item={item}
                     index={originalIndex}
                     activeTab={activeTab}
+                    projects={projects}
                   />
                 ))}
               </div>

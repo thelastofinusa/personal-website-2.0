@@ -44,7 +44,7 @@ export const MenuToggle: React.FC<
     toggle();
   }, [play, openMenu, toggle]);
 
-  useOnClickOutside(containerRef, closeMenu, openMenu);
+  useOnClickOutside(containerRef, toggleOpenMenu, openMenu);
 
   useHotkeys(MENU_KEY, toggleOpenMenu);
 

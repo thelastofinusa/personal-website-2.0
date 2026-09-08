@@ -12,7 +12,6 @@ import { Toaster } from "@/components/reusable/shadcn/toast";
 import { TooltipProvider } from "@/components/reusable/shadcn/tooltip";
 import { Footer } from "@/components/shared/footer";
 import { Navigation } from "@/components/shared/navigation";
-import { LivePreviewProvider } from "./live-preview";
 import { SoundFxProvider } from "./sound-fx";
 import { ToggleProvider } from "./toggle";
 
@@ -35,20 +34,18 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = (props) => {
       <ThemeProvider defaultTheme="system">
         <ToggleProvider>
           <TooltipProvider>
-            <LivePreviewProvider>
-              <NextJsToploader color="var(--primary)" showSpinner={false} />
-              <ScrollProgress />
+            <NextJsToploader color="var(--primary)" showSpinner={false} />
+            <ScrollProgress />
 
-              <Navigation />
-              <main className="min-h-full flex flex-col">
-                <div className="relative z-20 flex-1">{props.children}</div>
-              </main>
-              <Footer />
+            <Navigation />
+            <main className="min-h-full flex flex-col">
+              <div className="relative z-20 flex-1">{props.children}</div>
+            </main>
+            <Footer />
 
-              <Toaster />
-              <ReactLenis root options={{ autoRaf: false }} ref={lenisRef} />
-              {process.env.NODE_ENV === "production" && <Analytics />}
-            </LivePreviewProvider>
+            <Toaster />
+            <ReactLenis root options={{ autoRaf: false }} ref={lenisRef} />
+            {process.env.NODE_ENV === "production" && <Analytics />}
           </TooltipProvider>
         </ToggleProvider>
       </ThemeProvider>

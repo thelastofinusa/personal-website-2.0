@@ -181,7 +181,7 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
         className="overflow-hidden rounded-2xl border border-border/60 bg-background"
       >
         {/* Browser chrome */}
-        <div className="bg-muted">
+        <div className="bg-muted/70">
           {/* Tab */}
           <div className="flex pt-1 pb-0.5 items-center px-2.5">
             <div className="flex items-center mr-2 gap-1">
