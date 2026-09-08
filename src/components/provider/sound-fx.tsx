@@ -28,7 +28,7 @@ export function SoundFxProvider({ children }: { children: React.ReactNode }) {
 
   if (!soundFxRef.current && typeof window !== "undefined") {
     soundFxRef.current = createUISFX({
-      pack: packNames[0],
+      pack: "zen",
       volume: 1,
       enabled: false,
     });

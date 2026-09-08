@@ -32,7 +32,7 @@ const MOTION_ITEM_PROPS = {
 };
 
 // Create a motion-enhanced Link component
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 
 // 2. Extracted List Item Component (unchanged)
 const ProjectListItem: React.FC<{

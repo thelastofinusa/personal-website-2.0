@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { siteConfig } from "@/config/site.config";
+import { getOgImage } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: {
@@ -13,24 +14,34 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: siteConfig.url,
     title: `${siteConfig.author.nickname} - ${siteConfig.slogan}`,
-    siteName: siteConfig.title,
     description: siteConfig.description,
+    url: siteConfig.url,
     images: [
       {
-        url: "/opengraph.png",
+        url: getOgImage({
+          title: `${siteConfig.author.nickname} - ${siteConfig.slogan}`,
+          description: siteConfig.description,
+          category: "Home",
+        }),
         width: 1200,
         height: 630,
-        alt: siteConfig.title,
+        alt: `${siteConfig.author.nickname} - ${siteConfig.slogan}`,
       },
     ],
   },
+
   twitter: {
     card: "summary_large_image",
     title: `${siteConfig.author.nickname} - ${siteConfig.slogan}`,
     description: siteConfig.description,
-    images: ["/opengraph.png"],
+    images: [
+      getOgImage({
+        title: `${siteConfig.author.nickname} - ${siteConfig.slogan}`,
+        description: siteConfig.description,
+        category: "Home",
+      }),
+    ],
   },
   icons: siteConfig.author.avatar,
   robots: {
@@ -48,7 +59,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout(props: LayoutProps<"/">) {
   return (
-    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
+    <html lang="en" suppressHydrationWarning>
       <body className="h-full antialiased">{props.children}</body>
     </html>
   );

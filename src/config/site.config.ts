@@ -1,4 +1,3 @@
-// config/site.config.ts
 export const siteConfig = {
   title: "Holiday",
   slogan: "Your friendly neighborhood developer",
@@ -11,7 +10,7 @@ export const siteConfig = {
     nicknameAcronym: "Humble Optimistic Learner Inspiring Dreams And Youth",
     email: "dGhlbGFzdG9maW51c2FAZ21haWwuY29t",
     phone: "KzIzNDgxMjgxNTc1MTA=",
-    avatar: "https://avatars.githubusercontent.com/u/232781140?v=4",
+    avatar: "/avatar.jpg",
   },
   url:
     process.env.NODE_ENV === "production"
