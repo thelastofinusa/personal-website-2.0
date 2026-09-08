@@ -1,15 +1,19 @@
 import { siteConfig } from "@/config/site.config";
 
+type Theme = "light" | "dark";
+
 type OGOptions = {
   title: string;
   description?: string;
   category?: string;
+  theme?: Theme;
 };
 
 export function getOgImage({
   title,
   description,
   category = "Portfolio",
+  theme = "light",
 }: OGOptions) {
   const url = new URL("/api/og", siteConfig.url);
 
@@ -19,11 +23,8 @@ export function getOgImage({
     url.searchParams.set("description", description);
   }
 
-  if (category) {
-    url.searchParams.set("category", category);
-  }
-
-  url.searchParams.set("theme", "dark");
+  url.searchParams.set("category", category);
+  url.searchParams.set("theme", theme);
 
   return url.toString();
 }

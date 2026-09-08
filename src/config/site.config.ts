@@ -2,7 +2,7 @@ export const siteConfig = {
   title: "Holiday",
   slogan: "Your friendly neighborhood developer",
   description:
-    "Portfolio of Holiday — a Web3 frontend engineer building products, experiments, and open-source projects.",
+    "Somewhere between a portfolio, a playground, and an excuse to keep building things.",
   author: {
     name: "Abdullahi Salihu",
     username: "thelastofinusa",

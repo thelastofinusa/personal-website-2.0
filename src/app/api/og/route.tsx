@@ -5,7 +5,7 @@ import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
 import { siteConfig } from "@/config/site.config";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 // ─── Dynamic title sizing ───────────────────────
 function getTitleFontSize(title: string): number {
