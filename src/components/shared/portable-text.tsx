@@ -6,7 +6,7 @@ import { FileIcon } from "@react-symbols/icons/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 
 import { CopyButton } from "@/components/reusable/chanhdai/copy-button";
 import { LocalImg } from "@/components/shared/image";
@@ -172,6 +172,39 @@ function getYouTubeVideoId(url: string) {
 // ─────────────────────────────────────────────
 // Code block
 // ─────────────────────────────────────────────
+
+const LANGUAGE_EXTENSIONS: Record<string, string> = {
+  typescript: "ts",
+  javascript: "js",
+  jsx: "jsx",
+  tsx: "tsx",
+  css: "css",
+  scss: "scss",
+  sass: "sass",
+  html: "html",
+  xml: "xml",
+  json: "json",
+  markdown: "md",
+  python: "py",
+  ruby: "rb",
+  java: "java",
+  csharp: "cs",
+  go: "go",
+  php: "php",
+  sql: "sql",
+  mysql: "sql",
+  yaml: "yaml",
+  bash: "sh",
+  sh: "sh",
+  batch: "bat",
+  groq: "groq",
+};
+
+function getLanguageExtension(language?: string) {
+  if (!language) return "txt";
+
+  return LANGUAGE_EXTENSIONS[language.toLowerCase()] ?? language;
+}
 
 function CodeBlock({
   code,
@@ -426,11 +459,13 @@ export const PortableText = ({ value, className }: Props) => {
       code: ({ value }) => {
         if (!value?.code) return null;
 
+        const language = value.language || "plaintext";
+
         return (
           <CodeBlock
             code={value.code}
-            language={value.language || "plaintext"}
-            filename={value.filename}
+            language={language}
+            filename={`code-example.${getLanguageExtension(language)}`}
           />
         );
       },

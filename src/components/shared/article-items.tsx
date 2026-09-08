@@ -43,7 +43,7 @@ function ArticleSocialLinks({
         const iconOnly = isMobile && links.length > 3;
 
         return (
-          <Link key={_id} href={url as Route}>
+          <Link key={_id} target="_blank" href={url as Route}>
             <Button
               variant="outline"
               size={iconOnly ? "icon" : "sm"}
