@@ -18,6 +18,7 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/reusable/shadcn/input-group";
+import { Kbd } from "@/components/reusable/shadcn/kbd";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import type { ISearchFilterProps, TProjectView } from "@/types";
 
@@ -93,96 +94,106 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
   }, [projects.length, query, tab, view]);
 
   return (
-    <div className="wrapper flex w-full max-w-md items-center">
-      {/* View selector */}
-      <DropdownMenu open={openMenu} onOpenChange={handleOpenChange}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size={isMobile && hasActiveFilters ? "icon" : "default"}
-            aria-label="Change project view"
-            className="bg-background! text-foreground"
-          >
-            {ButtonIcon && (
-              <ButtonIcon
-                aria-hidden="true"
-                className="motion-safe:animate-bell-ring"
-              />
-            )}
+    <div className="flex flex-col gap-2 w-full max-w-md">
+      <p className="text-xs hidden md:block font-medium text-muted-foreground px-4 leading-relaxed">
+        <span className="text-foreground font-semibold">Pro tip:</span> Hold{" "}
+        <Kbd>⌘</Kbd> / <Kbd>Ctrl</Kbd> + click on any project to teleport
+        instantly
+      </p>
 
-            <p
-              className={cn(
-                isMobile &&
-                  hasActiveFilters &&
-                  "absolute translate-x-6 opacity-0 transition-all duration-300 ease-in-out",
+      <div className="wrapper flex w-full items-center">
+        {/* View selector */}
+        <DropdownMenu open={openMenu} onOpenChange={handleOpenChange}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size={isMobile && hasActiveFilters ? "icon" : "default"}
+              aria-label="Change project view"
+              className="bg-background! text-foreground"
+            >
+              {ButtonIcon && (
+                <ButtonIcon
+                  aria-hidden="true"
+                  className="motion-safe:animate-bell-ring"
+                />
               )}
-            >
-              <span>{views.find((item) => item.value === view)?.default}</span>
 
-              <span className="ml-1 hidden md:inline-block">View</span>
-            </p>
+              <p
+                className={cn(
+                  isMobile &&
+                    hasActiveFilters &&
+                    "absolute translate-x-6 opacity-0 transition-all duration-300 ease-in-out",
+                )}
+              >
+                <span>
+                  {views.find((item) => item.value === view)?.default}
+                </span>
+
+                <span className="ml-1 hidden md:inline-block">View</span>
+              </p>
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="start" className="w-52">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Fancy Arrangement</DropdownMenuLabel>
+
+              <DropdownMenuRadioGroup
+                value={view}
+                onValueChange={handleViewChange}
+              >
+                {views.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <DropdownMenuRadioItem
+                      key={item.value}
+                      value={item.value}
+                      onClick={() => {
+                        isSelectingView.current = true;
+                        play("select");
+                      }}
+                    >
+                      <Icon />
+                      <span>{item.name}</span>
+                    </DropdownMenuRadioItem>
+                  );
+                })}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Search */}
+        <InputGroup className="rounded-full bg-background! text-foreground">
+          <InputGroupInput
+            value={searchValue}
+            onChange={(event) => {
+              setSearchValue(event.target.value);
+            }}
+            placeholder="Poke around the shelf"
+            aria-label="Search projects"
+          />
+
+          <InputGroupAddon align="inline-end">
+            <InputGroupText className="text-xs">{resultText}</InputGroupText>
+          </InputGroupAddon>
+        </InputGroup>
+
+        {/* Clear filters */}
+        {hasActiveFilters && (
+          <Button
+            type="button"
+            onClick={onClear}
+            variant="destructive"
+            size="icon"
+            aria-label="Clear filters"
+            className="bg-destructive/30 border border-destructive"
+          >
+            <Xmark aria-hidden="true" />
           </Button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent align="start" className="w-52">
-          <DropdownMenuGroup>
-            <DropdownMenuLabel>Fancy Arrangement</DropdownMenuLabel>
-
-            <DropdownMenuRadioGroup
-              value={view}
-              onValueChange={handleViewChange}
-            >
-              {views.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <DropdownMenuRadioItem
-                    key={item.value}
-                    value={item.value}
-                    onClick={() => {
-                      isSelectingView.current = true;
-                      play("select");
-                    }}
-                  >
-                    <Icon />
-                    <span>{item.name}</span>
-                  </DropdownMenuRadioItem>
-                );
-              })}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* Search */}
-      <InputGroup className="rounded-full bg-background! text-foreground">
-        <InputGroupInput
-          value={searchValue}
-          onChange={(event) => {
-            setSearchValue(event.target.value);
-          }}
-          placeholder="Poke around the shelf"
-          aria-label="Search projects"
-        />
-
-        <InputGroupAddon align="inline-end">
-          <InputGroupText className="text-xs">{resultText}</InputGroupText>
-        </InputGroupAddon>
-      </InputGroup>
-
-      {/* Clear filters */}
-      {hasActiveFilters && (
-        <Button
-          type="button"
-          onClick={onClear}
-          variant="destructive"
-          size="icon"
-          aria-label="Clear filters"
-          className="bg-destructive/30 border border-destructive"
-        >
-          <Xmark aria-hidden="true" />
-        </Button>
-      )}
+        )}
+      </div>
     </div>
   );
 };

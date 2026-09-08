@@ -59,7 +59,6 @@ const ProjectListItem: React.FC<{
           event.preventDefault();
           return;
         }
-        play("forward");
         if (isDesktop) {
           event.preventDefault();
           openPreview(
@@ -208,7 +207,6 @@ const ProjectGridItem: React.FC<{
           event.preventDefault();
           return;
         }
-        play("forward");
         if (isDesktop) {
           event.preventDefault();
           openPreview(
@@ -229,6 +227,7 @@ const ProjectGridItem: React.FC<{
             src={item.mainImage?.image as string}
             ogUrl={item.url as string}
             alt={item.name as string}
+            unoptimized
             className="size-auto object-contain transition-all duration-500 ease-initial group-hover:scale-110"
           />
 

@@ -13,7 +13,7 @@ export const QuickHero: React.FC<IQuickHeroProps> = (props) => {
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
 
   return (
-    <section className="pt-26 pb-16 sticky top-0 sm:py-30 md:pt-36 bg-background">
+    <section className="pt-26 pb-16 sticky top-0 md:py-30 lg:pt-36 bg-background">
       <motion.div variants={parentVariants} initial="hidden" animate="visible">
         <motion.div
           style={{ opacity, scale }}

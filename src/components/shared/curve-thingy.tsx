@@ -35,7 +35,7 @@ export const CurveThingy: React.FC<Props> = (props) => {
       {props.tCurve && <FadeLine className="top-0 mx-auto w-[80%]" />}
 
       {!props.hideHash && (
-        <div className="absolute top-4 z-10 flex w-full items-center justify-center">
+        <div className="absolute top-4 md:top-6 z-10 flex w-full items-center justify-center">
           <button
             type="button"
             name="quick scroll button"

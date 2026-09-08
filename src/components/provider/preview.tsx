@@ -252,6 +252,7 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
                   className="block h-auto w-full object-cover"
                   width={img.width}
                   height={img.height}
+                  unoptimized
                 />
               </div>
             ))}

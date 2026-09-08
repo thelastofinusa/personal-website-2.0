@@ -17,7 +17,9 @@ type SoundFxContextValue = {
   setEnabled: (enabled: boolean) => void;
   setPack: (pack: SoundPackName) => void;
   setVolume: (volume: number) => void;
-  play: (cue: Parameters<UISFXPlayer["play"]>[0]) => void;
+  play: (
+    cue: Parameters<UISFXPlayer["play"]>[0],
+  ) => ReturnType<UISFXPlayer["play"]> | undefined;
 };
 
 const SoundFxContext = React.createContext<SoundFxContextValue | null>(null);
@@ -126,7 +128,7 @@ export function SoundFxProvider({ children }: { children: React.ReactNode }) {
   }, [enabled, setEnabled]);
 
   const play = React.useCallback((cue: Parameters<UISFXPlayer["play"]>[0]) => {
-    soundFxRef.current?.play(cue);
+    return soundFxRef.current?.play(cue);
   }, []);
 
   const value = React.useMemo(

@@ -234,7 +234,7 @@
 }
 
 @utility wrapper {
-  @apply bg-foreground/80 dark:bg-accent/80 shadow-lg p-1.25 gap-1.25 rounded-full;
+  @apply bg-secondary/80 p-1.25 gap-1.25 rounded-full;
 }
 
 :root {

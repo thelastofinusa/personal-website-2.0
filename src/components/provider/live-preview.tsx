@@ -1,6 +1,6 @@
+/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
 "use client";
 
-import { Loader } from "lucide-react";
 import {
   AnimatePresence,
   animate,
@@ -32,7 +32,7 @@ import { siteConfig } from "@/config/site.config";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import type { ProjectsListQueryResult } from "~/sanity.types";
-import { Skeleton } from "../reusable/shadcn/skeleton";
+import { Button } from "../reusable/shadcn/button";
 import { LocalImg } from "../shared/image";
 import { useSoundFx } from "./sound-fx";
 
@@ -42,6 +42,7 @@ interface ILivePreviewContextType {
     project: ProjectsListQueryResult[number],
     anchor?: DOMRect,
     projects?: ProjectsListQueryResult,
+    e?: React.MouseEvent | MouseEvent,
   ) => void;
   closePreview: () => void;
 }
@@ -72,6 +73,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
   const [projectsList, setProjectsList] =
     useState<ProjectsListQueryResult>(projects);
   const [expanded, setExpanded] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [iframeSlow, setIframeSlow] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
@@ -83,6 +85,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const loadingSoundRef = useRef<ReturnType<typeof play> | null>(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -92,17 +95,56 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
     }
   }, [projects]);
 
-  // Smoothly return the transform to 0 so it doesn't conflict with the `layout` projection
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // Handle the Genie Minimize Animation & Drag Reset
   useEffect(() => {
-    const springTransition = { type: "spring", stiffness: 300, damping: 30 };
-    animate(x, 0, springTransition as any);
-    animate(y, 0, springTransition as any);
-  }, [expanded, project, x, y]);
+    if (isMinimized) {
+      const targetX = window.innerWidth / 2 - 80;
+      const targetY = window.innerHeight / 2 - 40;
+
+      animate(x, targetX, {
+        type: "spring",
+        stiffness: 250,
+        damping: 25,
+      } as any);
+      animate(y, targetY, {
+        type: "spring",
+        stiffness: 200,
+        damping: 25,
+      } as any);
+    } else {
+      const springTransition = { type: "spring", stiffness: 300, damping: 30 };
+      animate(x, 0, springTransition as any);
+      animate(y, 0, springTransition as any);
+    }
+  }, [expanded, project, isMinimized, x, y]);
+
+  // Play continuous loading sound when iframe starts loading & clean up on unload
+  useEffect(() => {
+    if (project && !iframeLoaded) {
+      loadingSoundRef.current = play("processing");
+
+      return () => {
+        if (
+          loadingSoundRef.current &&
+          "stop" in loadingSoundRef.current &&
+          typeof loadingSoundRef.current.stop === "function"
+        ) {
+          loadingSoundRef.current.stop();
+        }
+        loadingSoundRef.current = null;
+      };
+    }
+  }, [project, reloadKey, iframeLoaded, play]);
+
+  const handleIframeLoad = useCallback(() => {
+    setIframeLoaded(true);
+    play("success");
+  }, [play]);
 
   const closePreview = useCallback(() => {
     setProject(null);
     setExpanded(false);
+    setIsMinimized(false);
     setIframeLoaded(false);
     setIframeSlow(false);
     setIsDragging(false);
@@ -110,12 +152,29 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
     if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
   }, [play]);
 
+  const minimizePreview = useCallback(() => {
+    setIsMinimized(true);
+    play("collapse");
+  }, [play]);
+
+  const restorePreview = useCallback(() => {
+    setIsMinimized(false);
+    play("expand");
+  }, [play]);
+
   const openPreview = useCallback(
     (
       nextProject: ProjectsListQueryResult[number],
       _nextAnchor?: DOMRect,
       overrideProjects?: ProjectsListQueryResult,
+      e?: React.MouseEvent | MouseEvent,
     ) => {
+      // Check for Control (Windows/Linux) or Command (Mac) key to redirect/open in new tab
+      if (e && (e.ctrlKey || e.metaKey)) {
+        window.open(nextProject.url as string, "_blank", "noopener,noreferrer");
+        return;
+      }
+
       if (!isDesktop) return;
 
       const list =
@@ -128,6 +187,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
       setProjectsList(list);
       setProject(nextProject);
       setExpanded(false);
+      setIsMinimized(false);
       setIframeLoaded(false);
       setIframeSlow(false);
       setIsDragging(false);
@@ -147,6 +207,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
   const navigateToProject = useCallback(
     (nextProject: ProjectsListQueryResult[number]) => {
       setProject(nextProject);
+      setIsMinimized(false);
       setIframeLoaded(false);
       setIframeSlow(false);
 
@@ -213,7 +274,8 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
           <AnimatePresence>
             {project && (
               <React.Fragment key={project.url}>
-                {expanded && (
+                {/* Backdrop overlay for expanded mode */}
+                {expanded && !isMinimized && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -223,17 +285,22 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                   />
                 )}
 
+                {/* Main Preview Window */}
                 <motion.div
                   layout
                   style={{ x, y }}
-                  drag={!expanded}
+                  drag={!expanded && !isMinimized}
                   dragControls={dragControls}
                   dragListener={false}
                   dragMomentum={false}
                   onDragStart={() => setIsDragging(true)}
                   onDragEnd={() => setIsDragging(false)}
                   initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  animate={{
+                    opacity: isMinimized ? 0 : 1,
+                    scale: isMinimized ? 0.05 : 1,
+                    filter: isMinimized ? "blur(4px)" : "blur(0px)",
+                  }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   className={cn(
@@ -242,6 +309,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                     expanded
                       ? "top-[6vh] left-[6vw] h-[88vh] w-[88vw]"
                       : "top-[calc(50vh-280px)] left-[calc(50vw-240px)] h-140 w-120",
+                    isMinimized && "pointer-events-none",
                   )}
                   role="dialog"
                   aria-modal="true"
@@ -258,39 +326,40 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                     {/* Tab Bar */}
                     <div className="flex h-9 items-center gap-2 px-3 pt-1.5">
                       <div className="flex items-center group/btn cursor-default gap-1.5 pr-2">
+                        {/* Red Button: Close */}
                         <button
                           type="button"
                           onClick={closePreview}
                           aria-label="Close preview"
                           title="Close"
-                          className="flex size-3 items-center justify-center rounded-full border border-[#e0443e] bg-[#ff5f57] transition-transform active:scale-90 disabled:pointer-events-none disabled:opacity-50"
+                          className="flex size-3 items-center justify-center rounded-full border border-[#e0443e] bg-[#ff5f57] transition-transform active:scale-90"
                         >
                           <Xmark className="size-2 opacity-0 text-black transition-opacity group-hover/btn:opacity-100 stroke-2" />
                         </button>
 
+                        {/* Yellow Button: Minimize */}
                         <button
                           type="button"
-                          onClick={() => {
-                            play(expanded ? "collapse" : "expand");
-                            setExpanded(false);
-                          }}
-                          disabled={!expanded}
-                          aria-label="Shrink preview"
-                          title="Shrink preview"
-                          className="flex size-3 items-center justify-center rounded-full border border-[#d89e24] bg-[#febc2e] transition-transform active:scale-90 disabled:pointer-events-none disabled:opacity-50"
+                          onClick={minimizePreview}
+                          aria-label="Minimize preview"
+                          title="Minimize"
+                          className="flex size-3 items-center justify-center rounded-full border border-[#d89e24] bg-[#febc2e] transition-transform active:scale-90"
                         >
                           <Minus className="size-2 opacity-0 text-black transition-opacity group-hover/btn:opacity-100 stroke-2" />
                         </button>
 
+                        {/* Green Button: Expand / Restore Size */}
                         <button
                           type="button"
                           onClick={() => {
                             play(expanded ? "collapse" : "expand");
                             setExpanded((prev) => !prev);
                           }}
-                          aria-label="Expand preview"
-                          title="Expand preview"
-                          className="flex size-3 items-center justify-center rounded-full border border-[#1aab29] bg-[#28c840] transition-transform active:scale-90 disabled:pointer-events-none disabled:opacity-50"
+                          aria-label={
+                            expanded ? "Restore size" : "Expand preview"
+                          }
+                          title={expanded ? "Restore size" : "Expand"}
+                          className="flex size-3 items-center justify-center rounded-full border border-[#1aab29] bg-[#28c840] transition-transform active:scale-90"
                         >
                           <ChevronExpandY className="size-2 opacity-0 text-black transition-opacity group-hover/btn:opacity-100 stroke-2 -rotate-45" />
                         </button>
@@ -391,46 +460,146 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                   {/* Browser Viewport */}
                   <div className="relative flex-1 bg-card">
                     {!iframeLoaded && (
-                      <div className="absolute inset-0 z-10 flex flex-col bg-background/90 backdrop-blur-xs transition-opacity duration-300">
-                        <div className="h-0.5 w-full overflow-hidden bg-muted">
-                          <div className="h-full w-1/3 animate-[shimmer_1.5s_infinite] bg-linear-to-r from-transparent via-primary to-transparent" />
-                        </div>
+                      <motion.div
+                        initial={{ opacity: 1 }}
+                        animate={{ opacity: 1 }}
+                        className="absolute inset-0 z-10 overflow-hidden bg-background"
+                      >
+                        {/* Fake page */}
+                        <div className="mx-auto w-full max-w-5xl px-6 py-10 sm:px-10">
+                          {/* Fake navigation */}
+                          <div className="flex items-center justify-between">
+                            <motion.div
+                              animate={{ opacity: [0.35, 0.7, 0.35] }}
+                              transition={{
+                                duration: 1.8,
+                                repeat: Number.POSITIVE_INFINITY,
+                                ease: "easeInOut",
+                              }}
+                              className="h-7 w-7 rounded-md bg-muted"
+                            />
 
-                        <div className="flex-1 space-y-5 p-6 opacity-60">
-                          <div className="flex items-center justify-between border-b border-border/40 pb-4">
-                            <Skeleton className="h-4 w-24 rounded" />
-                            <div className="flex gap-3">
-                              <Skeleton className="h-3 w-10 rounded" />
-                              <Skeleton className="h-3 w-10 rounded" />
-                              <Skeleton className="h-3 w-10 rounded" />
+                            <div className="flex items-center gap-2">
+                              {[48, 36, 52].map((width, index) => (
+                                <motion.div
+                                  key={width}
+                                  initial={{ opacity: 0.3 }}
+                                  animate={{ opacity: [0.25, 0.55, 0.25] }}
+                                  transition={{
+                                    duration: 1.8,
+                                    delay: index * 0.15,
+                                    repeat: Number.POSITIVE_INFINITY,
+                                    ease: "easeInOut",
+                                  }}
+                                  className="h-2 rounded-full bg-muted"
+                                  style={{ width }}
+                                />
+                              ))}
                             </div>
                           </div>
 
-                          <div className="space-y-3 pt-2">
-                            <Skeleton className="h-7 w-2/3 rounded-lg" />
-                            <Skeleton className="h-4 w-1/2 rounded-md" />
+                          {/* Hero */}
+                          <div className="mt-24 max-w-2xl">
+                            <motion.div
+                              animate={{ width: ["35%", "55%", "35%"] }}
+                              transition={{
+                                duration: 2.4,
+                                repeat: Number.POSITIVE_INFINITY,
+                                ease: "easeInOut",
+                              }}
+                              className="h-3 rounded-full bg-muted"
+                            />
+
+                            <div className="mt-5 space-y-3">
+                              {[100, 88, 62].map((width, index) => (
+                                <motion.div
+                                  key={width}
+                                  animate={{ opacity: [0.25, 0.55, 0.25] }}
+                                  transition={{
+                                    duration: 1.8,
+                                    delay: index * 0.12,
+                                    repeat: Number.POSITIVE_INFINITY,
+                                    ease: "easeInOut",
+                                  }}
+                                  className="h-2 rounded-full bg-muted"
+                                  style={{ width: `${width}%` }}
+                                />
+                              ))}
+                            </div>
+
+                            {/* Fake buttons */}
+                            <div className="mt-8 flex gap-3">
+                              <motion.div
+                                animate={{ opacity: [0.3, 0.65, 0.3] }}
+                                transition={{
+                                  duration: 1.6,
+                                  repeat: Number.POSITIVE_INFINITY,
+                                  ease: "easeInOut",
+                                }}
+                                className="h-9 w-24 rounded-md bg-muted"
+                              />
+
+                              <motion.div
+                                animate={{ opacity: [0.2, 0.5, 0.2] }}
+                                transition={{
+                                  duration: 1.6,
+                                  delay: 0.2,
+                                  repeat: Number.POSITIVE_INFINITY,
+                                  ease: "easeInOut",
+                                }}
+                                className="h-9 w-20 rounded-md border border-border"
+                              />
+                            </div>
                           </div>
 
-                          <Skeleton className="h-36 w-full rounded-xl border border-border/30" />
+                          {/* Fake cards */}
+                          <div className="mt-24 grid grid-cols-3 gap-4">
+                            {[1, 2, 3].map((card, index) => (
+                              <motion.div
+                                key={card}
+                                animate={{ opacity: [0.3, 0.6, 0.3] }}
+                                transition={{
+                                  duration: 2,
+                                  delay: index * 0.2,
+                                  repeat: Number.POSITIVE_INFINITY,
+                                  ease: "easeInOut",
+                                }}
+                                className="overflow-hidden rounded-xl border border-border/60"
+                              >
+                                <div className="aspect-video bg-muted/60" />
 
-                          <div className="grid grid-cols-2 gap-3">
-                            <Skeleton className="h-20 rounded-lg" />
-                            <Skeleton className="h-20 rounded-lg" />
+                                <div className="space-y-3 p-4">
+                                  <div className="h-2.5 w-2/3 rounded-full bg-muted" />
+                                  <div className="h-2 w-full rounded-full bg-muted/70" />
+                                  <div className="h-2 w-4/5 rounded-full bg-muted/70" />
+                                </div>
+                              </motion.div>
+                            ))}
                           </div>
                         </div>
 
-                        <div className="absolute bottom-3 left-4 flex items-center gap-2 rounded-full border border-border/50 bg-background/80 px-2.5 py-1 text-[11px] text-muted-foreground shadow-xs">
-                          <Loader className="size-3 animate-spin text-primary" />
-                          <span className="truncate max-w-50">
-                            Waiting for{" "}
-                            {project.url?.replace(/^https?:\/\//, "")}...
-                          </span>
-                        </div>
-                      </div>
+                        {/* Subtle loading message */}
+                        {expanded && (
+                          <div className="absolute bottom-12 left-1/2 -translate-x-1/2">
+                            <motion.div
+                              animate={{ opacity: [0.45, 1, 0.45] }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Number.POSITIVE_INFINITY,
+                                ease: "easeInOut",
+                              }}
+                              className="flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-[11px] text-muted-foreground shadow-sm backdrop-blur"
+                            >
+                              <span className="size-1.5 rounded-full bg-current" />
+                              Preparing {project.name}
+                            </motion.div>
+                          </div>
+                        )}
+                      </motion.div>
                     )}
 
                     {iframeSlow && !iframeLoaded && (
-                      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-background/95 px-3 py-2 text-xs text-muted-foreground border-t border-border/60">
+                      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-background/95 px-3 py-2 text-xs text-muted-foreground border-t border-border/60 z-20">
                         <span>
                           This site may not allow being previewed here.
                         </span>
@@ -450,7 +619,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                       key={`${project.url}-${reloadKey}`}
                       src={project.url as string}
                       title={`Live preview of ${project.name}`}
-                      onLoad={() => setIframeLoaded(true)}
+                      onLoad={handleIframeLoad}
                       className={cn(
                         "size-full border-0",
                         isDragging && "pointer-events-none",
@@ -459,6 +628,43 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                     />
                   </div>
                 </motion.div>
+
+                {/* Minimized Dock Floating Button */}
+                <AnimatePresence>
+                  {isMinimized && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5, y: 40 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.5, y: 40 }}
+                      onClick={restorePreview}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 25,
+                        delay: isMinimized ? 0.15 : 0,
+                      }}
+                      className="fixed bottom-5 right-5 z-100"
+                      aria-label={`Restore live preview of ${project.name}`}
+                    >
+                      <Button
+                        size="sm"
+                        variant="default"
+                        aria-label={`Restore live preview of ${project.name}`}
+                        className={cn(
+                          "shadow-[0_10px_30px_rgba(0,0,0,0.15)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)]",
+                        )}
+                      >
+                        <span className="relative flex size-2">
+                          <span className="absolute inset-0 rounded-full bg-white opacity-75 animate-ping" />
+                          <span className="relative size-2 rounded-full bg-white" />
+                        </span>
+                        <span className="text-xs font-medium">
+                          {project.name}
+                        </span>
+                      </Button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </React.Fragment>
             )}
           </AnimatePresence>,
