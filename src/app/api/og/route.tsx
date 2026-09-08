@@ -4,22 +4,57 @@
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
 import { siteConfig } from "@/config/site.config";
+import { getInitials } from "@/lib/utils";
 
 export const runtime = "nodejs";
+
+// ─── Google Fonts loader (Satori needs raw TTF/OTF bytes, not a stylesheet) ───
+// Passing `text=` subsets the request, which is also what makes Google's
+// CSS2 endpoint respond with a plain `format('truetype')` src instead of
+// woff2 — Satori can only parse ttf/otf, not woff2.
+const FONT_CHARSET =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,!?'\"-–—:;()&/@#%+";
+
+const fontCache = new Map<number, Promise<ArrayBuffer>>();
+
+function loadGoogleFont(weight: number): Promise<ArrayBuffer> {
+  if (!fontCache.has(weight)) {
+    fontCache.set(
+      weight,
+      (async () => {
+        const url = `https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@${weight}&text=${encodeURIComponent(FONT_CHARSET)}`;
+        const css = await (await fetch(url)).text();
+        const match = css.match(
+          /src: url\((.+)\) format\('(opentype|truetype)'\)/,
+        );
+        if (!match) {
+          throw new Error(`Could not find font source for weight ${weight}`);
+        }
+        const res = await fetch(match[1]);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch font file for weight ${weight}`);
+        }
+        return res.arrayBuffer();
+      })(),
+    );
+  }
+  // biome-ignore lint/style/noNonNullAssertion: just set above if absent
+  return fontCache.get(weight)!;
+}
 
 // ─── Dynamic title sizing ───────────────────────
 function getTitleFontSize(title: string): number {
   const len = title.length;
-  if (len <= 20) return 62;
-  if (len <= 35) return 54;
-  if (len <= 50) return 46;
-  if (len <= 70) return 40;
-  if (len <= 90) return 40;
-  return 38;
+  if (len <= 20) return 64;
+  if (len <= 35) return 56;
+  if (len <= 50) return 48;
+  if (len <= 70) return 42;
+  if (len <= 90) return 38;
+  return 34;
 }
 
 function getTitleLineHeight(fontSize: number): number {
-  return fontSize * 1.1;
+  return Math.round(fontSize * 1.08);
 }
 
 // ─── Colors ──────────────────────────────────────
@@ -29,38 +64,14 @@ function getColors(theme: Theme) {
   const isDark = theme === "dark";
 
   return {
-    // --background
-    bg: isDark ? "#151515" : "#e6e6e6",
-
-    // --card
-    panelBg: isDark ? "#0e0e0e" : "#ffffff",
-
-    // --border
-    panelBorder: isDark ? "rgba(255,255,255,0.06)" : "rgba(10,10,10,0.08)",
-
-    // --foreground
+    bg: isDark ? "#151515" : "#ffffff",
     text: isDark ? "#fafafa" : "#0a0a0a",
-
-    // --muted-foreground
     muted: isDark ? "#a1a1a1" : "#737373",
-
-    // --primary
     accent: isDark ? "#df7754" : "#c96442",
-
-    // Primary with transparency
-    accentGlow: isDark ? "rgba(223,119,84,0.15)" : "rgba(201,100,66,0.10)",
-
-    // --muted
-    mutedBg: isDark ? "#262626" : "#eeeeee",
-
-    // --secondary
-    secondary: isDark ? "#262626" : "#e6e6e6",
-
-    // --accent
-    accentBg: isDark ? "#404040" : "#eeeeee",
-
-    // Useful for subtle lines
+    accentText: isDark ? "#151515" : "#ffffff",
     line: isDark ? "rgba(255,255,255,0.08)" : "rgba(10,10,10,0.08)",
+    subtleLine: isDark ? "rgba(255,255,255,0.04)" : "rgba(10,10,10,0.05)",
+    panelLine: isDark ? "rgba(0,0,0,0.15)" : "rgba(0,0,0,0.08)",
   };
 }
 
@@ -74,8 +85,14 @@ export async function GET(req: NextRequest) {
     const theme = (searchParams.get("theme") || "dark") as Theme;
     const category = searchParams.get("category") || "Portfolio";
 
-    const isDark = theme === "dark";
     const c = getColors(theme);
+
+    const [light, regular, semibold, bold] = await Promise.all([
+      loadGoogleFont(300),
+      loadGoogleFont(400),
+      loadGoogleFont(600),
+      loadGoogleFont(700),
+    ]);
 
     const avatarUrl = siteConfig.author.avatar.startsWith("http")
       ? siteConfig.author.avatar
@@ -88,337 +105,208 @@ export async function GET(req: NextRequest) {
 
     const titleSize = getTitleFontSize(title);
     const titleLh = getTitleLineHeight(titleSize);
+    const initials = getInitials(siteConfig.author.name);
 
     return new ImageResponse(
       <div
-        style={{
-          width: "1200px",
-          height: "630px",
-          display: "flex",
-          position: "relative",
-          overflow: "hidden",
-          backgroundColor: c.bg,
-          fontFamily: "Inter, -apple-system, sans-serif",
-          padding: "20px",
-        }}
+        tw="flex w-[1200px] h-[630px]"
+        style={{ backgroundColor: c.bg, fontFamily: "Bricolage Grotesque" }}
       >
-        {/* ─── Outer frame ────────────────────── */}
-        <div
-          style={{
-            position: "absolute",
-            inset: "0",
-            border: `1px solid ${isDark ? "#25282b" : "#e0dcd6"}`,
-            borderRadius: "24px",
-            zIndex: 2,
-          }}
-        />
+        {/* ─── Left: content ─────────────────────── */}
+        <div tw="flex flex-col justify-between w-[800px] h-full px-[64px] py-[56px]">
+          {/* Header */}
+          <div
+            tw="flex items-center justify-between w-full"
+            style={{
+              paddingBottom: "22px",
+              borderBottom: `1px solid ${c.line}`,
+            }}
+          >
+            {/* Identity */}
 
-        {/* ─── Inner panel ────────────────────── */}
-        <div
-          style={{
-            position: "absolute",
-            left: "20px",
-            top: "20px",
-            right: "20px",
-            bottom: "20px",
-            backgroundColor: c.panelBg,
-            borderRadius: "22px",
-            border: `1px solid ${c.panelBorder}`,
-            zIndex: 3,
-          }}
-        />
+            <div tw="flex items-center">
+              {/* Avatar frame */}
 
-        {/* ─── Hero accent shape ──────────────── */}
-        <div
-          style={{
-            position: "absolute",
-            right: "-80px",
-            top: "-60px",
-            width: "520px",
-            height: "520px",
-            borderRadius: "50%",
-            background: `radial-gradient(circle at 30% 30%, ${c.accentGlow}, transparent 70%)`,
-            filter: "blur(60px)",
-            opacity: isDark ? 0.9 : 0.7,
-            zIndex: 4,
-          }}
-        />
+              <div
+                tw="flex items-center justify-center"
+                style={{
+                  width: "38px",
+                  height: "38px",
+                  borderRadius: "11px",
+                  border: `1px solid ${c.line}`,
+                  padding: "3px",
+                  marginRight: "12px",
+                }}
+              >
+                <img
+                  src={avatarUrl}
+                  alt=""
+                  width={36}
+                  height={36}
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "8px",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
 
-        <div
-          style={{
-            position: "absolute",
-            right: "40px",
-            top: "40px",
-            width: "320px",
-            height: "320px",
-            borderRadius: "50%",
-            border: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}`,
-            transform: "rotate(12deg)",
-            zIndex: 4,
-          }}
-        />
+              <div tw="flex flex-col">
+                <span
+                  tw="text-[15px] font-semibold"
+                  style={{
+                    color: c.text,
+                    letterSpacing: "-0.025em",
+                  }}
+                >
+                  {siteConfig.author.name}
+                </span>
 
-        <div
-          style={{
-            position: "absolute",
-            right: "70px",
-            top: "70px",
-            width: "260px",
-            height: "260px",
-            borderRadius: "50%",
-            border: `1px solid ${isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)"}`,
-            transform: "rotate(-8deg)",
-            zIndex: 4,
-          }}
-        />
+                <span
+                  tw="text-xs font-light"
+                  style={{
+                    color: c.muted,
+                    marginTop: "1px",
+                    letterSpacing: "0.01em",
+                  }}
+                >
+                  @{siteConfig.author.username}
+                </span>
+              </div>
+            </div>
 
-        <div
-          style={{
-            position: "absolute",
-            right: "130px",
-            top: "130px",
-            width: "140px",
-            height: "140px",
-            borderRadius: "50%",
-            border: `1px solid ${isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)"}`,
-            zIndex: 4,
-          }}
-        />
+            {/* Category */}
 
-        {/* ─── Accent dot cluster ─────────────── */}
-        <div
-          style={{
-            position: "absolute",
-            right: "180px",
-            top: "190px",
-            display: "flex",
-            gap: "6px",
-            opacity: 0.25,
-            zIndex: 5,
-          }}
-        >
-          {[0, 1, 2].map((i) => (
-            <div
-              key={`dot-${i}`}
+            <span
+              tw="text-[11px] font-normal uppercase"
               style={{
-                width: "4px",
-                height: "4px",
-                borderRadius: "50%",
-                backgroundColor: c.accent,
-                opacity: 0.3 + i * 0.25,
+                color: c.muted,
+                letterSpacing: "0.08em",
               }}
-            />
-          ))}
+            >
+              {category}
+            </span>
+          </div>
+
+          {/* Title + description */}
+          <div tw="flex flex-col" style={{ maxWidth: "660px" }}>
+            <h1
+              tw="flex flex-wrap font-medium m-0"
+              style={{
+                fontSize: `${titleSize}px`,
+                lineHeight: `${titleLh}px`,
+                letterSpacing: "-0.015em",
+                color: c.text,
+                wordBreak: "break-word",
+              }}
+            >
+              {title}
+            </h1>
+
+            <p
+              tw="flex flex-wrap font-light max-w-xl mt-[20px] m-0 mt-6"
+              style={{
+                fontSize: "19px",
+                lineHeight: 1.5,
+                color: c.muted,
+                wordBreak: "break-word",
+              }}
+            >
+              {description}
+            </p>
+          </div>
+
+          {/* Footer */}
+          <div
+            tw="flex items-center justify-between w-full pt-[20px]"
+            style={{ borderTop: `1px solid ${c.line}` }}
+          >
+            <span
+              tw="text-[13px] font-light"
+              style={{ color: c.muted, letterSpacing: "0.02em" }}
+            >
+              {displayDomain}
+            </span>
+
+            <div tw="flex items-center">
+              <span
+                tw="text-[12px] font-light mr-[16px]"
+                style={{ color: c.muted, letterSpacing: "0.02em" }}
+              >
+                {siteConfig.author.position}
+              </span>
+              <span
+                tw="text-[12px] font-light"
+                style={{ color: c.muted, opacity: 0.5 }}
+              >
+                {new Date().getFullYear()}
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* ─── Header ─────────────────────────── */}
+        {/* ─── Right: accent monogram panel ──────── */}
         <div
-          style={{
-            position: "absolute",
-            left: "84px",
-            top: "56px",
-            display: "flex",
-            alignItems: "center",
-            gap: "14px",
-            zIndex: 10,
-          }}
+          tw="flex items-center justify-center w-[400px] h-full relative"
+          style={{ backgroundColor: c.accent }}
         >
           <div
-            style={{
-              width: "44px",
-              height: "44px",
-              borderRadius: "50%",
-              border: `2.5px solid ${c.accent}`,
-              padding: "2px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+            tw="absolute w-full h-full flex flex-col justify-between"
+            style={{ padding: "40px" }}
           >
-            <img
-              src={avatarUrl}
-              alt=""
-              width={40}
-              height={40}
-              style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "50%",
-                objectFit: "cover",
-              }}
+            <div
+              tw="flex w-full"
+              style={{ borderTop: `1px solid ${c.line}` }}
+            />
+            <div
+              tw="flex w-full"
+              style={{ borderTop: `1px solid ${c.line}` }}
             />
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <span
-              style={{
-                fontSize: "18px",
-                fontWeight: 600,
-                letterSpacing: "-0.02em",
-                color: c.text,
-              }}
-            >
-              {siteConfig.author.name} - {siteConfig.author.nickname}
-            </span>
-            <span
-              style={{
-                fontSize: "14px",
-                color: c.muted,
-                marginTop: "1px",
-                fontWeight: 300,
-              }}
-            >
-              {siteConfig.slogan}
-            </span>
-          </div>
-        </div>
-
-        {/* ─── Category tag ───────────────────── */}
-        <div
-          style={{
-            position: "absolute",
-            right: "84px",
-            top: "60px",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            zIndex: 10,
-          }}
-        >
           <span
+            tw="font-bold flex"
             style={{
-              fontSize: "11px",
-              fontWeight: 400,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-              color: c.muted,
-              background: isDark
-                ? "rgba(255,255,255,0.04)"
-                : "rgba(0,0,0,0.04)",
-              padding: "5px 14px",
-              borderRadius: "100px",
-              border: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)"}`,
+              fontSize: "220px",
+              color: c.accentText,
+              letterSpacing: "-0.05em",
+              opacity: 0.92,
             }}
           >
-            {category}
+            {initials}
           </span>
         </div>
-
-        {/* ─── Main content ───────────────────── */}
-        <div
-          style={{
-            position: "absolute",
-            left: "84px",
-            right: "84px",
-            top: "42px",
-            bottom: "104px",
-            display: "flex",
-            flexDirection: "column",
-            marginTop: "144px",
-            zIndex: 10,
-          }}
-        >
-          <h1
-            style={{
-              margin: 0,
-              fontSize: `${titleSize}px`,
-              lineHeight: `${titleLh}px`,
-              fontWeight: 700,
-              letterSpacing: "-0.035em",
-              maxWidth: "648px",
-              color: c.text,
-              wordBreak: "break-word",
-              display: "flex",
-              flexWrap: "wrap",
-            }}
-          >
-            {title}
-          </h1>
-
-          <p
-            style={{
-              margin: "20px 0 0 0",
-              fontSize: "20px",
-              lineHeight: 1.5,
-              color: c.muted,
-              maxWidth: "554px",
-              fontWeight: 300,
-              display: "flex",
-              flexWrap: "wrap",
-              wordBreak: "break-word",
-            }}
-          >
-            {description}
-          </p>
-        </div>
-
-        {/* ─── Footer ─────────────────────────── */}
-        <div
-          style={{
-            position: "absolute",
-            left: "84px",
-            right: "84px",
-            bottom: "48px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingTop: "16px",
-            borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}`,
-            zIndex: 10,
-          }}
-        >
-          <span
-            style={{
-              fontSize: "13px",
-              fontWeight: 300,
-              color: c.muted,
-              letterSpacing: "0.02em",
-            }}
-          >
-            {displayDomain}
-          </span>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <span
-              style={{
-                fontSize: "12px",
-                fontWeight: 300,
-                color: c.muted,
-                letterSpacing: "0.02em",
-              }}
-            >
-              Web3 Frontend Engineer
-            </span>
-            <span
-              style={{
-                fontSize: "12px",
-                fontWeight: 300,
-                color: c.muted,
-                opacity: 0.4,
-              }}
-            >
-              {new Date().getFullYear()}
-            </span>
-          </div>
-        </div>
-
-        {/* ─── Accent line ────────────────────── */}
-        <div
-          style={{
-            position: "absolute",
-            left: "84px",
-            bottom: "38px",
-            width: "48px",
-            height: "2px",
-            backgroundColor: c.accent,
-            zIndex: 10,
-            borderRadius: "2px",
-          }}
-        />
       </div>,
       {
         width: 1200,
         height: 630,
+        fonts: [
+          {
+            name: "Bricolage Grotesque",
+            data: light,
+            weight: 300,
+            style: "normal",
+          },
+          {
+            name: "Bricolage Grotesque",
+            data: regular,
+            weight: 400,
+            style: "normal",
+          },
+          {
+            name: "Bricolage Grotesque",
+            data: semibold,
+            weight: 600,
+            style: "normal",
+          },
+          {
+            name: "Bricolage Grotesque",
+            data: bold,
+            weight: 700,
+            style: "normal",
+          },
+        ],
       },
     );
   } catch (error) {

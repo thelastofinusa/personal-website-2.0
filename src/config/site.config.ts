@@ -7,7 +7,7 @@ export const siteConfig = {
     name: "Abdullahi Salihu",
     username: "thelastofinusa",
     nickname: "Osilama",
-    nicknameAcronym: "Humble Optimistic Learner Inspiring Dreams And Youth",
+    position: "Web3 Frontend Developer",
     email: "dGhlbGFzdG9maW51c2FAZ21haWwuY29t",
     phone: "KzIzNDgxMjgxNTc1MTA=",
     avatar: "/avatar.jpg",
