@@ -211,7 +211,7 @@ export const SoundFXToggle: React.FC<
     const volumeStep = Math.floor(next / 5);
 
     if (next > 0 && lastVolumeStepRef.current !== volumeStep) {
-      play("volume-change");
+      play("press");
       lastVolumeStepRef.current = volumeStep;
     }
   };

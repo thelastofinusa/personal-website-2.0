@@ -1,8 +1,8 @@
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
 "use client";
 
-import dynamic from "next/dynamic";
 import type { Route } from "next";
+import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { useSoundFx } from "@/components/provider/sound-fx";
@@ -12,7 +12,7 @@ const LivePreviewProvider = dynamic(
     import("@/components/provider/live-preview").then(
       (mod) => mod.LivePreviewProvider,
     ),
-  { ssr: false, loading: () => null },
+  { ssr: false, loading: () => <ProjectsPageSkeleton /> },
 );
 
 const ImagePreviewProvider = dynamic(
@@ -22,6 +22,7 @@ const ImagePreviewProvider = dynamic(
     ),
   { ssr: false, loading: () => null },
 );
+
 import {
   Empty,
   EmptyDescription,
@@ -42,6 +43,7 @@ import type {
   ProjectsListQueryResult,
 } from "~/sanity.types";
 import { SearchFilter } from "./search-filter";
+import { ProjectsPageSkeleton } from "./skeleton";
 import { TabFilter } from "./tab-filter";
 
 export const ProjectsPageClient: React.FC<{

@@ -25,7 +25,7 @@ export const navLinks: NavLink[] = [
     href: "/about",
   },
   {
-    eyebrow: "Things I Built",
+    eyebrow: "Things I've Built",
     title: "They Work on My Machine",
     description:
       "Projects, experiments, and things that escaped the localhost.",
