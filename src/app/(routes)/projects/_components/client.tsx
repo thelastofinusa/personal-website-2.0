@@ -1,12 +1,27 @@
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
 "use client";
 
+import dynamic from "next/dynamic";
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
-import { LivePreviewProvider } from "@/components/provider/live-preview";
-import { ImagePreviewProvider } from "@/components/provider/preview";
 import { useSoundFx } from "@/components/provider/sound-fx";
+
+const LivePreviewProvider = dynamic(
+  () =>
+    import("@/components/provider/live-preview").then(
+      (mod) => mod.LivePreviewProvider,
+    ),
+  { ssr: false, loading: () => null },
+);
+
+const ImagePreviewProvider = dynamic(
+  () =>
+    import("@/components/provider/preview").then(
+      (mod) => mod.ImagePreviewProvider,
+    ),
+  { ssr: false, loading: () => null },
+);
 import {
   Empty,
   EmptyDescription,

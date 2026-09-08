@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/a11y/useSemanticElements: skipped */
 "use client";
-import confetti from "canvas-confetti";
+import type confetti from "canvas-confetti";
 import type { Route } from "next";
 import Link from "next/link";
 import type React from "react";
@@ -32,7 +32,7 @@ export const Footer = () => {
   const { state, copy } = useCopyToClipboard();
   const email = decodeString(siteConfig.author.email);
 
-  const handleCopy = (
+  const handleCopy = async (
     event:
       | React.MouseEvent<HTMLDivElement>
       | React.KeyboardEvent<HTMLDivElement>,
@@ -55,7 +55,10 @@ export const Footer = () => {
       };
     }
 
-    confetti({
+    const { default: confettiFn }: { default: typeof confetti } = await import(
+      "canvas-confetti"
+    );
+    confettiFn({
       zIndex: 9999,
       particleCount: 200,
       spread: 800,

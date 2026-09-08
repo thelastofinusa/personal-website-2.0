@@ -1,16 +1,31 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import type React from "react";
 import { Link4Newicons } from "reicon-react";
-import { LivePreviewProvider } from "@/components/provider/live-preview";
-import { ImagePreviewProvider } from "@/components/provider/preview";
 import { useSoundFx } from "@/components/provider/sound-fx";
 import { buttonVariants } from "@/components/reusable/shadcn/button";
 import { Container } from "@/components/shared/container";
 import { ProjectsView } from "@/components/shared/projects-view";
 import type { IImagePreviewPortalProps } from "@/types";
 import type { ProjectsListQueryResult } from "~/sanity.types";
+
+const LivePreviewProvider = dynamic(
+  () =>
+    import("@/components/provider/live-preview").then(
+      (mod) => mod.LivePreviewProvider,
+    ),
+  { ssr: false, loading: () => null },
+);
+
+const ImagePreviewProvider = dynamic(
+  () =>
+    import("@/components/provider/preview").then(
+      (mod) => mod.ImagePreviewProvider,
+    ),
+  { ssr: false, loading: () => null },
+);
 
 export const ProjectsComp: React.FC<{
   projects: ProjectsListQueryResult;

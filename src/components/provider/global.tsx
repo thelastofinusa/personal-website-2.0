@@ -1,9 +1,7 @@
 "use client";
 
 import { Analytics } from "@vercel/analytics/react";
-import type { LenisRef } from "lenis/react";
-import { ReactLenis } from "lenis/react";
-import { cancelFrame, frame } from "motion/react";
+import dynamic from "next/dynamic";
 import NextJsToploader from "nextjs-toploader";
 import * as React from "react";
 import { ThemeProvider } from "@/components/provider/theme";
@@ -15,20 +13,12 @@ import { Navigation } from "@/components/shared/navigation";
 import { SoundFxProvider } from "./sound-fx";
 import { ToggleProvider } from "./toggle";
 
+const LenisSmoothScroll = dynamic(
+  () => import("./lenis").then((mod) => mod.LenisSmoothScroll),
+  { ssr: false, loading: () => null },
+);
+
 export const GlobalProvider: React.FC<React.PropsWithChildren> = (props) => {
-  const lenisRef = React.useRef<LenisRef>(null);
-
-  React.useEffect(() => {
-    function update(data: { timestamp: number }) {
-      const time = data.timestamp;
-      lenisRef.current?.lenis?.raf(time);
-    }
-
-    frame.update(update, true);
-
-    return () => cancelFrame(update);
-  }, []);
-
   return (
     <SoundFxProvider>
       <ThemeProvider defaultTheme="system">
@@ -44,7 +34,7 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = (props) => {
             <Footer />
 
             <Toaster />
-            <ReactLenis root options={{ autoRaf: false }} ref={lenisRef} />
+            <LenisSmoothScroll />
             {process.env.NODE_ENV === "production" && <Analytics />}
           </TooltipProvider>
         </ToggleProvider>

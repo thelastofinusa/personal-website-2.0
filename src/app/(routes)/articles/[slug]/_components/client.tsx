@@ -40,6 +40,7 @@ export const ArticleDetailsClient: React.FC<{
                   src={article?.mainImage.image as string}
                   alt={article?.title as string}
                   className="size-full object-cover"
+                  loading="eager"
                 />
               </div>
             </Frame>

@@ -7,13 +7,16 @@ export type SoundPackName = (typeof packNames)[number];
 
 const STORAGE_KEY_ENABLED = "uisfx_enabled";
 const STORAGE_KEY_PACK = "uisfx_pack";
+const STORAGE_KEY_VOLUME = "uisfx_volume";
 
 type SoundFxContextValue = {
   enabled: boolean;
   pack: PackName;
+  volume: number;
   toggle: () => void;
   setEnabled: (enabled: boolean) => void;
   setPack: (pack: SoundPackName) => void;
+  setVolume: (volume: number) => void;
   play: (cue: Parameters<UISFXPlayer["play"]>[0]) => void;
 };
 
@@ -22,6 +25,7 @@ const SoundFxContext = React.createContext<SoundFxContextValue | null>(null);
 export function SoundFxProvider({ children }: { children: React.ReactNode }) {
   const [enabled, setEnabledState] = React.useState(false);
   const [pack, setPackState] = React.useState<SoundPackName>(packNames[0]);
+  const [volume, setVolumeState] = React.useState(0.7);
 
   const soundFxRef = React.useRef<UISFXPlayer | null>(null);
   const disableTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -51,6 +55,13 @@ export function SoundFxProvider({ children }: { children: React.ReactNode }) {
         setPackState(storedPack);
         soundFxRef.current?.setPack(storedPack);
       }
+
+      const storedVolume = localStorage.getItem(STORAGE_KEY_VOLUME);
+      if (storedVolume !== null) {
+        const parsedVolume = Math.min(1, Math.max(0, JSON.parse(storedVolume)));
+        setVolumeState(parsedVolume);
+        soundFxRef.current?.setVolume(parsedVolume);
+      }
     } catch (error) {
       console.error(
         "Failed to read SoundFX settings from localStorage:",
@@ -60,7 +71,6 @@ export function SoundFxProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setEnabled = React.useCallback((value: boolean) => {
-    // Clear any pending timeout to prevent race conditions when rapidly toggling
     if (disableTimeoutRef.current) {
       clearTimeout(disableTimeoutRef.current);
       disableTimeoutRef.current = null;
@@ -70,11 +80,9 @@ export function SoundFxProvider({ children }: { children: React.ReactNode }) {
       soundFxRef.current?.setEnabled(true);
       setEnabledState(true);
     } else {
-      // Play the turn-off sound while the player is still enabled
       soundFxRef.current?.play("remove-from-cart");
       setEnabledState(false);
 
-      // Delay disabling the engine so the audio clip finishes playing
       disableTimeoutRef.current = setTimeout(() => {
         soundFxRef.current?.setEnabled(false);
       }, 350);
@@ -97,6 +105,17 @@ export function SoundFxProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const setVolume = React.useCallback((value: number) => {
+    const clamped = Math.min(1, Math.max(0, value));
+    setVolumeState(clamped);
+    soundFxRef.current?.setVolume(clamped);
+    try {
+      localStorage.setItem(STORAGE_KEY_VOLUME, JSON.stringify(clamped));
+    } catch (error) {
+      console.error("Failed to save volume to localStorage:", error);
+    }
+  }, []);
+
   const toggle = React.useCallback(() => {
     const nextEnabled = !enabled;
     setEnabled(nextEnabled);
@@ -114,12 +133,14 @@ export function SoundFxProvider({ children }: { children: React.ReactNode }) {
     () => ({
       enabled,
       pack,
+      volume,
       toggle,
       setEnabled,
       setPack,
+      setVolume,
       play,
     }),
-    [enabled, pack, toggle, setEnabled, setPack, play],
+    [enabled, pack, volume, toggle, setEnabled, setPack, setVolume, play],
   );
 
   return (

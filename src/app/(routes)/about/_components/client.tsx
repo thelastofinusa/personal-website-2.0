@@ -1,12 +1,20 @@
 "use client";
+import dynamic from "next/dynamic";
 import { motion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { Pip, Router3 } from "reicon-react";
-import { ImagePreviewProvider } from "@/components/provider/preview";
 import { useSoundFx } from "@/components/provider/sound-fx";
+
+const ImagePreviewProvider = dynamic(
+  () =>
+    import("@/components/provider/preview").then(
+      (mod) => mod.ImagePreviewProvider,
+    ),
+  { ssr: false, loading: () => null },
+);
 import {
   GitHubContributions,
   GitHubContributionsFallback,

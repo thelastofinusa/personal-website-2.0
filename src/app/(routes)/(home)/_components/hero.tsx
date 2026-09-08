@@ -1,6 +1,6 @@
 "use client";
 
-import confetti from "canvas-confetti";
+import type confetti from "canvas-confetti";
 import { motion, useScroll, useTransform } from "motion/react";
 import { useSoundFx } from "@/components/provider/sound-fx";
 import { Highlighter } from "@/components/reusable/magicui/highlighter";
@@ -73,9 +73,14 @@ export const HomeHero = () => {
                 <button
                   type="button"
                   className="motion-safe:animate-bell-ring"
-                  onClick={() => {
+                  onClick={async () => {
                     play("streak");
-                    confetti({
+                    const {
+                      default: confettiFn,
+                    }: { default: typeof confetti } = await import(
+                      "canvas-confetti"
+                    );
+                    confettiFn({
                       zIndex: 9999,
                       particleCount: 500,
                       spread: 9000,

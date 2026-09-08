@@ -7,7 +7,13 @@ import { cn } from "cn";
 import { AnimatePresence, motion } from "motion/react";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { ArrowRight5, Soundwave, VolumeUp, VolumeX } from "reicon-react";
+import {
+  ArrowRight5,
+  Soundwave,
+  Tuning2,
+  VolumeUp,
+  VolumeX,
+} from "reicon-react";
 import { type PackName, packNames } from "uisfx";
 import { SOUND_KEY } from "@/constants/keys";
 import { menuItemVariants, menuVariants } from "@/constants/variants";
@@ -17,11 +23,11 @@ import { useToggle } from "../provider/toggle";
 import { IconSwap, IconSwapItem } from "../reusable/chanhdai/icon-swap";
 import { Frame, FramePanel } from "../reusable/reui/frame";
 import { Button, type buttonVariants } from "../reusable/shadcn/button";
+import { ButtonGroup } from "../reusable/shadcn/button-group";
 import { Skeleton } from "../reusable/shadcn/skeleton";
+import { Slider } from "../reusable/shadcn/slider";
 import { FadeLine } from "./fade-line";
 
-// ─── Generate a color per pack dynamically ──────
-// Updated to a new, diverse color palette
 const PACK_COLORS = [
   {
     bg: "bg-sky-500/10",
@@ -115,9 +121,19 @@ export const SoundFXToggle: React.FC<
     toggle: toggleMenu,
     close: closeMenu,
   } = useToggle("soundfx");
-  const { enabled, pack, toggle, setEnabled, setPack, play } = useSoundFx();
+  const {
+    enabled,
+    pack,
+    volume,
+    toggle,
+    setEnabled,
+    setPack,
+    setVolume,
+    play,
+  } = useSoundFx();
 
   const [mounted, setMounted] = React.useState(false);
+  const [showVolumeSlider, setShowVolumeSlider] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   // ─── Pagination State ──────────────────────────────
@@ -146,7 +162,14 @@ export const SoundFXToggle: React.FC<
   }, []);
 
   React.useEffect(() => {
+    if (!enabled) {
+      setShowVolumeSlider(false);
+    }
+  }, [enabled]);
+
+  React.useEffect(() => {
     if (!openMenu) {
+      setShowVolumeSlider(false);
       // Reset page when menu closes
       const timer = setTimeout(() => setPage(0), 300);
       return () => clearTimeout(timer);
@@ -175,6 +198,24 @@ export const SoundFXToggle: React.FC<
     play("achievement");
   };
 
+  const lastVolumeStepRef = React.useRef<number | null>(null);
+
+  const handleVolumeChange = (value: number | readonly number[]) => {
+    const next = Array.isArray(value) ? value[0] : value;
+
+    if (next === undefined) return;
+
+    setVolume(next / 100);
+
+    // Play only when crossing a 5% boundary.
+    const volumeStep = Math.floor(next / 5);
+
+    if (next > 0 && lastVolumeStepRef.current !== volumeStep) {
+      play("volume-change");
+      lastVolumeStepRef.current = volumeStep;
+    }
+  };
+
   if (!mounted) {
     return <Skeleton className="h-8 w-8 rounded-full" />;
   }
@@ -199,15 +240,7 @@ export const SoundFXToggle: React.FC<
         onClick={toggleOpenMenu}
         aria-label="Sound settings"
       >
-        <IconSwap>
-          <IconSwapItem key={enabled ? "volume-up" : "volume-x"}>
-            {enabled ? (
-              <VolumeUp className="size-4" />
-            ) : (
-              <VolumeX className="size-4" />
-            )}
-          </IconSwapItem>
-        </IconSwap>
+        <Tuning2 />
       </Button>
 
       <AnimatePresence>
@@ -229,41 +262,86 @@ export const SoundFXToggle: React.FC<
               {/* ─── Card Grid ──────────────────────── */}
               <FramePanel className="overflow-y-auto overscroll-contain bg-background p-3 flex flex-col gap-4">
                 {/* ─── Header ─────────────────────────── */}
-                <div className="flex items-center justify-between px-2">
+                <div className="flex items-center justify-between relative px-2">
                   <div className="flex items-center gap-2">
                     <Soundwave className="size-4 text-muted-foreground" />
                     <span className="text-xs font-medium">Sound Effects</span>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-light w-5 text-muted-foreground">
-                      {enabled ? "On" : "Off"}
-                    </span>
-                    <button
+                  <ButtonGroup>
+                    <Button
                       type="button"
+                      variant="outline"
+                      size="icon-xs"
+                      aria-label="More Options"
+                      className="h-7 w-8"
                       onClick={() => {
                         toggle();
                         play(enabled ? "remove-from-cart" : "add-to-cart");
                       }}
-                      className={cn(
-                        "relative h-5 w-9 rounded-full transition-colors duration-200",
-                        enabled ? "bg-primary" : "bg-muted-foreground/30",
-                      )}
                     >
-                      <span
-                        className={cn(
-                          "absolute top-0.5 h-4 w-4 left-0 rounded-full bg-white shadow-sm transition-transform duration-200",
-                          enabled ? "translate-x-4.5" : "translate-x-0.5",
-                        )}
-                      />
-                    </button>
-                  </div>
+                      <IconSwap>
+                        <IconSwapItem key={enabled ? "volume-up" : "volume-x"}>
+                          {enabled ? (
+                            <VolumeUp className="size-4" />
+                          ) : (
+                            <VolumeX className="size-4" />
+                          )}
+                        </IconSwapItem>
+                      </IconSwap>
+                    </Button>
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      type="button"
+                      disabled={!enabled}
+                      onClick={() => {
+                        if (!enabled) return;
+                        setShowVolumeSlider((prev) => !prev);
+                        play(showVolumeSlider ? "toggle-off" : "toggle-on");
+                      }}
+                    >
+                      <span className="font-mono text-xs font-medium w-7">
+                        {enabled ? `${Math.round(volume * 100)}%` : "0%"}
+                      </span>
+                    </Button>
+                  </ButtonGroup>
+
+                  {/* Inline volume popover */}
+                  <AnimatePresence>
+                    {showVolumeSlider && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-full z-50 mt-2 w-full rounded-lg border bg-popover p-4 shadow-xl"
+                      >
+                        <div className="flex flex-col gap-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium text-muted-foreground">
+                              Preview Volume
+                            </span>
+                            <span className="font-mono text-xs font-medium">
+                              {Math.round(volume * 100)}%
+                            </span>
+                          </div>
+                          <Slider
+                            value={[Math.round(volume * 100)]}
+                            max={100}
+                            min={0}
+                            step={5}
+                            onValueChange={handleVolumeChange}
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   {visiblePacks.map((packName, index) => {
                     const isActive = pack === packName && enabled;
-                    // Keep colors consistent with their original index
                     const originalIndex = page * ITEMS_PER_PAGE + index;
                     const colors = getPackColors(packName, originalIndex);
 
@@ -288,7 +366,6 @@ export const SoundFXToggle: React.FC<
                               : "border-border/50 bg-muted/20 hover:border-muted-foreground/30 hover:bg-muted/30 hover:text-foreground",
                           )}
                         >
-                          {/* Waveform / visual indicator */}
                           <div className="flex h-6 items-end justify-center gap-0.5">
                             {[1, 2, 3, 2, 1].map((height, i) => (
                               <div

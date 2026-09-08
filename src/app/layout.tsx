@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+
 import "./globals.css";
 import { siteConfig } from "@/config/site.config";
+import { fontVariables } from "@/lib/fonts";
 import { getOgImage } from "@/lib/og";
 
 export const metadata: Metadata = {
@@ -60,7 +62,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout(props: LayoutProps<"/">) {
   return (
-    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      data-scroll-behavior="smooth"
+      className={fontVariables()}
+    >
       <body className="h-full antialiased">{props.children}</body>
     </html>
   );

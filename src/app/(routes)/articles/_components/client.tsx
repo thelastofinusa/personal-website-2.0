@@ -1,12 +1,20 @@
 "use client";
+import dynamic from "next/dynamic";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import type React from "react";
-import { ImagePreviewProvider } from "@/components/provider/preview";
 import {
   ArticleList,
   ArticleSocialLinks,
 } from "@/components/shared/article-items";
+
+const ImagePreviewProvider = dynamic(
+  () =>
+    import("@/components/provider/preview").then(
+      (mod) => mod.ImagePreviewProvider,
+    ),
+  { ssr: false, loading: () => null },
+);
 import { Container } from "@/components/shared/container";
 import { CurveThingy } from "@/components/shared/curve-thingy";
 import { QuickHero } from "@/components/shared/quick-hero";
