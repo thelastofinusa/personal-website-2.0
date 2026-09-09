@@ -1,5 +1,5 @@
 import type { Route } from "next";
-import { Code, type IconComponent, Pip, UserLaptop } from "reicon-react";
+import { Code, Ghost, type IconComponent, Pip, UserLaptop } from "reicon-react";
 
 export type NavLink = {
   eyebrow: string;
@@ -19,9 +19,9 @@ export const navLinks: NavLink[] = [
   },
   {
     eyebrow: "Origin Story",
-    title: "How We Got Here",
+    title: "Context Nobody Asked For",
     description: "The story, the stack, and a questionable number of commits.",
-    icon: UserLaptop,
+    icon: Ghost,
     href: "/about",
   },
   {

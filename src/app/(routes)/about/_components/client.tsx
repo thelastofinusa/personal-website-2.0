@@ -1,7 +1,7 @@
 "use client";
-import dynamic from "next/dynamic";
 import { motion } from "motion/react";
 import type { Route } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -15,6 +15,7 @@ const ImagePreviewProvider = dynamic(
     ),
   { ssr: false, loading: () => null },
 );
+
 import {
   GitHubContributions,
   GitHubContributionsFallback,

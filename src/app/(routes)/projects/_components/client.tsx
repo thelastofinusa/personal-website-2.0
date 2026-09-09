@@ -298,10 +298,13 @@ export const ProjectsPageClient: React.FC<{
           </div>
 
           {filteredProjects.length > 0 && (
-            <div className="flex items-center justify-center gap-2">
-              <p className="text-sm text-center font-extralight italic text-muted-foreground/60 md:text-base">
-                The shelf isn’t full yet. <br />
-                There are a few more things being built and rebuilt.
+            <div className="flex flex-col items-center justify-center gap-3 px-6">
+              <span className="h-px w-8 bg-border" />
+
+              <p className="text-center text-sm font-extralight italic text-muted-foreground/60 md:text-base">
+                More things are being built.
+                <br />
+                They’ll show up when they’re ready.
               </p>
             </div>
           )}

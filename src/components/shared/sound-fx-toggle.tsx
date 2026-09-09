@@ -11,8 +11,12 @@ import {
   ArrowRight5,
   Soundwave,
   Tuning2,
-  VolumeUp,
-  VolumeX,
+  VolumeHigh,
+  VolumeLow,
+  VolumeLow2,
+  VolumeMute,
+  VolumeSlash,
+  VolumeUp3,
 } from "reicon-react";
 import { type PackName, packNames } from "uisfx";
 import { SOUND_KEY } from "@/constants/keys";
@@ -26,6 +30,7 @@ import { Button, type buttonVariants } from "../reusable/shadcn/button";
 import { ButtonGroup } from "../reusable/shadcn/button-group";
 import { Skeleton } from "../reusable/shadcn/skeleton";
 import { Slider } from "../reusable/shadcn/slider";
+import { CountingNumber } from "./count-number";
 import { FadeLine } from "./fade-line";
 
 const PACK_COLORS = [
@@ -226,6 +231,16 @@ export const SoundFXToggle: React.FC<
       ? getPackColors(pack, activePackIndex)
       : PACK_COLORS[0];
 
+  const volumePercentage = Math.round(volume * 100);
+
+  const VolumeIcon = !enabled
+    ? VolumeSlash
+    : volumePercentage === 0
+      ? VolumeMute
+      : volumePercentage <= 50
+        ? VolumeLow2
+        : VolumeHigh;
+
   return (
     <div ref={containerRef} className="inline-block">
       <Button
@@ -283,12 +298,10 @@ export const SoundFXToggle: React.FC<
                       }}
                     >
                       <IconSwap>
-                        <IconSwapItem key={enabled ? "volume-up" : "volume-x"}>
-                          {enabled ? (
-                            <VolumeUp className="size-4" />
-                          ) : (
-                            <VolumeX className="size-4" />
-                          )}
+                        <IconSwapItem
+                          key={`${enabled ? "on" : "off"}-${VolumeIcon.displayName ?? VolumeIcon.name}`}
+                        >
+                          <VolumeIcon className="size-4" />
                         </IconSwapItem>
                       </IconSwap>
                     </Button>
@@ -299,12 +312,17 @@ export const SoundFXToggle: React.FC<
                       disabled={!enabled}
                       onClick={() => {
                         if (!enabled) return;
+
                         setShowVolumeSlider((prev) => !prev);
                         play(showVolumeSlider ? "toggle-off" : "toggle-on");
                       }}
                     >
-                      <span className="font-mono text-xs font-medium w-7">
-                        {enabled ? `${Math.round(volume * 100)}%` : "0%"}
+                      <span className="w-7 font-mono text-xs font-medium tabular-nums">
+                        <CountingNumber
+                          number={enabled ? Math.round(volume * 100) : 0}
+                          fromNumber={0}
+                        />
+                        %
                       </span>
                     </Button>
                   </ButtonGroup>
@@ -317,24 +335,19 @@ export const SoundFXToggle: React.FC<
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -4, scale: 0.95 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full z-50 mt-2 w-full rounded-lg border bg-card p-4 shadow-xl"
+                        className="absolute right-0 top-full z-50 mt-2 w-full rounded-lg border bg-card p-3 shadow-xl"
                       >
-                        <div className="flex flex-col gap-4">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-muted-foreground">
-                              Preview Volume
-                            </span>
-                            <span className="font-mono text-xs font-medium">
-                              {Math.round(volume * 100)}%
-                            </span>
-                          </div>
+                        <div className="flex items-center gap-3">
+                          <VolumeLow className="size-4.5 text-muted-foreground" />
                           <Slider
                             value={[Math.round(volume * 100)]}
                             max={100}
                             min={0}
                             step={5}
                             onValueChange={handleVolumeChange}
+                            className="flex-1"
                           />
+                          <VolumeUp3 className="size-4.5 text-muted-foreground" />
                         </div>
                       </motion.div>
                     )}
