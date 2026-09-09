@@ -6,7 +6,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import React from "react";
 import type { IconType } from "react-icons";
-import { Clock, Thumbtack } from "reicon-react";
+import { Clock, SquareTopDown, Thumbtack } from "reicon-react";
 import {
   Empty,
   EmptyDescription,
@@ -143,9 +143,9 @@ function ArticleItem({
           </span>
         )}
 
-        <div className="flex items-center gap-2 text-xs text-muted-foreground/70">
-          <Clock className="size-3.5 text-muted-foreground/50" />
-          <span className="uppercase tracking-wider">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Clock className="size-3.5" />
+          <span className="font-light tracking-wider">
             {formatDate(article.publishedAt as string)}
           </span>
         </div>
@@ -153,11 +153,15 @@ function ArticleItem({
 
       {/* Right Column (Desktop): Main Content */}
       <div className="flex flex-col gap-2 md:col-span-9">
-        <h2 className="font-sans text-lg font-medium tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary md:text-xl">
-          {article.title}
-        </h2>
+        <div className="flex items-center gap-4">
+          <h2 className="font-sans flex-1 line-clamp-1 text-lg font-medium tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary md:text-xl">
+            {article.title}
+          </h2>
 
-        <p className="line-clamp-2 text-xs font-light leading-relaxed text-muted-foreground/80 md:text-sm">
+          <SquareTopDown className="size-4 group-hover:text-primary shrink-0 transition-colors duration-300" />
+        </div>
+
+        <p className="line-clamp-2 font-light leading-relaxed text-muted-foreground/80 text-sm">
           {article.description}
         </p>
       </div>
