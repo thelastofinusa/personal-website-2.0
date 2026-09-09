@@ -1,12 +1,12 @@
 export const siteConfig = {
-  title: "Osilama",
+  title: "Osilahma",
   slogan: "Your friendly neighborhood developer",
   description:
     "A friendly corner of the internet where I build things, chase ideas and see where curiosity takes me.",
   author: {
     name: "Abdullahi Salihu",
     username: "thelastofinusa",
-    nickname: "Osilama",
+    nickname: "Osilahma",
     position: "Web3 Frontend Developer",
     email: "dGhlbGFzdG9maW51c2FAZ21haWwuY29t",
     phone: "KzIzNDgxMjgxNTc1MTA=",
