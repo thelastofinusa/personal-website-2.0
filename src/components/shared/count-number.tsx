@@ -55,7 +55,20 @@ function CountingNumber({
 }: CountingNumberProps) {
   const localRef = React.useRef<HTMLSpanElement>(null);
 
-  React.useImperativeHandle(ref, () => localRef.current);
+  const setRefs = React.useCallback(
+    (node: HTMLSpanElement | null) => {
+      localRef.current = node;
+
+      if (!ref) return;
+
+      if (typeof ref === "function") {
+        ref(node);
+      } else {
+        ref.current = node;
+      }
+    },
+    [ref],
+  );
 
   const motionValue = useMotionValue(fromNumber);
   const springValue = useSpring(motionValue, transition);
@@ -84,7 +97,13 @@ function CountingNumber({
     });
 
     return unsubscribe;
-  }, [springValue, decimalPlaces, decimalSeparator, padStart, integerLength]);
+  }, [
+    springValue,
+    decimalPlaces,
+    decimalSeparator,
+    padStart,
+    integerLength,
+  ]);
 
   const initialText = formatNumber(
     fromNumber,
@@ -95,7 +114,7 @@ function CountingNumber({
   );
 
   return (
-    <span ref={localRef} data-slot="counting-number" {...props}>
+    <span ref={setRefs} data-slot="counting-number" {...props}>
       {initialText}
     </span>
   );
