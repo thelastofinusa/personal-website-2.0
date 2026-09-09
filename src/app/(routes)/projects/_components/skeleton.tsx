@@ -102,8 +102,8 @@ export const ProjectsPageSkeleton = () => {
       <CurveThingy tCurve hash="showcase">
         <div className="flex flex-col gap-8 pt-20 sm:pt-30 md:gap-12 md:pt-36">
           <Container size={view === "list" ? "sm" : "md"}>
-            <Skeleton className="h-3 max-w-sm w-full rounded-full mb-2 ml-4" />
-            <Skeleton className="h-10 w-full max-w-md rounded-full" />
+            {/* // TODO: command click <Skeleton className="h-3 max-w-sm w-full rounded-full mb-2 ml-4" /> */}
+            <Skeleton className="h-11 w-full max-w-md rounded-full" />
           </Container>
           <ProjectsCardsSkeleton view={view} />
         </div>
