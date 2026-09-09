@@ -170,7 +170,7 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
             onChange={(event) => {
               setSearchValue(event.target.value);
             }}
-            placeholder="Poke around the shelf"
+            placeholder="Search the collection"
             aria-label="Search projects"
           />
 
