@@ -3,9 +3,8 @@
 import { Analytics } from "@vercel/analytics/react";
 import dynamic from "next/dynamic";
 import NextJsToploader from "nextjs-toploader";
-import * as React from "react";
+import type * as React from "react";
 import { ThemeProvider } from "@/components/provider/theme";
-import { ScrollProgress } from "@/components/reusable/magicui/scroll-progress";
 import { Toaster } from "@/components/reusable/shadcn/toast";
 import { TooltipProvider } from "@/components/reusable/shadcn/tooltip";
 import { Footer } from "@/components/shared/footer";
@@ -25,7 +24,6 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = (props) => {
         <ToggleProvider>
           <TooltipProvider>
             <NextJsToploader color="var(--primary)" showSpinner={false} />
-            <ScrollProgress />
 
             <Navigation />
             <main className="min-h-full flex flex-col">
