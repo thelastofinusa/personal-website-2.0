@@ -93,7 +93,7 @@ const ProjectListItem: React.FC<{
           <Container size="md" className="py-6 md:py-8">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-center lg:gap-8">
               {/* Left Column: Index, Icon, Title & Tags */}
-              <div className="flex items-start gap-4 lg:col-span-7 lg:items-center lg:gap-6">
+              <div className="flex items-start gap-4 lg:col-span-7 lg:gap-6">
                 {/* Index + Icon Stack */}
                 <div className="flex flex-col items-center gap-1 pt-1 lg:pt-0">
                   <span className="font-mono text-xs font-normal text-muted-foreground transition-colors group-hover:text-primary">

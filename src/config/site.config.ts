@@ -10,7 +10,8 @@ export const siteConfig = {
     position: "Web3 Frontend Developer",
     email: "dGhlbGFzdG9maW51c2FAZ21haWwuY29t",
     phone: "KzIzNDgxMjgxNTc1MTA=",
-    avatar: "/avatar.jpg",
+    avatar:
+      "https://cdn.sanity.io/images/l1eyjyqo/production/2b6e5fad87a17efa39abbe40fd2b1dad4da30cd2-848x1182.jpg",
   },
   url:
     process.env.NODE_ENV === "production"

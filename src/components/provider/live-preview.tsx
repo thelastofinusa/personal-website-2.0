@@ -8,6 +8,8 @@ import {
   useDragControls,
   useMotionValue,
 } from "motion/react";
+import type { Route } from "next";
+import Link from "next/link";
 import React, {
   createContext,
   useCallback,
@@ -33,6 +35,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import type { ProjectsListQueryResult } from "~/sanity.types";
 import { Button } from "../reusable/shadcn/button";
+import { FadeLine } from "../shared/fade-line";
 import { LocalImg } from "../shared/image";
 import { useSoundFx } from "./sound-fx";
 
@@ -120,7 +123,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
 
   // Play continuous loading sound when iframe starts loading & clean up on unload
   useEffect(() => {
-    if (project && !iframeLoaded) {
+    if (project && !iframeLoaded && project.embeddable !== false) {
       loadingSoundRef.current = play("connecting");
 
       return () => {
@@ -193,7 +196,9 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
       setIsDragging(false);
 
       if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
-      slowTimerRef.current = setTimeout(() => setIframeSlow(true), 10000);
+      if (nextProject.embeddable !== false) {
+        slowTimerRef.current = setTimeout(() => setIframeSlow(true), 10000);
+      }
     },
     [isDesktop, projects],
   );
@@ -212,7 +217,9 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
       setIframeSlow(false);
 
       if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
-      slowTimerRef.current = setTimeout(() => setIframeSlow(true), 4000);
+      if (nextProject.embeddable !== false) {
+        slowTimerRef.current = setTimeout(() => setIframeSlow(true), 4000);
+      }
     },
     [],
   );
@@ -431,7 +438,9 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                           <ArrowRotate
                             className={cn(
                               "size-3",
-                              !iframeLoaded && "animate-spin",
+                              !iframeLoaded &&
+                                project.embeddable !== false &&
+                                "animate-spin",
                             )}
                           />
                         </button>
@@ -459,173 +468,240 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
 
                   {/* Browser Viewport */}
                   <div className="relative flex-1 bg-card">
-                    {!iframeLoaded && (
-                      <motion.div
-                        initial={{ opacity: 1 }}
-                        animate={{ opacity: 1 }}
-                        className="absolute inset-0 z-10 overflow-hidden bg-background"
-                      >
-                        {/* Fake page */}
-                        <div className="mx-auto w-full max-w-5xl px-6 py-10 sm:px-10">
-                          {/* Fake navigation */}
-                          <div className="flex items-center justify-between">
-                            <motion.div
-                              animate={{ opacity: [0.35, 0.7, 0.35] }}
-                              transition={{
-                                duration: 1.8,
-                                repeat: Number.POSITIVE_INFINITY,
-                                ease: "easeInOut",
-                              }}
-                              className="h-7 w-7 rounded-md bg-muted"
-                            />
+                    {project.embeddable === false ? (
+                      <div className="relative flex size-full flex-col items-center justify-center overflow-hidden bg-background p-6">
+                        {/* Glowing Background Blob */}
+                        <div className="pointer-events-none absolute size-96 rounded-full bg-primary/15 blur-3xl animate-pulse" />
 
-                            <div className="flex items-center gap-2">
-                              {[48, 36, 52].map((width, index) => (
-                                <motion.div
-                                  key={width}
-                                  initial={{ opacity: 0.3 }}
-                                  animate={{ opacity: [0.25, 0.55, 0.25] }}
-                                  transition={{
-                                    duration: 1.8,
-                                    delay: index * 0.15,
-                                    repeat: Number.POSITIVE_INFINITY,
-                                    ease: "easeInOut",
-                                  }}
-                                  className="h-2 rounded-full bg-muted"
-                                  style={{ width }}
-                                />
-                              ))}
-                            </div>
+                        {/* Fine-line architectural frame */}
+                        <div className="relative bg-background flex w-full max-w-md flex-col items-start p-8 md:p-10">
+                          {/* Corner Crosshairs */}
+                          <FadeLine
+                            orientation="horizontal"
+                            className="top-0 -mx-6"
+                          />
+                          <FadeLine
+                            orientation="horizontal"
+                            className="bottom-0 -mx-6"
+                          />
+                          <FadeLine
+                            orientation="vertical"
+                            className="left-0 -my-6"
+                          />
+                          <FadeLine
+                            orientation="vertical"
+                            className="right-0 -my-6"
+                          />
+
+                          {/* Header Status */}
+                          <div className="flex w-full items-center justify-between font-mono text-[10px] tracking-widest text-muted-foreground/60 uppercase">
+                            <span>01 / FRAME_RESTRICTED</span>
+                            <span className="size-1.5 rounded-full bg-primary/60" />
                           </div>
 
-                          {/* Hero */}
-                          <div className="mt-24 max-w-2xl">
-                            <motion.div
-                              animate={{ width: ["35%", "55%", "35%"] }}
-                              transition={{
-                                duration: 2.4,
-                                repeat: Number.POSITIVE_INFINITY,
-                                ease: "easeInOut",
-                              }}
-                              className="h-3 rounded-full bg-muted"
-                            />
+                          {/* Content */}
+                          <h3 className="mt-8 font-serif text-3xl font-light tracking-tight text-foreground md:text-4xl">
+                            {project.name}
+                          </h3>
 
-                            <div className="mt-5 space-y-3">
-                              {[100, 88, 62].map((width, index) => (
-                                <motion.div
-                                  key={width}
-                                  animate={{ opacity: [0.25, 0.55, 0.25] }}
-                                  transition={{
-                                    duration: 1.8,
-                                    delay: index * 0.12,
-                                    repeat: Number.POSITIVE_INFINITY,
-                                    ease: "easeInOut",
-                                  }}
-                                  className="h-2 rounded-full bg-muted"
-                                  style={{ width: `${width}%` }}
-                                />
-                              ))}
-                            </div>
+                          <p className="mt-3 text-xs font-light leading-relaxed text-muted-foreground/80">
+                            Direct preview blocked by host header policy. Launch
+                            the project directly in a primary window.
+                          </p>
 
-                            {/* Fake buttons */}
-                            <div className="mt-8 flex gap-3">
-                              <motion.div
-                                animate={{ opacity: [0.3, 0.65, 0.3] }}
-                                transition={{
-                                  duration: 1.6,
-                                  repeat: Number.POSITIVE_INFINITY,
-                                  ease: "easeInOut",
-                                }}
-                                className="h-9 w-24 rounded-md bg-muted"
-                              />
+                          {/* Footer Action */}
+                          <div className="mt-8 flex w-full items-center justify-between border-t border-border/40 pt-6">
+                            <Link
+                              href={project.url as Route}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={closePreview}
+                              className="group inline-flex items-center gap-3 font-mono text-xs tracking-wider text-foreground transition-colors hover:text-primary"
+                            >
+                              <span className="relative py-0.5 after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all after:duration-300 group-hover:after:w-full">
+                                LAUNCH PROJECT
+                              </span>
+                              <SquareTopDown className="size-3.5 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                            </Link>
 
-                              <motion.div
-                                animate={{ opacity: [0.2, 0.5, 0.2] }}
-                                transition={{
-                                  duration: 1.6,
-                                  delay: 0.2,
-                                  repeat: Number.POSITIVE_INFINITY,
-                                  ease: "easeInOut",
-                                }}
-                                className="h-9 w-20 rounded-md border border-border"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Fake cards */}
-                          <div className="mt-24 grid grid-cols-3 gap-4">
-                            {[1, 2, 3].map((card, index) => (
-                              <motion.div
-                                key={card}
-                                animate={{ opacity: [0.3, 0.6, 0.3] }}
-                                transition={{
-                                  duration: 2,
-                                  delay: index * 0.2,
-                                  repeat: Number.POSITIVE_INFINITY,
-                                  ease: "easeInOut",
-                                }}
-                                className="overflow-hidden rounded-xl border border-border/60"
-                              >
-                                <div className="aspect-video bg-muted/60" />
-
-                                <div className="space-y-3 p-4">
-                                  <div className="h-2.5 w-2/3 rounded-full bg-muted" />
-                                  <div className="h-2 w-full rounded-full bg-muted/70" />
-                                  <div className="h-2 w-4/5 rounded-full bg-muted/70" />
-                                </div>
-                              </motion.div>
-                            ))}
+                            <span className="font-mono text-[10px] text-muted-foreground/40">
+                              SEC_403
+                            </span>
                           </div>
                         </div>
+                      </div>
+                    ) : (
+                      /* Embeddable / Loading State */
+                      <>
+                        {!iframeLoaded && (
+                          <motion.div
+                            initial={{ opacity: 1 }}
+                            animate={{ opacity: 1 }}
+                            className="absolute inset-0 z-10 overflow-hidden bg-background"
+                          >
+                            {/* Fake page */}
+                            <div className="mx-auto w-full max-w-5xl px-6 py-10 sm:px-10">
+                              {/* Fake navigation */}
+                              <div className="flex items-center justify-between">
+                                <motion.div
+                                  animate={{ opacity: [0.35, 0.7, 0.35] }}
+                                  transition={{
+                                    duration: 1.8,
+                                    repeat: Number.POSITIVE_INFINITY,
+                                    ease: "easeInOut",
+                                  }}
+                                  className="h-7 w-7 rounded-md bg-muted"
+                                />
 
-                        {/* Subtle loading message */}
-                        {expanded && !iframeSlow && (
-                          <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-                            <motion.div
-                              animate={{ opacity: [0.45, 1, 0.45] }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Number.POSITIVE_INFINITY,
-                                ease: "easeInOut",
-                              }}
-                              className="flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-[11px] text-muted-foreground shadow-sm backdrop-blur"
+                                <div className="flex items-center gap-2">
+                                  {[48, 36, 52].map((width, index) => (
+                                    <motion.div
+                                      key={width}
+                                      initial={{ opacity: 0.3 }}
+                                      animate={{ opacity: [0.25, 0.55, 0.25] }}
+                                      transition={{
+                                        duration: 1.8,
+                                        delay: index * 0.15,
+                                        repeat: Number.POSITIVE_INFINITY,
+                                        ease: "easeInOut",
+                                      }}
+                                      className="h-2 rounded-full bg-muted"
+                                      style={{ width }}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Hero */}
+                              <div className="mt-24 max-w-2xl">
+                                <motion.div
+                                  animate={{ width: ["35%", "55%", "35%"] }}
+                                  transition={{
+                                    duration: 2.4,
+                                    repeat: Number.POSITIVE_INFINITY,
+                                    ease: "easeInOut",
+                                  }}
+                                  className="h-3 rounded-full bg-muted"
+                                />
+
+                                <div className="mt-5 space-y-3">
+                                  {[100, 88, 62].map((width, index) => (
+                                    <motion.div
+                                      key={width}
+                                      animate={{ opacity: [0.25, 0.55, 0.25] }}
+                                      transition={{
+                                        duration: 1.8,
+                                        delay: index * 0.12,
+                                        repeat: Number.POSITIVE_INFINITY,
+                                        ease: "easeInOut",
+                                      }}
+                                      className="h-2 rounded-full bg-muted"
+                                      style={{ width: `${width}%` }}
+                                    />
+                                  ))}
+                                </div>
+
+                                {/* Fake buttons */}
+                                <div className="mt-8 flex gap-3">
+                                  <motion.div
+                                    animate={{ opacity: [0.3, 0.65, 0.3] }}
+                                    transition={{
+                                      duration: 1.6,
+                                      repeat: Number.POSITIVE_INFINITY,
+                                      ease: "easeInOut",
+                                    }}
+                                    className="h-9 w-24 rounded-md bg-muted"
+                                  />
+
+                                  <motion.div
+                                    animate={{ opacity: [0.2, 0.5, 0.2] }}
+                                    transition={{
+                                      duration: 1.6,
+                                      delay: 0.2,
+                                      repeat: Number.POSITIVE_INFINITY,
+                                      ease: "easeInOut",
+                                    }}
+                                    className="h-9 w-20 rounded-md border border-border"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Fake cards */}
+                              <div className="mt-24 grid grid-cols-3 gap-4">
+                                {[1, 2, 3].map((card, index) => (
+                                  <motion.div
+                                    key={card}
+                                    animate={{ opacity: [0.3, 0.6, 0.3] }}
+                                    transition={{
+                                      duration: 2,
+                                      delay: index * 0.2,
+                                      repeat: Number.POSITIVE_INFINITY,
+                                      ease: "easeInOut",
+                                    }}
+                                    className="overflow-hidden rounded-xl border border-border/60"
+                                  >
+                                    <div className="aspect-video bg-muted/60" />
+
+                                    <div className="space-y-3 p-4">
+                                      <div className="h-2.5 w-2/3 rounded-full bg-muted" />
+                                      <div className="h-2 w-full rounded-full bg-muted/70" />
+                                      <div className="h-2 w-4/5 rounded-full bg-muted/70" />
+                                    </div>
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Subtle loading message */}
+                            {expanded && !iframeSlow && (
+                              <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+                                <motion.div
+                                  animate={{ opacity: [0.45, 1, 0.45] }}
+                                  transition={{
+                                    duration: 1.5,
+                                    repeat: Number.POSITIVE_INFINITY,
+                                    ease: "easeInOut",
+                                  }}
+                                  className="flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-[11px] text-muted-foreground shadow-sm backdrop-blur"
+                                >
+                                  <span className="size-1.5 rounded-full bg-current" />
+                                  Preparing {project.name}
+                                </motion.div>
+                              </div>
+                            )}
+                          </motion.div>
+                        )}
+
+                        {iframeSlow && !iframeLoaded && (
+                          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-background/95 px-3 py-2 text-xs text-muted-foreground border-t border-border/60 z-20">
+                            <span>
+                              This site may not allow being previewed here.
+                            </span>
+                            <a
+                              href={project.url as string}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={closePreview}
+                              className="shrink-0 font-medium text-primary underline underline-offset-2"
                             >
-                              <span className="size-1.5 rounded-full bg-current" />
-                              Preparing {project.name}
-                            </motion.div>
+                              Open in new tab
+                            </a>
                           </div>
                         )}
-                      </motion.div>
-                    )}
 
-                    {iframeSlow && !iframeLoaded && (
-                      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-background/95 px-3 py-2 text-xs text-muted-foreground border-t border-border/60 z-20">
-                        <span>
-                          This site may not allow being previewed here.
-                        </span>
-                        <a
-                          href={project.url as string}
-                          target="_blank"
-                          rel="noreferrer"
-                          onClick={closePreview}
-                          className="shrink-0 font-medium text-primary underline underline-offset-2"
-                        >
-                          Open in new tab
-                        </a>
-                      </div>
+                        <iframe
+                          key={`${project.url}-${reloadKey}`}
+                          src={project.url as string}
+                          title={`Live preview of ${project.name}`}
+                          onLoad={handleIframeLoad}
+                          className={cn(
+                            "size-full border-0",
+                            isDragging && "pointer-events-none",
+                          )}
+                          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                        />
+                      </>
                     )}
-
-                    <iframe
-                      key={`${project.url}-${reloadKey}`}
-                      src={project.url as string}
-                      title={`Live preview of ${project.name}`}
-                      onLoad={handleIframeLoad}
-                      className={cn(
-                        "size-full border-0",
-                        isDragging && "pointer-events-none",
-                      )}
-                      sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-                    />
                   </div>
                 </motion.div>
 

@@ -7,6 +7,7 @@ const projectsList = `
 _id,
 name,
 url,
+embeddable,
 
 "mainImage": {
   "image": mainImage.asset->url,

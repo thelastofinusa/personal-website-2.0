@@ -197,7 +197,9 @@ export type Project = {
   _updatedAt: string;
   _rev: string;
   name?: string;
+  featured?: boolean;
   url?: string;
+  embeddable?: boolean;
   mainImage?: {
     asset?: SanityImageAssetReference;
     media?: unknown;
@@ -619,11 +621,31 @@ export type ArticleUrlsListQueryResult = Array<{
 
 // Source: src/sanity/queries/project.query.ts
 // Variable: projectsListQuery
-// Query: *[_type == "project"] | order(_createdAt asc) {  _id,name,url,"mainImage": {  "image": mainImage.asset->url,  "width": mainImage.asset->metadata.dimensions.width,  "height": mainImage.asset->metadata.dimensions.height},date,description,tags,"filters": filters[]->value.current}
+// Query: *[_type == "project"] | order(date desc) {  _id,name,url,embeddable,"mainImage": {  "image": mainImage.asset->url,  "width": mainImage.asset->metadata.dimensions.width,  "height": mainImage.asset->metadata.dimensions.height},date,description,tags,"filters": filters[]->value.current}
 export type ProjectsListQueryResult = Array<{
   _id: string;
   name: string | null;
   url: string | null;
+  embeddable: boolean | null;
+  mainImage: {
+    image: string | null;
+    width: number | null;
+    height: number | null;
+  };
+  date: string | null;
+  description: string | null;
+  tags: Array<string> | null;
+  filters: Array<string | null> | null;
+}>;
+
+// Source: src/sanity/queries/project.query.ts
+// Variable: featuredProjectsQuery
+// Query: *[_type == "project" && featured == true]  | order(_createdAt desc)[0...4] {    _id,name,url,embeddable,"mainImage": {  "image": mainImage.asset->url,  "width": mainImage.asset->metadata.dimensions.width,  "height": mainImage.asset->metadata.dimensions.height},date,description,tags,"filters": filters[]->value.current  }
+export type FeaturedProjectsQueryResult = Array<{
+  _id: string;
+  name: string | null;
+  url: string | null;
+  embeddable: boolean | null;
   mainImage: {
     image: string | null;
     width: number | null;
@@ -687,7 +709,8 @@ declare module "@sanity/client" {
     '\n  *[_type == "article" && pinned == true]\n    | order(publishedAt desc, _createdAt desc)[0...3] {\n      \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n    }\n': PinnedArticlesQueryResult;
     '\n  *[_type == "article" && slug.current == $slug][0] {\n    \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n  }\n': ArticleBySlugQueryResult;
     '\n*[_type == "articleUrl"] | order(_createdAt asc) {\n  \n_id,\nname,\nurl,\n\n}': ArticleUrlsListQueryResult;
-    '\n*[_type == "project"] | order(_createdAt asc) {\n  \n_id,\nname,\nurl,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n}': ProjectsListQueryResult;
+    '\n*[_type == "project"] | order(date desc) {\n  \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n}': ProjectsListQueryResult;
+    '\n  *[_type == "project" && featured == true]\n  | order(_createdAt desc)[0...4] {\n    \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n  }\n': FeaturedProjectsQueryResult;
     '\n*[_type == "projectFilter"] | order(_createdAt asc) {\n  \n_id,\nname,\n"slug": value.current,\ndescription,\nicon,\n\n}': ProjectFiltersListQueryResult;
     '\n  *[_type == "timeline"] | order(_createdAt asc) {\n    _id,\n    category,\n    organization,\n\n    "logo": select(\n      logo.type == "url" => logo.url,\n      logo.type == "upload" => logo.image.asset->url\n    ),\n\n    website,\n    isCurrent,\n\n    items[] {\n      _key,\n      title,\n\n      period {\n        start,\n        end\n      },\n\n      type,\n      icon,\n      description,\n      skills,\n      isExpanded\n    }\n  }\n': TimelineListQueryResult;
   }

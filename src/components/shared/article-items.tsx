@@ -6,7 +6,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import React from "react";
 import type { IconType } from "react-icons";
-import { Clock, SquareTopDown, Thumbtack } from "reicon-react";
+import { Clock, Thumbtack } from "reicon-react";
 import {
   Empty,
   EmptyDescription,
@@ -70,7 +70,7 @@ function ArticleList({ articles }: { articles: ArticlesListQueryResult }) {
     <React.Fragment>
       {/* Desktop */}
       <Frame className="hidden rounded-3xl! md:block">
-        <div className="flex flex-col divide-y overflow-hidden rounded-[20px]! border">
+        <div className="flex flex-col overflow-hidden rounded-[20px]! gap-1">
           <ArticleItems articles={articles} className="p-6 md:p-8 lg:p-12" />
         </div>
       </Frame>
@@ -130,38 +130,34 @@ function ArticleItem({
       href={`/articles/${article.slug}`}
       onClick={() => play("forward")}
       className={cn(
-        "group relative bg-card flex flex-col gap-6 transition-colors duration-300 md:hover:bg-background",
+        "group relative flex bg-card flex-col gap-4 md:rounded-[20px] md:border p-5 transition-all duration-300 md:grid md:grid-cols-12 md:items-start md:p-6 hover:bg-background",
         className,
       )}
     >
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          {article.pinned && (
-            <>
-              <Thumbtack className="size-3.5 transition-colors group-hover:text-primary" />
-              <span className="text-xs font-light uppercase tracking-[0.12em]">
-                Pinned
-              </span>
-              <span className="size-1.25 rounded-full bg-secondary" />
-            </>
-          )}
+      {/* Left Column (Desktop): Meta & Pinned Status */}
+      <div className="flex items-center gap-3 md:col-span-3 md:flex-col md:items-start md:gap-2.5">
+        {article.pinned && (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-2 py-0.75 text-[10px] font-medium uppercase tracking-wider text-primary">
+            <Thumbtack className="size-3" />
+            <span>Featured</span>
+          </span>
+        )}
 
-          <Clock className="size-3.5 shrink-0 motion-safe:animate-bell-ring" />
-
-          <span className="text-xs font-light uppercase tracking-[0.12em]">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground/70">
+          <Clock className="size-3.5 text-muted-foreground/50" />
+          <span className="uppercase tracking-wider">
             {formatDate(article.publishedAt as string)}
           </span>
         </div>
-
-        <SquareTopDown className="size-4 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:text-primary group-hover:translate-x-0.5" />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <h2 className="text-base font-normal leading-snug tracking-tight transition-all duration-300 ease-out group-hover:translate-x-1 group-hover:text-primary md:text-xl">
+      {/* Right Column (Desktop): Main Content */}
+      <div className="flex flex-col gap-2 md:col-span-9">
+        <h2 className="font-sans text-lg font-medium tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary md:text-xl">
           {article.title}
         </h2>
 
-        <p className="line-clamp-2 text-sm font-extralight leading-relaxed text-muted-foreground md:text-base">
+        <p className="line-clamp-2 text-xs font-light leading-relaxed text-muted-foreground/80 md:text-sm">
           {article.description}
         </p>
       </div>
