@@ -88,6 +88,13 @@ export const projectSchema = defineType({
       title: "Project Name",
     }),
     defineField({
+      name: "featured",
+      type: "boolean",
+      title: "Featured",
+      description: "Show this project in the featured projects section.",
+      initialValue: false,
+    }),
+    defineField({
       name: "url",
       type: "url",
       title: "Project Url",
@@ -120,6 +127,11 @@ export const projectSchema = defineType({
           value: tag,
         })),
       },
+      validation: (Rule) =>
+        Rule.required()
+          .min(1)
+          .max(5)
+          .error("You can select between 1 and 5 tags"),
     }),
     defineField({
       name: "filters",
@@ -135,11 +147,17 @@ export const projectSchema = defineType({
       title: "name",
       media: "mainImage",
       date: "date",
+      featured: "featured",
     },
-    prepare({ title, media, date }) {
+    prepare({ title, media, date, featured }) {
       return {
         title,
-        subtitle: date ? formatDate(date) : undefined,
+        subtitle: [
+          featured ? "✅ Featured" : null,
+          date ? formatDate(date) : null,
+        ]
+          .filter(Boolean)
+          .join(" • "),
         media,
       };
     },

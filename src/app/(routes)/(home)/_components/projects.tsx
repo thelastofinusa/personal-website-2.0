@@ -3,13 +3,16 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import type React from "react";
-import { Link4Newicons } from "reicon-react";
 import { useSoundFx } from "@/components/provider/sound-fx";
-import { buttonVariants } from "@/components/reusable/shadcn/button";
+import { Button } from "@/components/reusable/shadcn/button";
 import { Container } from "@/components/shared/container";
 import { ProjectsView } from "@/components/shared/projects-view";
+import { navLinksData } from "@/constants/navigation";
 import type { IImagePreviewPortalProps } from "@/types";
-import type { ProjectsListQueryResult } from "~/sanity.types";
+import type {
+  ProjectFiltersListQueryResult,
+  ProjectsListQueryResult,
+} from "~/sanity.types";
 
 const LivePreviewProvider = dynamic(
   () =>
@@ -29,10 +32,26 @@ const ImagePreviewProvider = dynamic(
 
 export const ProjectsComp: React.FC<{
   projects: ProjectsListQueryResult;
-}> = ({ projects }) => {
+  filters: ProjectFiltersListQueryResult;
+}> = ({ projects, filters }) => {
   const { play } = useSoundFx();
+  const Icon = navLinksData("/projects")?.icon;
 
   if (projects.length === 0) return null;
+
+  // Same synthetic "All" entry client.tsx builds for the /projects page —
+  // ProjectsView resolves its Reicon by matching `activeTab` against this
+  // list, so without it there's nothing for the lookup to find.
+  const tabFilters: ProjectFiltersListQueryResult = [
+    {
+      _id: "first-all",
+      slug: "all",
+      name: "Everything",
+      description: "Everything I've been up to",
+      icon: "StackPerspective",
+    },
+    ...filters,
+  ];
 
   const projectImages: IImagePreviewPortalProps["images"] = projects.flatMap(
     (project) => {
@@ -56,21 +75,25 @@ export const ProjectsComp: React.FC<{
     <LivePreviewProvider projects={projects}>
       <div className="flex flex-col gap-8 md:gap-12">
         <ImagePreviewProvider images={projectImages}>
-          <ProjectsView projects={projects} />
+          <ProjectsView
+            projects={projects}
+            tabFilters={tabFilters}
+            activeTab="all"
+          />
         </ImagePreviewProvider>
 
-        <Container size="md" className="flex justify-end">
+        <Container size="md">
           <Link
             href="/projects"
             onClick={() => play("forward")}
-            className={buttonVariants({
-              size: "lg",
-              variant: "link",
-              className: "p-0! h-auto!",
-            })}
+            className="flex mx-auto wrapper items-center w-max"
           >
-            <span>Checkout the rest of my work</span>
-            <Link4Newicons className="size-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary" />
+            <Button variant="inverse">
+              <span>Go see what else exists</span>
+            </Button>
+            <Button variant="inverse" size="icon">
+              {Icon && <Icon />}
+            </Button>
           </Link>
         </Container>
       </div>

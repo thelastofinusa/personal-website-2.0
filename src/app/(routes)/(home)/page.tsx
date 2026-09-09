@@ -1,6 +1,7 @@
 import { CurveThingy } from "@/components/shared/curve-thingy";
 import { TextContent } from "@/components/shared/text-content";
 import { fetchFeaturedProjects } from "@/sanity/queries/project.query";
+import { fetchAllProjectFilters } from "@/sanity/queries/projectFilter.query";
 import { ContactComp } from "./_components/contact";
 import { HomeHero } from "./_components/hero";
 import { ProjectsComp } from "./_components/projects";
@@ -15,13 +16,14 @@ Always curious. Always learning. Always... forgot what to say. 😅
 
 export default async function Home() {
   const projects = await fetchFeaturedProjects();
+  const projectFilters = await fetchAllProjectFilters();
 
   return (
     <div className="flex-1 overflow-x-clip bg-background">
       <HomeHero />
       <CurveThingy tCurve tMargin>
         <TextContent hash="about" content={aboutContent} />
-        <ProjectsComp projects={projects} />
+        <ProjectsComp projects={projects} filters={projectFilters} />
         <ContactComp />
       </CurveThingy>
     </div>

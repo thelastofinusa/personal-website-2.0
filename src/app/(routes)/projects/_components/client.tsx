@@ -277,6 +277,7 @@ export const ProjectsPageClient: React.FC<{
                   projects={filteredProjects}
                   view={view}
                   activeTab={tab ?? "all"}
+                  tabFilters={tabFilters}
                 />
               </ImagePreviewProvider>
             ) : (

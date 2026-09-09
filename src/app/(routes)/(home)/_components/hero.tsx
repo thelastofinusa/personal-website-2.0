@@ -54,7 +54,7 @@ export const HomeHero = () => {
 
             <motion.h1
               variants={itemVariants}
-              className="text-3xl relative sm:text-4xl md:text-5xl lg:text-6xl md:mx-auto md:text-center"
+              className="text-3xl relative sm:text-4xl max-w-xl lg:max-w-3xl md:text-5xl lg:text-6xl md:mx-auto md:text-center"
             >
               <i className="text-background dark:text-foreground">
                 <Highlighter action="highlight" color="var(--primary)">
@@ -101,10 +101,10 @@ export const HomeHero = () => {
             >
               Equal parts{" "}
               <span className="font-normal text-foreground">design</span> and{" "}
-              <span className="font-normal text-foreground">code</span>, fueled
-              by <span className="font-normal text-foreground">chai</span>{" "}
-              (never coffee) and an endless curiosity for how things fit
-              together.
+              <span className="font-normal text-foreground">code</span>, powered
+              by <span className="font-normal text-foreground">curiosity</span>,{" "}
+              <span className="font-normal text-foreground">chai</span>, and a
+              slightly unreasonable attention to detail.
             </motion.p>
           </motion.div>
         </motion.div>

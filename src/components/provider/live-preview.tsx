@@ -121,7 +121,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
   // Play continuous loading sound when iframe starts loading & clean up on unload
   useEffect(() => {
     if (project && !iframeLoaded) {
-      loadingSoundRef.current = play("processing");
+      loadingSoundRef.current = play("connecting");
 
       return () => {
         if (
@@ -138,7 +138,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
 
   const handleIframeLoad = useCallback(() => {
     setIframeLoaded(true);
-    play("success");
+    play("complete");
   }, [play]);
 
   const closePreview = useCallback(() => {
@@ -154,7 +154,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
 
   const minimizePreview = useCallback(() => {
     setIsMinimized(true);
-    play("collapse");
+    play("queued");
   }, [play]);
 
   const restorePreview = useCallback(() => {

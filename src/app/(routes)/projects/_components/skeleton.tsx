@@ -36,12 +36,14 @@ const ProjectsCardsSkeletonGrid = () => (
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="flex flex-col gap-3">
           <Skeleton className="aspect-4/3 w-full rounded-[20px]" />
-          <div className="flex items-center justify-between px-1">
-            <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-4 w-16" />
+          <div className="flex flex-col gap-2 px-4 md:px-6">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
           </div>
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/4" />
         </div>
       ))}
     </div>
@@ -80,7 +82,7 @@ const QuickHeroSkeleton = () => (
     <Container size="sm" className="mt-5">
       <div className="flex flex-wrap items-center gap-2">
         <Skeleton className="h-9 w-28 rounded-full" />
-        <Skeleton className="h-9 w-24 rounded-full" />
+        <Skeleton className="h-9 w-32 rounded-full" />
         <Skeleton className="h-9 w-36 rounded-full" />
         <Skeleton className="h-9 w-24 rounded-full" />
       </div>

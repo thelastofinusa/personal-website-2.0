@@ -6,7 +6,6 @@ import { getOgImage } from "@/lib/og";
 import { fetchAllProjects } from "@/sanity/queries/project.query";
 import { fetchAllProjectFilters } from "@/sanity/queries/projectFilter.query";
 import { ProjectsPageClient } from "./_components/client";
-import { ProjectsPageSkeleton } from "./_components/skeleton";
 
 const nav = navLinksData("/projects");
 
@@ -52,7 +51,7 @@ export default async function Projects() {
   const projectFilters = await fetchAllProjectFilters();
 
   return (
-    <Suspense fallback={<ProjectsPageSkeleton />}>
+    <Suspense fallback={null}>
       <ProjectsPageClient initialProjects={projects} filters={projectFilters} />
     </Suspense>
   );

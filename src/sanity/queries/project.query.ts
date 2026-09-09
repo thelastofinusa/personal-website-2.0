@@ -22,16 +22,13 @@ tags,
 `;
 
 const projectsListQuery = defineQuery(`
-*[_type == "project"] | order(_createdAt asc) {
+*[_type == "project"] | order(date desc) {
   ${projectsList}
 }`);
 
 const featuredProjectsQuery = defineQuery(`
-  *[
-    _type == "project" &&
-    "featured" in filters[]->value.current
-  ]
-  | order(_createdAt asc)[0...3] {
+  *[_type == "project" && featured == true]
+  | order(_createdAt desc)[0...4] {
     ${projectsList}
   }
 `);

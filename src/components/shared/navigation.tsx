@@ -38,9 +38,9 @@ export const Navigation = () => {
         </Link>
 
         <div className="pointer-events-auto wrapper flex relative items-center rounded-full">
-          <SoundFXToggle className="bg-background text-foreground hover:bg-background/90" />
-          <MenuToggle className="bg-background text-foreground hover:bg-background/90" />
-          <ThemeToggle className="bg-background text-foreground hover:bg-background/90" />
+          <SoundFXToggle variant="inverse" />
+          <MenuToggle variant="inverse" />
+          <ThemeToggle variant="inverse" />
         </div>
       </header>
     </nav>

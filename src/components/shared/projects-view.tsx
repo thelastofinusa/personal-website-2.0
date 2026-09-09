@@ -8,19 +8,21 @@ import Link from "next/link";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { tabFilters } from "@/constants/filters";
 import { workItemVariants } from "@/constants/variants";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn, formatDate } from "@/lib/utils";
 import type { ISearchFilterProps } from "@/types";
-import type { ProjectsListQueryResult } from "~/sanity.types";
+import type {
+  ProjectFiltersListQueryResult,
+  ProjectsListQueryResult,
+} from "~/sanity.types";
 import { useLivePreview } from "../provider/live-preview";
 import { useImagePreview } from "../provider/preview";
-import { useSoundFx } from "../provider/sound-fx";
 import { Frame } from "../reusable/reui/frame";
 import { Container } from "./container";
 import { FadeLine } from "./fade-line";
 import { LocalImg } from "./image";
+import { Reicon } from "./reicon";
 
 // 1. Shared Framer Motion animation configuration
 const MOTION_ITEM_PROPS = {
@@ -41,13 +43,16 @@ const ProjectListItem: React.FC<{
   isLast: boolean;
   activeTab?: string;
   projects: ProjectsListQueryResult;
-}> = ({ item, index, isLast, activeTab, projects }) => {
-  const { play } = useSoundFx();
+  tabFilters: ProjectFiltersListQueryResult;
+}> = ({ item, index, isLast, activeTab, projects, tabFilters }) => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { openPreview, currentProject } = useLivePreview();
   const { handleMouseEnter, handleMouseLeave } = useImagePreview();
-  const Icon = tabFilters.find((filter) => filter.value === activeTab)?.icon;
+  const icon = tabFilters.find((filter) => filter.slug === activeTab)?.icon;
   const isActive = currentProject?.url === item.url;
+
+  // Format index as 01, 02, 03...
+  const formattedIndex = String(index + 1).padStart(2, "0");
 
   return (
     <motion.div
@@ -69,7 +74,7 @@ const ProjectListItem: React.FC<{
         }
       }}
       className={cn(
-        "group relative transition-all duration-500 ease-out hover:bg-muted dark:hover:bg-black",
+        "group relative transition-colors duration-500 hover:bg-muted/40 dark:hover:bg-accent/10",
         isActive && "pointer-events-none opacity-50!",
       )}
     >
@@ -80,43 +85,56 @@ const ProjectListItem: React.FC<{
           rel="noreferrer"
           onMouseEnter={() => handleMouseEnter(index)}
           onMouseLeave={handleMouseLeave}
-          onClick={(e) => {
-            if (isActive) e.preventDefault();
-            else play("forward");
-          }}
+          onClick={(e) => isActive && e.preventDefault()}
         >
           <FadeLine orientation="horizontal" className="top-0" />
           {isLast && <FadeLine orientation="horizontal" className="bottom-0" />}
 
-          <Container size="md" className="py-5 md:py-7">
-            <div className="flex items-start justify-between gap-6 md:items-center">
-              <div className="flex min-w-0 items-start gap-3 md:gap-4">
-                {Icon && (
-                  <Icon className="mt-1 md:mt-1.5 lg:mt-2 xl:mt-4 size-5" />
-                )}
-                <div className="flex flex-1 flex-col gap-1 md:gap-3">
-                  <h1 className="font-serif text-3xl transition-[inherit] ease-[inherit] group-hover:text-primary md:text-4xl lg:text-5xl xl:text-6xl">
+          <Container size="md" className="py-6 md:py-8">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-center lg:gap-8">
+              {/* Left Column: Index, Icon, Title & Tags */}
+              <div className="flex items-start gap-4 lg:col-span-7 lg:items-center lg:gap-6">
+                {/* Index + Icon Stack */}
+                <div className="flex flex-col items-center gap-1 pt-1 lg:pt-0">
+                  <span className="font-mono text-xs font-normal text-muted-foreground transition-colors group-hover:text-primary">
+                    {formattedIndex}
+                  </span>
+                  <Reicon
+                    name={icon}
+                    className="size-4 text-muted-foreground transition-transform duration-300 group-hover:scale-110 group-hover:text-primary"
+                  />
+                </div>
+
+                {/* Title & Micro Metadata */}
+                <div className="flex flex-1 flex-col gap-2 transition-transform duration-300 ease-out lg:group-hover:translate-x-2">
+                  <h1 className="font-serif text-3xl font-light tracking-tight transition-colors duration-300 group-hover:text-primary md:text-4xl lg:text-5xl">
                     {item.name}
                   </h1>
 
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <span className="text-xs text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-xs text-muted-foreground/70">
                       {formatDate(item.date as string)}
                     </span>
-                    <span className="text-xs text-muted-foreground">/</span>
-                    {item.tags &&
-                      item.tags?.length > 0 &&
-                      item.tags.map((badge) => (
-                        <span
-                          key={badge}
-                          className="rounded-full border bg-background px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground transition-colors group-hover:border-primary/40 group-hover:text-primary md:px-2.5 md:py-1"
-                        >
-                          {badge}
+
+                    {item.tags && item.tags.length > 0 && (
+                      <>
+                        <span className="text-xs text-muted-foreground/30">
+                          •
                         </span>
-                      ))}
+                        {item.tags.map((badge) => (
+                          <span
+                            key={badge}
+                            className="rounded-md bg-muted/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground transition-all duration-300 group-hover:bg-primary/10 group-hover:text-primary"
+                          >
+                            {badge}
+                          </span>
+                        ))}
+                      </>
+                    )}
                   </div>
 
-                  <div className="mt-1 text-sm font-light leading-relaxed text-muted-foreground lg:hidden">
+                  {/* Mobile Description */}
+                  <div className="mt-2 text-sm font-light leading-relaxed text-muted-foreground/80 lg:hidden">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
@@ -146,32 +164,35 @@ const ProjectListItem: React.FC<{
                 </div>
               </div>
 
-              <div className="hidden max-w-xs text-right text-sm font-light leading-relaxed text-muted-foreground lg:block">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    p: ({ children }) => <>{children}</>,
-                    strong: ({ children }) => (
-                      <strong className="font-medium text-foreground">
-                        {children}
-                      </strong>
-                    ),
-                    em: ({ children }) => <em>{children}</em>,
-                    a: ({ children, href }) => (
-                      <a
-                        href={href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="underline underline-offset-4 transition-colors hover:text-primary"
-                        onClick={(event) => event.stopPropagation()}
-                      >
-                        {children}
-                      </a>
-                    ),
-                  }}
-                >
-                  {item.description}
-                </ReactMarkdown>
+              {/* Right Column: Desktop Description & Trailing Indicator */}
+              <div className="hidden lg:col-span-5 lg:flex lg:items-center lg:justify-between lg:gap-6">
+                <div className="text-right text-sm font-light leading-relaxed text-muted-foreground/80 transition-colors duration-300 group-hover:text-foreground">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({ children }) => <>{children}</>,
+                      strong: ({ children }) => (
+                        <strong className="font-medium text-foreground">
+                          {children}
+                        </strong>
+                      ),
+                      em: ({ children }) => <em>{children}</em>,
+                      a: ({ children, href }) => (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="underline underline-offset-4 transition-colors hover:text-primary"
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          {children}
+                        </a>
+                      ),
+                    }}
+                  >
+                    {item.description}
+                  </ReactMarkdown>
+                </div>
               </div>
             </div>
           </Container>
@@ -187,11 +208,11 @@ const ProjectGridItem: React.FC<{
   index: number;
   activeTab?: string;
   projects: ProjectsListQueryResult;
-}> = ({ item, index, activeTab, projects }) => {
-  const { play } = useSoundFx();
+  tabFilters: ProjectFiltersListQueryResult;
+}> = ({ item, index, activeTab, projects, tabFilters }) => {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { openPreview, currentProject } = useLivePreview();
-  const Icon = tabFilters.find((filter) => filter.value === activeTab)?.icon;
+  const icon = tabFilters.find((filter) => filter.slug === activeTab)?.icon;
   const isActive = currentProject?.url === item.url;
 
   return (
@@ -221,24 +242,28 @@ const ProjectGridItem: React.FC<{
         isActive && "pointer-events-none opacity-50!",
       )}
     >
-      <Frame variant="inverse" className="rounded-3xl">
-        <div className="relative h-auto overflow-hidden rounded-[20px]! border">
+      <Frame
+        variant="inverse"
+        className="rounded-3xl transition-transform duration-500 ease-out group-hover:-translate-y-1"
+      >
+        <div className="relative h-auto overflow-hidden rounded-[20px]! border border-border/60 bg-muted/20">
           <LocalImg
             src={item.mainImage?.image as string}
             ogUrl={item.url as string}
             alt={item.name as string}
             unoptimized
-            className="size-auto object-contain transition-all duration-500 ease-initial group-hover:scale-110"
+            className="size-auto object-contain transition-transform duration-700 ease-out group-hover:scale-105"
           />
 
-          <div className="absolute inset-x-0 bottom-0 bg-linear-to-b from-transparent via-black/20 to-black/50 px-6 pb-4 pt-8">
-            <div className="flex flex-wrap items-center gap-2">
+          {/* Gradient Overlay with Glassmorphic Badges */}
+          <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 via-black/30 to-transparent px-5 pb-4 pt-12">
+            <div className="flex flex-wrap items-center gap-1.5">
               {item.tags &&
                 item.tags?.length > 0 &&
                 item.tags.map((badge) => (
                   <span
                     key={badge}
-                    className="rounded-full border border-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-white backdrop-blur-sm md:px-2.5 md:py-1"
+                    className="rounded-full border border-white/20 bg-black/40 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-wider text-white/90 backdrop-blur-md transition-colors duration-300 group-hover:border-white/40"
                   >
                     {badge}
                   </span>
@@ -251,7 +276,7 @@ const ProjectGridItem: React.FC<{
       <div className="flex flex-col gap-0.5 px-4 md:px-8 py-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {Icon && <Icon className="mb-1.25 size-5" />}
+            <Reicon name={icon} className="mb-1 size-4" />
             <p className="font-serif text-lg font-normal">{item.name}</p>
           </div>
 
@@ -260,7 +285,7 @@ const ProjectGridItem: React.FC<{
           </p>
         </div>
 
-        <div className="text-sm font-extralight leading-relaxed text-muted-foreground">
+        <div className="text-[13px] font-extralight leading-relaxed">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
@@ -299,7 +324,8 @@ export const ProjectsView: React.FC<{
   view?: ISearchFilterProps["view"];
   projects: ProjectsListQueryResult;
   activeTab?: string;
-}> = ({ view = "list", projects, activeTab }) => {
+  tabFilters: ProjectFiltersListQueryResult;
+}> = ({ view = "list", projects, tabFilters, activeTab }) => {
   const { handleMouseLeave } = useImagePreview();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
@@ -344,6 +370,7 @@ export const ProjectsView: React.FC<{
               isLast={index === projects.length - 1}
               activeTab={activeTab}
               projects={projects}
+              tabFilters={tabFilters}
             />
           ))}
         </div>
@@ -358,6 +385,7 @@ export const ProjectsView: React.FC<{
                 index={index}
                 activeTab={activeTab}
                 projects={projects}
+                tabFilters={tabFilters}
               />
             ))}
           </div>
@@ -373,6 +401,7 @@ export const ProjectsView: React.FC<{
                     index={originalIndex}
                     activeTab={activeTab}
                     projects={projects}
+                    tabFilters={tabFilters}
                   />
                 ))}
               </div>
@@ -390,6 +419,7 @@ export const ProjectsView: React.FC<{
                     index={originalIndex}
                     activeTab={activeTab}
                     projects={projects}
+                    tabFilters={tabFilters}
                   />
                 ))}
               </div>

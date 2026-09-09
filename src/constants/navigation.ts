@@ -1,5 +1,5 @@
 import type { Route } from "next";
-import { FolderLink, type IconComponent, Pip, UserLaptop } from "reicon-react";
+import { Code, type IconComponent, Pip, UserLaptop } from "reicon-react";
 
 export type NavLink = {
   eyebrow: string;
@@ -12,29 +12,29 @@ export type NavLink = {
 export const navLinks: NavLink[] = [
   {
     eyebrow: "The Genesis",
-    title: "You are here. Ground Zero. Probably.",
+    title: "Welcome to the Rabbit Hole",
     description: "A little corner of the internet I decided to build.",
     icon: UserLaptop,
     href: "/",
   },
   {
     eyebrow: "Origin Story",
-    title: "Context Nobody Asked For",
+    title: "How We Got Here",
     description: "The story, the stack, and a questionable number of commits.",
     icon: UserLaptop,
     href: "/about",
   },
   {
     eyebrow: "Things I've Built",
-    title: "They Work on My Machine",
+    title: "Evidence of Productivity",
     description:
       "Projects, experiments, and things that escaped the localhost.",
-    icon: FolderLink,
+    icon: Code,
     href: "/projects",
   },
   {
     eyebrow: "Brain Dump",
-    title: "Thoughts that escaped",
+    title: "Words Were Eventually Written",
     description:
       "Opinions and occasional technical rambling that somehow became paragraphs",
     icon: Pip,

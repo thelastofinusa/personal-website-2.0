@@ -18,7 +18,6 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/reusable/shadcn/input-group";
-import { Kbd } from "@/components/reusable/shadcn/kbd";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import type { ISearchFilterProps, TProjectView } from "@/types";
 
@@ -95,11 +94,11 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
 
   return (
     <div className="flex flex-col gap-2 w-full max-w-md">
-      <p className="text-xs hidden md:block font-medium text-muted-foreground px-4 leading-relaxed">
+      {/* <p className="text-xs hidden md:block font-medium text-muted-foreground px-4 leading-relaxed">
         <span className="text-foreground font-semibold">Pro tip:</span> Hold{" "}
         <Kbd>⌘</Kbd> / <Kbd>Ctrl</Kbd> + click on any project to teleport
         instantly
-      </p>
+      </p> */}
 
       <div className="wrapper flex w-full items-center">
         {/* View selector */}
@@ -188,7 +187,6 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
             variant="destructive"
             size="icon"
             aria-label="Clear filters"
-            className="bg-destructive/30 border border-destructive"
           >
             <Xmark aria-hidden="true" />
           </Button>
