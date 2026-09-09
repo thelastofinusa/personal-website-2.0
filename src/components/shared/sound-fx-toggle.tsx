@@ -262,10 +262,12 @@ export const SoundFXToggle: React.FC<
               {/* ─── Card Grid ──────────────────────── */}
               <FramePanel className="overflow-y-auto overscroll-contain bg-background p-3 flex flex-col gap-4">
                 {/* ─── Header ─────────────────────────── */}
-                <div className="flex items-center justify-between relative px-2">
+                <div className="flex items-center justify-between relative">
                   <div className="flex items-center gap-2">
-                    <Soundwave className="size-4 text-muted-foreground" />
-                    <span className="text-xs font-medium">Sound Effects</span>
+                    <Soundwave className="size-4.5 text-muted-foreground" />
+                    <span className="text-[13px] font-medium">
+                      Sound Effects
+                    </span>
                   </div>
 
                   <ButtonGroup>
@@ -315,7 +317,7 @@ export const SoundFXToggle: React.FC<
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -4, scale: 0.95 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full z-50 mt-2 w-full rounded-lg border bg-popover p-4 shadow-xl"
+                        className="absolute right-0 top-full z-50 mt-2 w-full rounded-lg border bg-card p-4 shadow-xl"
                       >
                         <div className="flex flex-col gap-4">
                           <div className="flex items-center justify-between">
