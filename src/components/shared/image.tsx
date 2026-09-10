@@ -14,6 +14,41 @@ interface LocalImgProps
   onLoad?: React.ReactEventHandler<HTMLImageElement>;
 }
 
+/**
+ * Returns true when the URL resolves to the current origin.
+ * Relative URLs (e.g. "/logo.png") are treated as local.
+ */
+function isLocalUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url, window.location.origin);
+    return parsed.origin === window.location.origin;
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Rewrites external image URLs to go through our same-origin proxy
+ * so they bypass the strict `img-src` CSP. Local URLs (including
+ * already-proxied /api/... routes) pass through untouched.
+ */
+function getProxiedUrl(src?: string): string | undefined {
+  if (!src) return undefined;
+
+  // Relative URLs вАФ leave alone
+  if (src.startsWith("/") && !src.startsWith("//")) {
+    return src;
+  }
+
+  // Already same-origin (proxy route, sanity CDN, etc.)
+  if (isLocalUrl(src)) {
+    return src;
+  }
+
+  // External вЖТ proxy through our own origin
+  return `/api/og-image/proxy?url=${encodeURIComponent(src)}`;
+}
+
 export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
   (
     {
@@ -57,7 +92,7 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
       const resolveImage = async () => {
         if (cancelled) return;
 
-        // Already resolved this exact src/ogUrl pair — don't flash the loader again.
+        // Already resolved this exact src/ogUrl pair
         if (resolvedKeyRef.current === key && imageSrc !== loadingGif) {
           return;
         }
@@ -65,6 +100,7 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
         setIsLoading(true);
         setImageSrc(loadingGif);
 
+        // вФАвФАвФА 1. Prefer OG image when ogUrl is provided вФАвФАвФА
         if (ogUrl) {
           try {
             const response = await fetch(
@@ -73,6 +109,7 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
             if (response.ok) {
               const data: { image?: string | null } = await response.json();
               if (data.image) {
+                // /api/og-image already returns a same-origin proxy path
                 const works = await testImage(data.image);
                 if (cancelled) return;
                 if (works) {
@@ -88,17 +125,20 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
           }
         }
 
-        if (src) {
-          const works = await testImage(src);
+        // вФАвФАвФА 2. Fall back to src вАФ proxied if external вФАвФАвФА
+        const proxiedSrc = getProxiedUrl(src);
+        if (proxiedSrc) {
+          const works = await testImage(proxiedSrc);
           if (cancelled) return;
           if (works) {
             resolvedKeyRef.current = key;
-            setImageSrc(src);
+            setImageSrc(proxiedSrc);
             setIsLoading(false);
             return;
           }
         }
 
+        // вФАвФАвФА 3. Final fallback вФАвФАвФА
         if (!cancelled) {
           resolvedKeyRef.current = key;
           setImageSrc(fallbackSrc);
@@ -111,7 +151,7 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
       return () => {
         cancelled = true;
       };
-    }, [src, ogUrl, fallbackSrc, loadingGif, attempt]);
+    }, [src, ogUrl, fallbackSrc, loadingGif, attempt, imageSrc]);
 
     const handleError: React.ReactEventHandler<HTMLImageElement> = (event) => {
       // If the current image is not the fallback, retry the entire chain once
@@ -119,7 +159,6 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
         setAttempt((prev) => prev + 1);
         return;
       }
-      // Otherwise, propagate the error
       onError?.(event);
     };
 
@@ -142,107 +181,3 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
 );
 
 LocalImg.displayName = "LocalImg";
-
-/**
- * "use client";
-
-import Image, { type ImageProps as NextImageProps } from "next/image";
-import React from "react";
-
-interface LocalImgProps
-  extends Omit<NextImageProps, "src" | "onError" | "onLoad"> {
-  src?: string;
-  fallbackSrc?: string;
-  ogUrl?: string;
-  onError?: React.ReactEventHandler<HTMLImageElement>;
-  onLoad?: React.ReactEventHandler<HTMLImageElement>;
-}
-
-export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
-  (
-    {
-      src,
-      fallbackSrc = "/broken.gif",
-      ogUrl,
-      onError,
-      onLoad,
-      width = 800,
-      height = 600,
-      loading = "lazy",
-      alt = "",
-      ...props
-    },
-    ref,
-  ) => {
-    const [resolvedSrc, setResolvedSrc] = React.useState<string | undefined>(
-      src,
-    );
-    const [failed, setFailed] = React.useState(false);
-    const resolvedKeyRef = React.useRef<string | null>(null);
-
-    React.useEffect(() => {
-      let cancelled = false;
-      const key = `${src ?? ""}|${ogUrl ?? ""}`;
-
-      if (resolvedKeyRef.current === key) return;
-
-      const resolveOg = async () => {
-        if (!ogUrl || src) {
-          resolvedKeyRef.current = key;
-          return;
-        }
-        try {
-          const response = await fetch(
-            `/api/og-image?url=${encodeURIComponent(ogUrl)}`,
-          );
-          if (cancelled || !response.ok) return;
-          const data: { image?: string | null } = await response.json();
-          if (cancelled) return;
-          if (data.image) {
-            resolvedKeyRef.current = key;
-            setResolvedSrc(data.image);
-            setFailed(false);
-          }
-        } catch {
-          // silently fall through; onError will show fallback if needed
-        }
-      };
-
-      resolveOg();
-
-      return () => {
-        cancelled = true;
-      };
-    }, [src, ogUrl]);
-
-    const handleError: React.ReactEventHandler<HTMLImageElement> = (event) => {
-      if (failed) {
-        onError?.(event);
-        return;
-      }
-      setFailed(true);
-      setResolvedSrc(fallbackSrc);
-    };
-
-    const finalSrc = failed ? fallbackSrc : (resolvedSrc ?? fallbackSrc);
-
-    return (
-      <Image
-        {...props}
-        ref={ref}
-        src={finalSrc}
-        alt={alt}
-        aria-label={alt || undefined}
-        loading={loading}
-        onLoad={onLoad}
-        onError={handleError}
-        width={width}
-        height={height}
-      />
-    );
-  },
-);
-
-LocalImg.displayName = "LocalImg";
-
- */

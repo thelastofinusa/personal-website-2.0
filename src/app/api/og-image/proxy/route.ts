@@ -1,14 +1,16 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const url = searchParams.get("url");
+  const url = request.nextUrl.searchParams.get("url");
 
   if (!url) {
     return NextResponse.json({ error: "Missing URL" }, { status: 400 });
   }
 
   let targetUrl: URL;
+
   try {
     targetUrl = new URL(url);
   } catch {
@@ -22,8 +24,7 @@ export async function GET(request: NextRequest) {
   try {
     const response = await fetch(targetUrl.href, {
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (compatible; ProjectPreview/1.0; +https://example.com)",
+        "User-Agent": "Mozilla/5.0 (compatible; ProjectPreview/1.0)",
         Accept: "image/*",
       },
       redirect: "follow",
@@ -35,12 +36,14 @@ export async function GET(request: NextRequest) {
     }
 
     const contentType = response.headers.get("content-type") ?? "";
+
     if (!contentType.startsWith("image/")) {
       return NextResponse.json({ error: "Not an image" }, { status: 415 });
     }
 
     const contentLength = Number(response.headers.get("content-length") ?? 0);
-    if (contentLength > 10 * 1024 * 1024) {
+
+    if (contentLength > MAX_IMAGE_SIZE) {
       return NextResponse.json({ error: "Image too large" }, { status: 413 });
     }
 

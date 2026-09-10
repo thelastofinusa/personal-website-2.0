@@ -1,7 +1,8 @@
-// initially work experience
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
+"use client";
 
 import { differenceInMonths } from "date-fns";
-import { InfinityIcon } from "lucide-react";
+import { Briefcase, GraduationCap, InfinityIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ComponentProps } from "react";
 import { useCallback, useRef } from "react";
@@ -27,7 +28,7 @@ export type TimelineProps = {
 
 export function Timeline({ className, items }: TimelineProps) {
   return (
-    <div className={cn(className)}>
+    <div className={cn("flex flex-col", className)}>
       <AnimatePresence mode="popLayout">
         {items.map((group, index) => (
           <motion.div
@@ -39,6 +40,7 @@ export function Timeline({ className, items }: TimelineProps) {
             exit="exit"
             layout
             viewport={{ once: true, margin: "-50px" }}
+            className="border-b border-border/40 last:border-0"
           >
             <TimelineGroup group={group} />
           </motion.div>
@@ -54,27 +56,28 @@ export type TimelineGroupProps = {
 
 export function TimelineGroup({ group }: TimelineGroupProps) {
   const items = group.items ?? [];
+  const isEdu = group.category === "education";
 
   return (
-    <div className="space-y-4 py-4">
-      <div className="not-prose flex items-center gap-3">
-        <div className="ml-1 flex size-5 shrink-0 items-center justify-center backdrop-blur-md">
-          {group.logo ? (
-            <LocalImg
-              src={group.logo}
-              alt={group.organization ?? ""}
-              className="size-5 rounded-sm border object-cover"
-              aria-hidden
-            />
-          ) : (
-            <span className="size-5 rounded-sm border bg-muted" />
-          )}
-        </div>
+    <div className="grid grid-cols-1 gap-6 py-10 md:grid-cols-[220px_1fr] md:gap-12">
+      {/* LEFT COLUMN: Organization Info */}
+      <div className="flex flex-col items-start">
+        {/* Raw Logo: No borders, no background, no border-radius */}
+        {group.logo && (
+          <LocalImg
+            width={24}
+            height={24}
+            src={group.logo}
+            alt={group.organization ?? ""}
+            className="size-6 object-contain mb-4"
+            aria-hidden
+          />
+        )}
 
-        <h3 className="mt-px text-sm font-normal uppercase leading-snug text-primary">
+        <h3 className="text-base font-normal leading-snug text-primary md:text-lg">
           {group.website ? (
             <a
-              className="link underline"
+              className="transition-colors hover:text-muted-foreground hover:underline hover:decoration-muted-foreground/50 hover:underline-offset-4"
               href={group.website}
               target="_blank"
               rel="noopener noreferrer"
@@ -82,22 +85,47 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
               {group.organization}
             </a>
           ) : (
-            group.organization
+            <span>{group.organization}</span>
           )}
         </h3>
 
-        {group.isCurrent && (
-          <span className="relative flex items-center justify-center">
-            <span className="absolute inline-flex size-3 animate-ping rounded-full bg-primary opacity-50" />
-            <span className="relative inline-flex size-2 rounded-full bg-primary" />
-          </span>
-        )}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          {isEdu ? (
+            <span className="flex items-center gap-1.5 font-medium text-primary/70">
+              <GraduationCap className="size-4" />
+              Education
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 font-medium text-primary/70">
+              <Briefcase className="size-4" />
+              Experience
+            </span>
+          )}
+
+          {group.isCurrent && (
+            <>
+              <span className="text-border">•</span>
+              <span className="relative flex items-center gap-1.5 text-xs font-medium uppercase tracking-widest text-primary">
+                <span className="relative flex size-2 items-center justify-center">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-50" />
+                  <span className="relative inline-flex size-1.5 rounded-full bg-primary" />
+                </span>
+                Present
+              </span>
+            </>
+          )}
+        </div>
       </div>
 
-      <div className="relative space-y-4 before:absolute before:left-3 before:h-full before:w-px before:bg-border">
+      {/* RIGHT COLUMN: Items Stream */}
+      <div className="flex flex-col space-y-10">
         {items.map((item, index) => (
           <motion.div key={item._key} layout>
-            <TimelineItem item={item} isLast={index === items.length - 1} />
+            <TimelineItem
+              item={item}
+              isLast={index === items.length - 1}
+              category={group.category}
+            />
           </motion.div>
         ))}
       </div>
@@ -106,20 +134,19 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
 }
 
 type TimelineGroup = TimelineListQueryResult[number];
-
 type TimelineItem = NonNullable<TimelineGroup["items"]>[number];
 
 export type TimelineItemProps = {
   item: TimelineItem;
   isLast?: boolean;
+  category?: string | null;
 };
 
-export function TimelineItem({ item, isLast }: TimelineItemProps) {
+export function TimelineItem({ item }: TimelineItemProps) {
   const chevronsUpDownIconRef = useRef<ChevronsUpDownIconHandle>(null);
 
   const handleOpenChange = useCallback((open: boolean) => {
     const controls = chevronsUpDownIconRef.current;
-
     if (!controls) return;
 
     if (open) {
@@ -131,7 +158,6 @@ export function TimelineItem({ item, isLast }: TimelineItemProps) {
 
   const start = item.period?.start;
   const end = item.period?.end;
-
   const isOngoing = !end;
   const duration = formatDuration(start, end);
 
@@ -141,117 +167,106 @@ export function TimelineItem({ item, isLast }: TimelineItemProps) {
       onOpenChange={handleOpenChange}
       disabled={!item.description}
       render={
-        <div className="relative last:before:absolute last:before:h-full last:before:w-4 last:before:bg-transparent">
+        <div className="group/timeline-item relative flex flex-col gap-3">
           <CollapsibleTrigger
             className={cn(
-              "group/timeline-item not-prose block w-full select-none text-left",
-              "relative before:absolute before:-right-1 before:-bottom-1.5 before:-left-7 before:-top-1 before:rounded-lg hover:before:bg-muted/60",
-              "data-disabled:before:content-none",
+              "flex w-full select-none items-start justify-between gap-4 text-left outline-none",
+              "data-disabled:cursor-default",
             )}
           >
-            <div className="relative z-1 flex items-start gap-3 text-base md:mb-1">
-              <div
-                className={cn(
-                  "flex size-7 shrink-0 items-center justify-center rounded-sm",
-                  "bg-muted text-muted-foreground",
-                  "[&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+            {/* Title & Metadata */}
+            <div className="flex-1 space-y-1.5">
+              <h4 className="flex items-center gap-2 text-base font-medium text-foreground md:text-[17px]">
+                {item.icon && (
+                  <span className="text-muted-foreground/60 [&_svg]:size-4.5">
+                    <Reicon name={item.icon} />
+                  </span>
                 )}
-              >
-                <Reicon name={item.icon ?? ""} />
-              </div>
-
-              <h4 className="mt-0.5 flex-1 text-balance text-base font-normal">
                 {item.title}
               </h4>
 
-              <div className="shrink-0 text-muted-foreground group-disabled/timeline-item:hidden [&_svg]:h-lh [&_svg]:w-4">
+              <dl className="flex flex-wrap items-center gap-2 text-sm font-light text-muted-foreground">
+                {start && (
+                  <div>
+                    <dt className="sr-only">Period</dt>
+                    <dd className="flex items-center gap-1 font-mono text-xs tracking-tight sm:text-sm">
+                      <span>{formatPeriod(start)}</span>
+                      <span>—</span>
+                      {isOngoing ? (
+                        <InfinityIcon
+                          className="size-4 translate-y-[0.5px]"
+                          aria-label="Present"
+                        />
+                      ) : (
+                        <span>{formatPeriod(end)}</span>
+                      )}
+                    </dd>
+                  </div>
+                )}
+
+                {duration && (
+                  <>
+                    <Separator
+                      className="data-vertical:h-3.5 data-vertical:self-center"
+                      orientation="vertical"
+                    />
+                    <div>
+                      <dt className="sr-only">Duration</dt>
+                      <dd className="font-mono text-xs tabular-nums tracking-tight sm:text-sm">
+                        {duration}
+                      </dd>
+                    </div>
+                  </>
+                )}
+
+                {item.type && (
+                  <>
+                    <Separator
+                      className="data-vertical:h-3.5 data-vertical:self-center"
+                      orientation="vertical"
+                    />
+                    <div>
+                      <dt className="sr-only">Type</dt>
+                      <dd>{item.type}</dd>
+                    </div>
+                  </>
+                )}
+              </dl>
+            </div>
+
+            {/* Chevron */}
+            {item.description && (
+              <div className="mt-1 shrink-0 text-muted-foreground transition-colors group-hover/timeline-item:text-foreground group-disabled/timeline-item:hidden [&_svg]:h-lh [&_svg]:w-4.5">
                 <ChevronsUpDownIcon
                   ref={chevronsUpDownIconRef}
                   duration={0.15}
                 />
               </div>
-            </div>
-
-            <dl className="relative z-1 flex items-center gap-2 pl-10 text-xs font-light text-muted-foreground sm:text-sm">
-              {item.type && (
-                <>
-                  <div>
-                    <dt className="sr-only">Type</dt>
-                    <dd>{item.type}</dd>
-                  </div>
-
-                  <Separator
-                    className="data-vertical:h-4 data-vertical:self-center"
-                    orientation="vertical"
-                  />
-                </>
-              )}
-
-              {start && (
-                <div>
-                  <dt className="sr-only">Period</dt>
-
-                  <dd className="flex items-center gap-0.5 tabular-nums">
-                    <span>{formatPeriod(start)}</span>
-
-                    <span className="font-mono">—</span>
-
-                    {isOngoing ? (
-                      <InfinityIcon
-                        className="size-4.5 translate-y-[0.5px]"
-                        aria-label="Present"
-                      />
-                    ) : (
-                      <span>{formatPeriod(end)}</span>
-                    )}
-                  </dd>
-                </div>
-              )}
-
-              {duration && (
-                <>
-                  <Separator
-                    className="data-vertical:h-4 data-vertical:self-center"
-                    orientation="vertical"
-                  />
-
-                  <div>
-                    <dt className="sr-only">Duration</dt>
-                    <dd className="tabular-nums">{duration}</dd>
-                  </div>
-                </>
-              )}
-            </dl>
+            )}
           </CollapsibleTrigger>
 
           <CollapsibleContent className="overflow-hidden">
             {item.description && (
-              <Prose className="pl-9 pt-2">
+              <Prose className="pt-2">
                 <PortableText value={item.description} />
               </Prose>
             )}
           </CollapsibleContent>
 
           {Array.isArray(item.skills) && item.skills.length > 0 && (
-            <ul
-              className={cn(
-                "relative not-prose flex flex-wrap gap-1.5 pl-9 pt-3",
-                // Connector line
-                "before:absolute before:left-3 before:top-0 before:h-6 before:w-4",
-                "before:rounded-bl-lg before:border-b before:border-l before:border-border",
-
-                // Mask the main vertical line after the curve
-                isLast &&
-                  "after:absolute after:left-3 after:top-4 after:-bottom-2 after:w-px after:bg-card",
-              )}
-            >
-              {item.skills.map((skill, index) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: ignore
-                <li key={index} className="relative z-10 flex">
-                  <Skill>{skill}</Skill>
-                </li>
-              ))}
-            </ul>
+            <div className="pt-2">
+              <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
+                {item.skills.map((skill, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground"
+                  >
+                    <span className="size-1 rounded-full bg-border" />
+                    <Skill>{skill}</Skill>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       }
@@ -263,7 +278,7 @@ export function Prose({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "prose prose-ncdai prose-zinc max-w-none text-sm font-light dark:prose-invert md:text-base",
+        "prose prose-ncdai prose-zinc max-w-none text-sm font-light text-muted-foreground dark:prose-invert md:text-base md:leading-relaxed",
         className,
       )}
       {...props}
@@ -273,90 +288,43 @@ export function Prose({ className, ...props }: ComponentProps<"div">) {
 
 function Skill({ className, ...props }: ComponentProps<"span">) {
   return (
-    <span
-      className={cn(
-        "rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground backdrop-blur-sm md:px-2.5 md:py-1",
-        className,
-      )}
-      {...props}
-    />
+    <span className={cn("font-medium tracking-wide", className)} {...props} />
   );
 }
 
-/**
- * Convert Sanity's date value:
- *
- * "2022-08-01" → "08/2022"
- */
 function formatPeriod(date?: string | null): string {
   if (!date) return "";
-
   const parsed = new Date(`${date}T00:00:00Z`);
-
-  if (Number.isNaN(parsed.getTime())) {
-    return "";
-  }
+  if (Number.isNaN(parsed.getTime())) return "";
 
   return new Intl.DateTimeFormat("en-US", {
-    month: "2-digit",
+    month: "short",
     year: "numeric",
     timeZone: "UTC",
-  }).format(parsed);
+  }).format(parsed); // e.g., "Aug 2022"
 }
 
-/**
- * Calculate the duration between two Sanity dates.
- *
- * "2022-08-01" → "2024-02-01"
- * becomes:
- *
- * "1y 7m"
- *
- * If there is no end date, the current date is used.
- */
 function formatDuration(start?: string | null, end?: string | null): string {
   const startDate = parsePeriodDate(start);
-
-  if (!startDate) {
-    return "";
-  }
+  if (!startDate) return "";
 
   const endDate = end ? parsePeriodDate(end) : new Date();
-
-  if (!endDate) {
-    return "";
-  }
+  if (!endDate) return "";
 
   const totalMonths = differenceInMonths(endDate, startDate) + 1;
+  if (totalMonths <= 0) return "";
 
-  if (totalMonths <= 0) {
-    return "";
-  }
-
-  if (totalMonths < 12) {
-    return `${totalMonths}m`;
-  }
-
+  if (totalMonths < 12) return `${totalMonths} mo`;
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
 
-  if (months === 0) {
-    return `${years}y`;
-  }
-
-  return `${years}y ${months}m`;
+  if (months === 0) return `${years} yr`;
+  return `${years} yr ${months} mo`;
 }
 
 function parsePeriodDate(date?: string | null): Date | null {
-  if (!date) {
-    return null;
-  }
-
+  if (!date) return null;
   const parsed = new Date(`${date}T00:00:00Z`);
-
-  if (Number.isNaN(parsed.getTime())) {
-    return null;
-  }
-
+  if (Number.isNaN(parsed.getTime())) return null;
   return parsed;
 }

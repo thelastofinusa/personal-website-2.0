@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { Pip, Router3 } from "reicon-react";
+import { History3 } from "reicon-react";
 import { useSoundFx } from "@/components/provider/sound-fx";
 
 const ImagePreviewProvider = dynamic(
@@ -98,19 +98,22 @@ export const AboutPageClient: React.FC<{
       <CurveThingy tCurve>
         <TextContent content={introduction} />
 
+        {/* Unified Timeline Container */}
         {timeline.length > 0 && (
-          <Container size="sm">
-            <motion.div
-              variants={parentVariants}
-              initial="hidden"
-              animate="visible"
-              className="flex flex-col gap-4 md:gap-6"
-            >
-              <Eyebrow label="Work Experience" icon={Router3} />
+          <motion.div
+            variants={parentVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col gap-4 md:gap-6"
+          >
+            <Container size="xs">
+              <Eyebrow label="Experience & Education" icon={History3} />
+            </Container>
 
+            <Container size="sm">
               <Timeline className="w-full" items={timeline} />
-            </motion.div>
-          </Container>
+            </Container>
+          </motion.div>
         )}
 
         {articles.length > 0 && (
@@ -122,7 +125,10 @@ export const AboutPageClient: React.FC<{
           >
             <Container size="sm">
               <div className="flex items-center justify-between gap-4">
-                <Eyebrow label="Latest Articles" icon={Pip} />
+                <Eyebrow
+                  label="Latest Articles"
+                  icon={navLinksData("/articles")?.icon}
+                />
 
                 <motion.div variants={itemVariants}>
                   <Link href="/articles" onClick={() => play("forward")}>

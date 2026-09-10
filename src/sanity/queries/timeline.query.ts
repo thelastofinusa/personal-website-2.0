@@ -3,8 +3,11 @@ import { revalidateOption } from "@/lib/utils";
 import type { TimelineListQueryResult } from "~/sanity.types";
 import { readClient } from "../lib/client";
 
+// Removed the `$category` variable requirement so we pull ALL timelines into a single list
 const timelineListQuery = defineQuery(`
-  *[_type == "timeline"] | order(_createdAt asc) {
+  *[
+    _type == "timeline"
+  ] | order(_createdAt asc) {
     _id,
     category,
     organization,
@@ -35,12 +38,12 @@ const timelineListQuery = defineQuery(`
   }
 `);
 
-const query = {
-  all: timelineListQuery,
-};
-
-export async function fetchAllTimeline(): Promise<TimelineListQueryResult> {
-  const result = await readClient.fetch(query.all, {}, revalidateOption);
+export async function fetchTimeline(): Promise<TimelineListQueryResult> {
+  const result = await readClient.fetch(
+    timelineListQuery,
+    {},
+    revalidateOption,
+  );
 
   return result;
 }
