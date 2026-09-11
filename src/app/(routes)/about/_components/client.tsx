@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { History3 } from "reicon-react";
 import { useSoundFx } from "@/components/provider/sound-fx";
 
 const ImagePreviewProvider = dynamic(
@@ -100,20 +99,16 @@ export const AboutPageClient: React.FC<{
 
         {/* Unified Timeline Container */}
         {timeline.length > 0 && (
-          <motion.div
-            variants={parentVariants}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-col gap-4 md:gap-6"
-          >
-            <Container size="xs">
-              <Eyebrow label="Experience & Education" icon={History3} />
-            </Container>
-
-            <Container size="sm">
+          <Container size="sm">
+            <motion.div
+              variants={parentVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex flex-col gap-6 md:gap-8"
+            >
               <Timeline className="w-full" items={timeline} />
-            </Container>
-          </motion.div>
+            </motion.div>
+          </Container>
         )}
 
         {articles.length > 0 && (
@@ -121,7 +116,7 @@ export const AboutPageClient: React.FC<{
             variants={parentVariants}
             initial="hidden"
             animate="visible"
-            className="flex flex-col gap-4 md:gap-6"
+            className="flex flex-col gap-6 md:gap-8"
           >
             <Container size="sm">
               <div className="flex items-center justify-between gap-4">

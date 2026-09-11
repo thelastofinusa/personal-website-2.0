@@ -47,7 +47,7 @@ export function Timeline({ className, items }: TimelineProps) {
             >
               <TimelineGroup group={group} />
               {!isLast && (
-                <FadeLine orientation="horizontal" className="bottom-0" />
+                <FadeLine orientation="horizontal" className="relative" />
               )}
             </motion.div>
           );
@@ -66,9 +66,9 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
   const isEdu = group.category === "education";
 
   return (
-    <div className="grid grid-cols-1 gap-8 py-8 md:grid-cols-[220px_1fr] md:gap-12 lg:grid-cols-[260px_1fr]">
+    <div className="grid grid-cols-1 gap-8 pb-10 last:pt-10 md:grid-cols-[220px_1fr] md:gap-12 lg:grid-cols-[260px_1fr]">
       {/* LEFT COLUMN: Organization Info (Sticky on scroll) */}
-      <div className="flex-1 h-max pt-3">
+      <div className="flex-1 h-max">
         <div className="flex items-center gap-2">
           {group.logo && (
             <LocalImg
@@ -110,7 +110,7 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
       </div>
 
       {/* RIGHT COLUMN: Items Stream with Left Threading */}
-      <div className="group relative flex flex-col space-y-8 pl-4 before:absolute before:bottom-3 before:left-0 md:before:-left-2 before:top-7.5 before:w-px before:bg-border">
+      <div className="group relative flex flex-col space-y-8 pl-4 before:absolute before:bottom-3 before:left-0 md:before:-left-2 before:top-4.5 before:w-px before:bg-border">
         {items.map((item, _index) => (
           <motion.div key={item._key} layout className="relative">
             {/* Text-free visual differentiation:
@@ -118,7 +118,7 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
                 - Education: Diamond/rotated square node (rounded-xs rotate-45) */}
             <span
               className={cn(
-                "absolute -left-5.5 md:left-[-29.5px] top-4.5 size-3 border transition-colors bg-background",
+                "absolute -left-5.5 md:left-[-29.5px] top-1.5 size-3 border transition-colors bg-background",
                 isEdu ? "rounded-xs rotate-45 scale-90" : "rounded-full",
                 item.description && "group-hover:bg-primary",
               )}
@@ -143,7 +143,7 @@ export function TimelineItem({ item }: TimelineItemProps) {
   const chevronsUpDownIconRef = useRef<ChevronsUpDownIconHandle>(null);
 
   const handleOpenChange = useCallback((open: boolean) => {
-    setIsOpen(open); // Track state for Framer Motion
+    setIsOpen(open);
     const controls = chevronsUpDownIconRef.current;
     if (!controls) return;
 
@@ -161,14 +161,14 @@ export function TimelineItem({ item }: TimelineItemProps) {
 
   return (
     <Collapsible
-      defaultOpen={item.isExpanded ?? false}
+      open={isOpen}
       onOpenChange={handleOpenChange}
       disabled={!item.description}
       render={
         <div className="group/timeline-item -mx-3">
           <CollapsibleTrigger
             className={cn(
-              "flex w-full select-none items-start p-3 gap-0! rounded-lg transition-all justify-between text-left outline-none",
+              "flex w-full select-none items-start -mt-3 p-3 gap-0! rounded-lg transition-all justify-between text-left outline-none",
               "data-disabled:cursor-default",
               item.description &&
                 "group-hover/timeline-item:bg-muted/40 dark:group-hover/timeline-item:bg-muted/20",
