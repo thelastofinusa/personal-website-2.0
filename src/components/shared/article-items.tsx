@@ -152,9 +152,9 @@ function ArticleItem({
       </div>
 
       {/* Right Column (Desktop): Main Content */}
-      <div className="flex flex-col gap-2 md:col-span-9">
+      <div className="flex flex-col gap-1 md:col-span-9">
         <div className="flex items-center gap-4">
-          <h2 className="font-sans flex-1 line-clamp-1 text-lg font-medium tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary md:text-xl">
+          <h2 className="font-sans flex-1 line-clamp-1 text-lg font-medium tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary">
             {article.title}
           </h2>
 

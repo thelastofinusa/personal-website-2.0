@@ -1,5 +1,6 @@
 import { History3 } from "reicon-react";
 import { defineField, defineType } from "sanity";
+import { resolveReicon } from "@/lib/icons";
 
 export const timelineSchema = defineType({
   name: "timeline",
@@ -182,6 +183,7 @@ export const timelineSchema = defineType({
               type: "string",
               options: {
                 list: [
+                  // Experience
                   "Full-time",
                   "Part-time",
                   "Contract",
@@ -189,7 +191,16 @@ export const timelineSchema = defineType({
                   "Internship",
                   "Temporary",
                   "Volunteer",
+
+                  // Education
+                  "Degree",
+                  "Diploma",
+                  "Certificate",
+                  "Course",
+                  "Bootcamp",
+                  "Training",
                 ],
+                layout: "dropdown",
               },
               validation: (Rule) => Rule.required(),
             }),
@@ -247,6 +258,7 @@ export const timelineSchema = defineType({
                 ]
                   .filter(Boolean)
                   .join(" · "),
+                media: resolveReicon(icon),
               };
             },
           },

@@ -2,16 +2,17 @@
 "use client";
 
 import { differenceInMonths } from "date-fns";
-import { Briefcase, GraduationCap, InfinityIcon } from "lucide-react";
+import { InfinityIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ComponentProps } from "react";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/reusable/shadcn/collapsible";
 import { Separator } from "@/components/reusable/shadcn/separator";
+import { FadeLine } from "@/components/shared/fade-line";
 import { LocalImg } from "@/components/shared/image";
 import { PortableText } from "@/components/shared/portable-text";
 import { Reicon } from "@/components/shared/reicon";
@@ -28,23 +29,29 @@ export type TimelineProps = {
 
 export function Timeline({ className, items }: TimelineProps) {
   return (
-    <div className={cn("flex flex-col", className)}>
+    <div className={cn(className)}>
       <AnimatePresence mode="popLayout">
-        {items.map((group, index) => (
-          <motion.div
-            key={group._id}
-            custom={index}
-            variants={workItemVariants}
-            initial="hidden"
-            whileInView="visible"
-            exit="exit"
-            layout
-            viewport={{ once: true, margin: "-50px" }}
-            className="border-b border-border/40 last:border-0"
-          >
-            <TimelineGroup group={group} />
-          </motion.div>
-        ))}
+        {items.map((group, index) => {
+          const isLast = index === items.length - 1;
+          return (
+            <motion.div
+              key={group._id}
+              custom={index}
+              variants={workItemVariants}
+              initial="hidden"
+              whileInView="visible"
+              exit="exit"
+              layout
+              viewport={{ once: true, margin: "-50px" }}
+              className="relative"
+            >
+              <TimelineGroup group={group} />
+              {!isLast && (
+                <FadeLine orientation="horizontal" className="bottom-0" />
+              )}
+            </motion.div>
+          );
+        })}
       </AnimatePresence>
     </div>
   );
@@ -59,73 +66,64 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
   const isEdu = group.category === "education";
 
   return (
-    <div className="grid grid-cols-1 gap-6 py-10 md:grid-cols-[220px_1fr] md:gap-12">
-      {/* LEFT COLUMN: Organization Info */}
-      <div className="flex flex-col items-start">
-        {/* Raw Logo: No borders, no background, no border-radius */}
-        {group.logo && (
-          <LocalImg
-            width={24}
-            height={24}
-            src={group.logo}
-            alt={group.organization ?? ""}
-            className="size-6 object-contain mb-4"
-            aria-hidden
-          />
-        )}
-
-        <h3 className="text-base font-normal leading-snug text-primary md:text-lg">
-          {group.website ? (
-            <a
-              className="transition-colors hover:text-muted-foreground hover:underline hover:decoration-muted-foreground/50 hover:underline-offset-4"
-              href={group.website}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {group.organization}
-            </a>
-          ) : (
-            <span>{group.organization}</span>
+    <div className="grid grid-cols-1 gap-8 py-8 md:grid-cols-[220px_1fr] md:gap-12 lg:grid-cols-[260px_1fr]">
+      {/* LEFT COLUMN: Organization Info (Sticky on scroll) */}
+      <div className="flex-1 h-max pt-3">
+        <div className="flex items-center gap-2">
+          {group.logo && (
+            <LocalImg
+              width={16}
+              height={16}
+              src={group.logo}
+              alt={group.organization ?? ""}
+              className="size-4 object-contain"
+              aria-hidden
+            />
           )}
-        </h3>
-
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          {isEdu ? (
-            <span className="flex items-center gap-1.5 font-medium text-primary/70">
-              <GraduationCap className="size-4" />
-              Education
-            </span>
-          ) : (
-            <span className="flex items-center gap-1.5 font-medium text-primary/70">
-              <Briefcase className="size-4" />
-              Experience
-            </span>
-          )}
-
+          <h3 className="text-sm font-normal leading-snug text-foreground">
+            {group.website ? (
+              <a
+                className="link-underline transition-colors hover:text-primary"
+                href={group.website}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {group.organization}
+              </a>
+            ) : (
+              <span>{group.organization}</span>
+            )}
+          </h3>
           {group.isCurrent && (
             <>
-              <span className="text-border">•</span>
-              <span className="relative flex items-center gap-1.5 text-xs font-medium uppercase tracking-widest text-primary">
-                <span className="relative flex size-2 items-center justify-center">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-50" />
-                  <span className="relative inline-flex size-1.5 rounded-full bg-primary" />
+              <span className="text-border/60">•</span>
+              <span className="relative flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-primary">
+                <span className="relative flex size-2.5 items-center justify-center">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
+                  <span className="relative flex size-2 rounded-full bg-primary" />
                 </span>
-                Present
+                PRESENT
               </span>
             </>
           )}
         </div>
       </div>
 
-      {/* RIGHT COLUMN: Items Stream */}
-      <div className="flex flex-col space-y-10">
-        {items.map((item, index) => (
-          <motion.div key={item._key} layout>
-            <TimelineItem
-              item={item}
-              isLast={index === items.length - 1}
-              category={group.category}
+      {/* RIGHT COLUMN: Items Stream with Left Threading */}
+      <div className="group relative flex flex-col space-y-8 pl-4 before:absolute before:bottom-3 before:left-0 md:before:-left-2 before:top-7.5 before:w-px before:bg-border">
+        {items.map((item, _index) => (
+          <motion.div key={item._key} layout className="relative">
+            {/* Text-free visual differentiation:
+                - Experience: Circular node (rounded-full)
+                - Education: Diamond/rotated square node (rounded-xs rotate-45) */}
+            <span
+              className={cn(
+                "absolute -left-5.5 md:left-[-29.5px] top-4.5 size-3 border transition-colors bg-background",
+                isEdu ? "rounded-xs rotate-45 scale-90" : "rounded-full",
+                item.description && "group-hover:bg-primary",
+              )}
             />
+            <TimelineItem item={item} />
           </motion.div>
         ))}
       </div>
@@ -138,14 +136,14 @@ type TimelineItem = NonNullable<TimelineGroup["items"]>[number];
 
 export type TimelineItemProps = {
   item: TimelineItem;
-  isLast?: boolean;
-  category?: string | null;
 };
 
 export function TimelineItem({ item }: TimelineItemProps) {
+  const [isOpen, setIsOpen] = useState(item.isExpanded ?? false);
   const chevronsUpDownIconRef = useRef<ChevronsUpDownIconHandle>(null);
 
   const handleOpenChange = useCallback((open: boolean) => {
+    setIsOpen(open); // Track state for Framer Motion
     const controls = chevronsUpDownIconRef.current;
     if (!controls) return;
 
@@ -167,34 +165,44 @@ export function TimelineItem({ item }: TimelineItemProps) {
       onOpenChange={handleOpenChange}
       disabled={!item.description}
       render={
-        <div className="group/timeline-item relative flex flex-col gap-3">
+        <div className="group/timeline-item -mx-3">
           <CollapsibleTrigger
             className={cn(
-              "flex w-full select-none items-start justify-between gap-4 text-left outline-none",
+              "flex w-full select-none items-start p-3 gap-0! rounded-lg transition-all justify-between text-left outline-none",
               "data-disabled:cursor-default",
+              item.description &&
+                "group-hover/timeline-item:bg-muted/40 dark:group-hover/timeline-item:bg-muted/20",
             )}
           >
             {/* Title & Metadata */}
             <div className="flex-1 space-y-1.5">
-              <h4 className="flex items-center gap-2 text-base font-medium text-foreground md:text-[17px]">
+              <h4
+                className={cn(
+                  "flex items-center gap-2 text-base font-medium text-foreground transition-colors",
+                  item.description && "group-hover/timeline-item:text-primary",
+                )}
+              >
                 {item.icon && (
-                  <span className="text-muted-foreground/60 [&_svg]:size-4.5">
-                    <Reicon name={item.icon} />
+                  <span className="text-muted-foreground [&_svg]:size-4.5">
+                    <Reicon
+                      name={item.icon}
+                      className="motion-safe:animate-bell-ring"
+                    />
                   </span>
                 )}
                 {item.title}
               </h4>
 
-              <dl className="flex flex-wrap items-center gap-2 text-sm font-light text-muted-foreground">
+              <dl className="flex flex-wrap items-center gap-2 text-xs font-normal text-muted-foreground sm:text-sm">
                 {start && (
                   <div>
                     <dt className="sr-only">Period</dt>
-                    <dd className="flex items-center gap-1 font-mono text-xs tracking-tight sm:text-sm">
+                    <dd className="flex items-center gap-1 text-xs tabular-nums">
                       <span>{formatPeriod(start)}</span>
-                      <span>—</span>
+                      <span className="text-muted">—</span>
                       {isOngoing ? (
                         <InfinityIcon
-                          className="size-4 translate-y-[0.5px]"
+                          className="size-3.5 text-primary"
                           aria-label="Present"
                         />
                       ) : (
@@ -207,14 +215,12 @@ export function TimelineItem({ item }: TimelineItemProps) {
                 {duration && (
                   <>
                     <Separator
-                      className="data-vertical:h-3.5 data-vertical:self-center"
+                      className="data-vertical:h-2 data-vertical:self-center"
                       orientation="vertical"
                     />
                     <div>
                       <dt className="sr-only">Duration</dt>
-                      <dd className="font-mono text-xs tabular-nums tracking-tight sm:text-sm">
-                        {duration}
-                      </dd>
+                      <dd className="text-xs tabular-nums">{duration}</dd>
                     </div>
                   </>
                 )}
@@ -222,21 +228,21 @@ export function TimelineItem({ item }: TimelineItemProps) {
                 {item.type && (
                   <>
                     <Separator
-                      className="data-vertical:h-3.5 data-vertical:self-center"
+                      className="data-vertical:h-2 data-vertical:self-center"
                       orientation="vertical"
                     />
                     <div>
                       <dt className="sr-only">Type</dt>
-                      <dd>{item.type}</dd>
+                      <dd className="text-xs">{item.type}</dd>
                     </div>
                   </>
                 )}
               </dl>
             </div>
 
-            {/* Chevron */}
+            {/* Expand Chevron Icon */}
             {item.description && (
-              <div className="mt-1 shrink-0 text-muted-foreground transition-colors group-hover/timeline-item:text-foreground group-disabled/timeline-item:hidden [&_svg]:h-lh [&_svg]:w-4.5">
+              <div className="mt-1 shrink-0 text-muted-foreground transition-colors group-hover/timeline-item:text-foreground group-disabled/timeline-item:hidden [&_svg]:h-lh [&_svg]:w-4">
                 <ChevronsUpDownIcon
                   ref={chevronsUpDownIconRef}
                   duration={0.15}
@@ -245,23 +251,33 @@ export function TimelineItem({ item }: TimelineItemProps) {
             )}
           </CollapsibleTrigger>
 
-          <CollapsibleContent className="overflow-hidden">
-            {item.description && (
-              <Prose className="pt-2">
-                <PortableText value={item.description} />
-              </Prose>
+          <AnimatePresence initial={false}>
+            {isOpen && (
+              <CollapsibleContent
+                render={
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden px-3"
+                  >
+                    {item.description && (
+                      <Prose>
+                        <PortableText value={item.description} />
+                      </Prose>
+                    )}
+                  </motion.div>
+                }
+              />
             )}
-          </CollapsibleContent>
+          </AnimatePresence>
 
           {Array.isArray(item.skills) && item.skills.length > 0 && (
-            <div className="pt-2">
-              <ul className="flex flex-wrap gap-x-3 gap-y-1.5">
+            <div className="px-3">
+              <ul className="flex flex-wrap gap-1.5">
                 {item.skills.map((skill, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center gap-1.5 text-xs text-muted-foreground"
-                  >
-                    <span className="size-1 rounded-full bg-border" />
+                  <li key={index}>
                     <Skill>{skill}</Skill>
                   </li>
                 ))}
@@ -278,7 +294,7 @@ export function Prose({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "prose prose-ncdai prose-zinc max-w-none text-sm font-light text-muted-foreground dark:prose-invert md:text-base md:leading-relaxed",
+        "prose prose-ncdai max-w-none text-sm text-foreground",
         className,
       )}
       {...props}
@@ -288,7 +304,13 @@ export function Prose({ className, ...props }: ComponentProps<"div">) {
 
 function Skill({ className, ...props }: ComponentProps<"span">) {
   return (
-    <span className={cn("font-medium tracking-wide", className)} {...props} />
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium text-muted-foreground",
+        className,
+      )}
+      {...props}
+    />
   );
 }
 
@@ -301,7 +323,7 @@ function formatPeriod(date?: string | null): string {
     month: "short",
     year: "numeric",
     timeZone: "UTC",
-  }).format(parsed); // e.g., "Aug 2022"
+  }).format(parsed);
 }
 
 function formatDuration(start?: string | null, end?: string | null): string {
