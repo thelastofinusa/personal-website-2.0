@@ -223,6 +223,26 @@ export const timelineSchema = defineType({
             }),
 
             defineField({
+              name: "images",
+              title: "Images",
+              type: "array",
+              description:
+                "Images related to this organization, role, school, projects, events, or experience.",
+              of: [
+                {
+                  type: "image",
+                  options: {
+                    hotspot: true,
+                  },
+                },
+              ],
+              options: {
+                layout: "grid",
+              },
+              validation: (Rule) => Rule.max(10),
+            }),
+
+            defineField({
               name: "skills",
               title: "Skills",
               type: "array",

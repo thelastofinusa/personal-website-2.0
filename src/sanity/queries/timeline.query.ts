@@ -19,14 +19,21 @@ const timelineListQuery = defineQuery(`
 
     website,
     isCurrent,
-
+    
     items[] {
       _key,
       title,
-
+      
       period {
         start,
         end
+      },
+        
+      "images": images[]{
+        "url": asset->url,
+        "width": asset->metadata.dimensions.width,
+        "height": asset->metadata.dimensions.height,
+        "alt": coalesce(asset->altText, "")
       },
 
       type,

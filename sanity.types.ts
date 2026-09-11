@@ -56,13 +56,43 @@ export type Timeline = {
       | "Freelance"
       | "Internship"
       | "Temporary"
-      | "Volunteer";
+      | "Volunteer"
+      | "Degree"
+      | "Diploma"
+      | "Certificate"
+      | "Course"
+      | "Bootcamp"
+      | "Training";
     icon?: string;
     description?: BlockContent;
+    images?: Array<{
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+      _key: string;
+    }>;
     skills?: Array<string>;
     isExpanded?: boolean;
     _key: string;
   }>;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
 };
 
 export type BlockContent = Array<
@@ -117,22 +147,6 @@ export type BlockContent = Array<
       _key: string;
     }
 >;
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
 
 export type ArticleUrl = {
   _id: string;
@@ -351,9 +365,9 @@ export type Geopoint = {
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
   | Timeline
-  | BlockContent
   | SanityImageCrop
   | SanityImageHotspot
+  | BlockContent
   | ArticleUrl
   | Article
   | Slug
@@ -670,7 +684,7 @@ export type ProjectFiltersListQueryResult = Array<{
 
 // Source: src/sanity/queries/timeline.query.ts
 // Variable: timelineListQuery
-// Query: *[_type == "timeline"] | order(_createdAt asc) {    _id,    category,    organization,    "logo": select(      logo.type == "url" => logo.url,      logo.type == "upload" => logo.image.asset->url    ),    website,    isCurrent,    items[] {      _key,      title,      period {        start,        end      },      type,      icon,      description,      skills,      isExpanded    }  }
+// Query: *[    _type == "timeline"  ] | order(_createdAt asc) {    _id,    category,    organization,    "logo": select(      logo.type == "url" => logo.url,      logo.type == "upload" => logo.image.asset->url    ),    website,    isCurrent,        items[] {      _key,      title,            period {        start,        end      },              "images": images[]{        "url": asset->url,        "width": asset->metadata.dimensions.width,        "height": asset->metadata.dimensions.height,        "alt": coalesce(asset->altText, "")      },      type,      icon,      description,      skills,      isExpanded    }  }
 export type TimelineListQueryResult = Array<{
   _id: string;
   category: "education" | "experience" | null;
@@ -685,13 +699,25 @@ export type TimelineListQueryResult = Array<{
       start: string | null;
       end: string | null;
     } | null;
+    images: Array<{
+      url: string | null;
+      width: number | null;
+      height: number | null;
+      alt: string | "";
+    }> | null;
     type:
+      | "Bootcamp"
+      | "Certificate"
       | "Contract"
+      | "Course"
+      | "Degree"
+      | "Diploma"
       | "Freelance"
       | "Full-time"
       | "Internship"
       | "Part-time"
       | "Temporary"
+      | "Training"
       | "Volunteer"
       | null;
     icon: string | null;
@@ -712,6 +738,6 @@ declare module "@sanity/client" {
     '\n*[_type == "project"] | order(date desc) {\n  \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n}': ProjectsListQueryResult;
     '\n  *[_type == "project" && featured == true]\n  | order(_createdAt desc)[0...4] {\n    \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n  }\n': FeaturedProjectsQueryResult;
     '\n*[_type == "projectFilter"] | order(_createdAt asc) {\n  \n_id,\nname,\n"slug": value.current,\ndescription,\nicon,\n\n}': ProjectFiltersListQueryResult;
-    '\n  *[_type == "timeline"] | order(_createdAt asc) {\n    _id,\n    category,\n    organization,\n\n    "logo": select(\n      logo.type == "url" => logo.url,\n      logo.type == "upload" => logo.image.asset->url\n    ),\n\n    website,\n    isCurrent,\n\n    items[] {\n      _key,\n      title,\n\n      period {\n        start,\n        end\n      },\n\n      type,\n      icon,\n      description,\n      skills,\n      isExpanded\n    }\n  }\n': TimelineListQueryResult;
+    '\n  *[\n    _type == "timeline"\n  ] | order(_createdAt asc) {\n    _id,\n    category,\n    organization,\n\n    "logo": select(\n      logo.type == "url" => logo.url,\n      logo.type == "upload" => logo.image.asset->url\n    ),\n\n    website,\n    isCurrent,\n    \n    items[] {\n      _key,\n      title,\n      \n      period {\n        start,\n        end\n      },\n        \n      "images": images[]{\n        "url": asset->url,\n        "width": asset->metadata.dimensions.width,\n        "height": asset->metadata.dimensions.height,\n        "alt": coalesce(asset->altText, "")\n      },\n\n      type,\n      icon,\n      description,\n      skills,\n      isExpanded\n    }\n  }\n': TimelineListQueryResult;
   }
 }
