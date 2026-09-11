@@ -294,7 +294,7 @@ export function Prose({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "prose prose-ncdai max-w-none text-sm text-foreground",
+        "prose prose-ncdai max-w-none text-sm font-light text-foreground",
         className,
       )}
       {...props}
