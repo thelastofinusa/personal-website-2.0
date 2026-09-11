@@ -19,6 +19,7 @@ import { Reicon } from "@/components/shared/reicon";
 import { workItemVariants } from "@/constants/variants";
 import { cn } from "@/lib/utils";
 import type { TimelineListQueryResult } from "~/sanity.types";
+import { Frame } from "../reui/frame";
 import type { ChevronsUpDownIconHandle } from "./chevrons-up-down-icon";
 import { ChevronsUpDownIcon } from "./chevrons-up-down-icon";
 
@@ -66,7 +67,7 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
   const isEdu = group.category === "education";
 
   return (
-    <div className="grid grid-cols-1 gap-4 py-8 md:grid-cols-[220px_1fr] md:gap-12 lg:grid-cols-[260px_1fr]">
+    <div className="grid grid-cols-1 gap-4 py-8 md:grid-cols-[220px_1fr] md:gap-12">
       {/* LEFT COLUMN: Organization Info (Sticky on scroll) */}
       <div className="flex-1 h-max">
         <div className="flex items-center gap-2">
@@ -80,7 +81,7 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
               aria-hidden
             />
           ) : (
-            <span className="rounded-md size-4 bg-secondary" />
+            <span className="rounded-xs size-4 bg-secondary" />
           )}
           <h3 className="text-sm font-normal leading-snug text-foreground">
             {group.website ? (
@@ -227,7 +228,7 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
               variants={node1Variants}
               animate={state}
               className={cn(
-                "absolute size-3 -left-4.5 md:-left-6 z-10 top-4.25 border bg-background",
+                "absolute size-2.5 -left-4.25 md:-left-5.75 z-10 top-4.75 border bg-background",
                 isEdu ? "rounded-xs rotate-45 scale-90" : "rounded-full",
               )}
             />
@@ -237,19 +238,19 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
               variants={node2Variants}
               animate={state}
               className={cn(
-                "absolute size-3 -left-4.5 md:-left-6 z-10 -bottom-4.75 border bg-background",
+                "absolute size-2.5 -left-4.25 md:-left-5.75 z-10 -bottom-4.75 border bg-background",
                 isEdu ? "rounded-xs rotate-45 scale-90" : "rounded-full",
               )}
             />
 
             {/* Default Thread Line */}
-            <span className="absolute w-px bg-border top-4.5 -bottom-4.75 left-[-12.5px] md:left-[-18.5px]" />
+            <span className="absolute w-px bg-border top-5 -bottom-4.75 left-[-12.5px] md:left-[-18.5px]" />
 
             {/* Animated Connection Line */}
             <motion.span
               variants={lineVariants}
               animate={state}
-              className="absolute w-px top-4.5 -bottom-4.75 left-[-12.5px] md:left-[-18.5px] origin-top rounded-full"
+              className="absolute w-px top-5 -bottom-4.75 left-[-12.5px] md:left-[-18.5px] origin-top rounded-full"
             />
 
             <CollapsibleTrigger
@@ -263,7 +264,7 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
               <div className="flex-1 space-y-1.5">
                 <h4
                   className={cn(
-                    "flex items-center gap-2 text-base font-medium text-foreground transition-colors",
+                    "flex items-center gap-2 text-base font-normal text-foreground transition-colors",
                     item.description &&
                       "group-hover/timeline-item:text-primary",
                   )}
@@ -369,15 +370,30 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
           )}
 
           {Array.isArray(item.images) && item.images.length > 0 && (
-            <div className="grid grid-cols-3 gap-3 px-3 pt-4">
-              {item.images.map((item) => (
-                <div key={item.url} className="overflow-hidden aspect-[1.5]">
-                  <LocalImg
-                    src={item.url as string}
-                    alt={item.alt}
-                    className="size-full object-cover"
-                  />
-                </div>
+            <div
+              className={cn(
+                "grid gap-3 px-3 pt-4",
+                item.images.length > 2
+                  ? "grid-cols-3"
+                  : item.images.length === 2
+                    ? "grid-cols-2"
+                    : "grid-cols-1",
+              )}
+            >
+              {item.images.map((image) => (
+                <Frame
+                  key={image.url}
+                  className="rounded-md p-0.5"
+                  variant="inverse"
+                >
+                  <div className="aspect-[1.5] overflow-hidden rounded-sm border bg-card">
+                    <LocalImg
+                      src={image.url as string}
+                      alt={image.alt}
+                      className="size-full object-cover"
+                    />
+                  </div>
+                </Frame>
               ))}
             </div>
           )}
@@ -391,7 +407,7 @@ export function Prose({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "prose prose-ncdai max-w-none text-sm font-light text-foreground",
+        "prose prose-ncdai max-w-none text-[15px] font-light text-foreground",
         className,
       )}
       {...props}

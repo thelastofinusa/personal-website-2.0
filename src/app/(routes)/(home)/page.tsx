@@ -11,7 +11,7 @@ I work across **Frontend**, **Web3**, and **Developer Experience** — building 
 
 Lately, I’ve been exploring **AI**, building **open-source** and **dev tools**, and experimenting with new ways to make software more useful and enjoyable to work with.
 
-Always curious. Always learning. Always... forgot what to say. 😅
+There’s more to the story, but this paragraph is already getting suspiciously long. Go bother my **[about page](/about)** if you want the full lore.
 `;
 
 export default async function Home() {

@@ -13,7 +13,7 @@ const containerVariants = cva(
         default: "max-w-[1380px]",
         md: "max-w-[1090px]",
         sm: "max-w-[900px]",
-        xs: "max-w-[768px]",
+        xs: "max-w-[748px]",
       },
     },
     defaultVariants: {
