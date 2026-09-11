@@ -37,13 +37,13 @@ import type {
   TimelineListQueryResult,
 } from "~/sanity.types";
 
-const introduction = `Hey, I’m **${siteConfig.author.name}**, though most people call me **${siteConfig.author.nickname}**.
+const introduction = `Hey, I’m **${siteConfig.author.name}**, though most people call me **${siteConfig.author.nickname}** [🔊](pronunciation) or **${siteConfig.author.nicknameShorten}**.
 
-${siteConfig.author.nickname} is my tribal name, pronounced **oh-see-LAH-ma**, and apparently it means **“requesting something from God.”** I say “apparently” because I have never personally witnessed the naming meeting where my parents decided this was the one.
+${siteConfig.author.nickname} is my tribal name. It means **“requesting something from God.”** Apparently. I’ve never personally witnessed the naming meeting.
 
-But I’ve grown into it. It’s a pretty meaningful name, even if it sounds like my parents were submitting a support ticket to heaven.
+But I’ve grown into it. It’s meaningful, even if it sounds like my parents were submitting a support ticket to heaven.
 
-Anyway, that’s me — ${siteConfig.author.name.split(" ")[0]} on official documents, ${siteConfig.author.nickname} everywhere else, and somewhere in between is where I spend most of my time building things for the web.`;
+Anyway, that’s me — ${siteConfig.author.name.split(" ")[0]} on official documents, ${siteConfig.author.nickname} everywhere else, and somewhere in between is where I build things for the web.`;
 
 export const AboutPageClient: React.FC<{
   timeline: TimelineListQueryResult;
@@ -95,7 +95,10 @@ export const AboutPageClient: React.FC<{
       />
 
       <CurveThingy tCurve>
-        <TextContent content={introduction} />
+        <TextContent
+          content={introduction}
+          namePronunciationUrl={siteConfig.author.namePronunciationUrl}
+        />
 
         {/* Unified Timeline Container */}
         {timeline.length > 0 && (

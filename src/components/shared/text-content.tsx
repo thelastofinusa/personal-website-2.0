@@ -7,15 +7,21 @@ import ReactMarkdown from "react-markdown";
 import { itemVariants, parentVariants } from "@/constants/variants";
 
 import { Container } from "./container";
+import { PronounceMyName } from "./pronunce-my-name";
 
-export const TextContent: React.FC<{ content: string; hash?: string }> = (
-  props,
-) => {
+interface TextContentProps {
+  content: string;
+  hash?: string;
+  namePronunciationUrl?: string;
+}
+
+export const TextContent: React.FC<TextContentProps> = ({
+  content,
+  hash,
+  namePronunciationUrl,
+}) => {
   return (
-    <section
-      id={props.hash ? `#${props.hash}` : undefined}
-      className="pt-20 sm:pt-30 md:pt-36"
-    >
+    <section id={hash} className="pt-20 sm:pt-30 md:pt-36">
       <Container size="xs">
         <motion.div
           variants={parentVariants}
@@ -33,9 +39,25 @@ export const TextContent: React.FC<{ content: string; hash?: string }> = (
                   {children}
                 </motion.p>
               ),
+
+              a: ({ href, children }) => {
+                if (href === "pronunciation") {
+                  return (
+                    <PronounceMyName
+                      namePronunciationUrl={namePronunciationUrl as string}
+                    />
+                  );
+                }
+
+                return (
+                  <a href={href} target="_blank" rel="noreferrer">
+                    {children}
+                  </a>
+                );
+              },
             }}
           >
-            {props.content}
+            {content}
           </ReactMarkdown>
         </motion.div>
       </Container>
