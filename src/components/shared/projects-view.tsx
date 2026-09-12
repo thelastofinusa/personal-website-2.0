@@ -19,6 +19,7 @@ import type {
 import { useLivePreview } from "../provider/live-preview";
 import { useImagePreview } from "../provider/preview";
 import { Frame } from "../reusable/reui/frame";
+import { Badge } from "../reusable/shadcn/badge";
 import { Container } from "./container";
 import { FadeLine } from "./fade-line";
 import { LocalImg } from "./image";
@@ -122,12 +123,13 @@ const ProjectListItem: React.FC<{
                           •
                         </span>
                         {item.tags.map((badge) => (
-                          <span
+                          <Badge
                             key={badge}
-                            className="rounded-md bg-muted/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground transition-all duration-300 group-hover:bg-primary/10 group-hover:text-primary"
+                            variant="secondary"
+                            className="text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
                           >
                             {badge}
-                          </span>
+                          </Badge>
                         ))}
                       </>
                     )}
@@ -261,12 +263,12 @@ const ProjectGridItem: React.FC<{
               {item.tags &&
                 item.tags?.length > 0 &&
                 item.tags.map((badge) => (
-                  <span
+                  <Badge
                     key={badge}
-                    className="rounded-full border border-white/20 bg-black/40 px-2.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-wider text-white/90 backdrop-blur-md transition-colors duration-300 group-hover:border-white/40"
+                    className="border border-white/20 bg-black/40 text-white/90 backdrop-blur-md transition-colors duration-300 group-hover:border-white/40"
                   >
                     {badge}
-                  </span>
+                  </Badge>
                 ))}
             </div>
           </div>

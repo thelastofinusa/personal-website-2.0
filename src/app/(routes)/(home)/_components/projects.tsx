@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
 "use client";
 
 import dynamic from "next/dynamic";
@@ -5,6 +6,7 @@ import Link from "next/link";
 import type React from "react";
 import { useSoundFx } from "@/components/provider/sound-fx";
 import { Button } from "@/components/reusable/shadcn/button";
+import { Skeleton } from "@/components/reusable/shadcn/skeleton";
 import { Container } from "@/components/shared/container";
 import { ProjectsView } from "@/components/shared/projects-view";
 import { navLinksData } from "@/constants/navigation";
@@ -19,7 +21,32 @@ const LivePreviewProvider = dynamic(
     import("@/components/provider/live-preview").then(
       (mod) => mod.LivePreviewProvider,
     ),
-  { ssr: false, loading: () => null },
+  {
+    ssr: false,
+    loading: () => {
+      return (
+        <div className="flex flex-col">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="border-t last:border-b">
+              <Container size="md" className="py-5 md:py-7">
+                <div className="flex items-start justify-between gap-6 md:items-center">
+                  <div className="flex min-w-0 flex-1 flex-col gap-2 md:gap-3">
+                    <Skeleton className="h-8 w-2/3 max-w-xs md:h-10 lg:h-12" />
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-3 w-16" />
+                      <Skeleton className="h-5 w-14 rounded-full" />
+                      <Skeleton className="h-5 w-14 rounded-full" />
+                    </div>
+                  </div>
+                  <Skeleton className="hidden h-4 w-40 lg:block" />
+                </div>
+              </Container>
+            </div>
+          ))}
+        </div>
+      );
+    },
+  },
 );
 
 const ImagePreviewProvider = dynamic(

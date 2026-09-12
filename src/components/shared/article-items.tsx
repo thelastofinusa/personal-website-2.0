@@ -21,6 +21,7 @@ import type { ArticlesListQueryResult } from "~/sanity.types";
 import { useImagePreview } from "../provider/preview";
 import { useSoundFx } from "../provider/sound-fx";
 import { Frame } from "../reusable/reui/frame";
+import { Badge } from "../reusable/shadcn/badge";
 import { Button } from "../reusable/shadcn/button";
 import { StackedPagesIllustration } from "./illustration";
 
@@ -130,17 +131,20 @@ function ArticleItem({
       href={`/articles/${article.slug}`}
       onClick={() => play("forward")}
       className={cn(
-        "group relative flex bg-card flex-col gap-4 md:rounded-[20px] md:border p-5 transition-all duration-300 md:grid md:grid-cols-12 md:items-start md:p-6 hover:bg-background",
+        "group relative flex bg-card flex-col gap-4 md:rounded-[20px] md:border transition-all duration-300 md:grid md:grid-cols-12 md:items-start md:p-6 md:hover:bg-background",
         className,
       )}
     >
       {/* Left Column (Desktop): Meta & Pinned Status */}
       <div className="flex items-center gap-3 md:col-span-3 md:flex-col md:items-start md:gap-2.5">
         {article.pinned && (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-2 py-0.75 text-[10px] font-medium uppercase tracking-wider text-primary">
+          <Badge
+            variant="secondary"
+            className="pl-1.5 bg-muted/80 group-hover:bg-primary/10 group-hover:text-primary text-muted-foreground"
+          >
             <Thumbtack className="size-3" />
             <span>Featured</span>
-          </span>
+          </Badge>
         )}
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -154,7 +158,7 @@ function ArticleItem({
       {/* Right Column (Desktop): Main Content */}
       <div className="flex flex-col gap-1 md:col-span-9">
         <div className="flex items-center gap-4">
-          <h2 className="font-sans flex-1 line-clamp-1 text-lg font-medium tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary">
+          <h2 className="font-sans flex-1 line-clamp-1 text-base md:text-lg font-medium tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary">
             {article.title}
           </h2>
 

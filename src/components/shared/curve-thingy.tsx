@@ -4,7 +4,9 @@ import { cn } from "cn";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import type React from "react";
+import { keyOptions } from "@/constants/keys";
 import { useSoundFx } from "../provider/sound-fx";
+import { Container } from "./container";
 import { FadeLine } from "./fade-line";
 
 type Props = {
@@ -23,7 +25,7 @@ export const CurveThingy: React.FC<Props> = (props) => {
   return (
     <div
       className={cn(
-        "relative overflow-hidden backdrop-blur-3xl bg-card",
+        "relative bg-card",
         "gap-20 sm:gap-30 md:gap-36 flex flex-col pb-20 sm:pb-30 md:pb-36",
         "rounded-b-[46px] sm:rounded-b-[64px] md:rounded-b-[84px] -mb-16",
         props.tCurve &&
@@ -32,6 +34,21 @@ export const CurveThingy: React.FC<Props> = (props) => {
         props.className,
       )}
     >
+      <Container className="absolute hidden lg:block -top-6 left-1/2 -translate-x-1/2">
+        <div className="flex items-center justify-between gap-8">
+          {keyOptions.map((item) => (
+            <p
+              key={item.key}
+              className="text-[10px] font-mono tracking-[0.12em] max-w-33.75 text-center w-full text-muted-foreground uppercase"
+            >
+              <span className="text-foreground">{item.key}</span>
+              <span className="mx-1.5 opacity-40">/</span>
+              <span>{item.label}</span>
+            </p>
+          ))}
+        </div>
+      </Container>
+
       {props.tCurve && <FadeLine className="top-0 mx-auto w-[80%]" />}
 
       {!props.hideHash && (

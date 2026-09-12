@@ -11,7 +11,7 @@ import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ArrowRight5, Discover2, Menu4, Xmark } from "reicon-react";
 import { siteConfig } from "@/config/site.config";
-import { MENU_KEY } from "@/constants/keys";
+import { NAVIGATION_KEY } from "@/constants/keys";
 import { navLinks } from "@/constants/navigation";
 import { menuItemVariants, menuVariants } from "@/constants/variants";
 import { useOnClickOutside } from "@/hooks/use-click-outside";
@@ -46,7 +46,7 @@ export const MenuToggle: React.FC<
 
   useOnClickOutside(containerRef, toggleOpenMenu, openMenu);
 
-  useHotkeys(MENU_KEY, toggleOpenMenu);
+  useHotkeys(NAVIGATION_KEY, toggleOpenMenu);
 
   React.useEffect(() => {
     setMounted(true);

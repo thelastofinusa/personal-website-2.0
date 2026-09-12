@@ -20,7 +20,7 @@ export const ContactComp = () => {
     state: "FCT Abuja",
   });
 
-  const contactLinks = [
+  const contactItems = [
     ...siteConfig.socials
       .filter((item) => shouldInclude.includes(item.platform.toLowerCase()))
       .map((item) => ({
@@ -28,23 +28,25 @@ export const ContactComp = () => {
         label: item.platform,
         href: item.url,
         external: true,
+        icon: resolveIcon(item.platform),
       })),
+
     {
       id: "email",
       label: email,
       href: `mailto:${email}`,
       external: false,
     },
-  ];
 
-  const contactDetails = [
     {
       id: "location",
-      content: locationWithFlag,
+      label: locationWithFlag,
     },
+
     {
       id: "time",
-      content: time ? `${time} local time` : "Loading...",
+      label: time ? `It's currently ${time} here` : "...",
+      icon: AlarmClock,
     },
   ];
 
@@ -54,59 +56,63 @@ export const ContactComp = () => {
         size="xs"
         className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-6"
       >
-        <motion.div
-          variants={parentVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          className="flex flex-col gap-3"
-        >
-          {contactLinks.map((item) => {
-            const Icon = item.id !== "email" && resolveIcon(item.label);
+        {["links", "details"].map((group, _index) => (
+          <motion.div
+            key={group}
+            variants={parentVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            className="flex flex-col gap-3"
+          >
+            {contactItems
+              .filter((item) =>
+                group === "links" ? "href" in item : !("href" in item),
+              )
+              .map((item) => {
+                const Icon = item.icon;
 
-            return (
-              <motion.a
-                key={item.id}
-                variants={itemVariants}
-                href={item.href}
-                target={item.external ? "_blank" : undefined}
-                rel={item.external ? "noopener noreferrer" : undefined}
-                className="flex w-max items-center gap-2 text-base font-extralight tracking-[0.03em] hover:text-primary"
-              >
-                {Icon && <Icon className="sie-4" />}
+                const content = (
+                  <>
+                    {Icon && (
+                      <Icon
+                        className={`size-4 ${
+                          item.id === "time"
+                            ? "mb-px motion-safe:animate-bell-ring"
+                            : ""
+                        }`}
+                      />
+                    )}
 
-                <span className={item.external ? "capitalize" : undefined}>
-                  {item.label}
-                </span>
-              </motion.a>
-            );
-          })}
-        </motion.div>
+                    <span className={item.external ? "capitalize" : undefined}>
+                      {item.label}
+                    </span>
+                  </>
+                );
 
-        <motion.div
-          variants={parentVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          className="flex flex-col gap-3"
-        >
-          {contactDetails.map((item) => (
-            <motion.p
-              key={item.id}
-              variants={itemVariants}
-              className="text-base font-extralight tracking-[0.03em]"
-            >
-              {item.id === "time" ? (
-                <span className="flex w-max items-center gap-2 text-muted-foreground hover:text-foreground">
-                  <AlarmClock className="mb-px size-4 motion-safe:animate-bell-ring" />
-                  <span>{item.content}</span>
-                </span>
-              ) : (
-                item.content
-              )}
-            </motion.p>
-          ))}
-        </motion.div>
+                return "href" in item ? (
+                  <motion.a
+                    key={item.id}
+                    variants={itemVariants}
+                    href={item.href}
+                    target={item.external ? "_blank" : undefined}
+                    rel={item.external ? "noopener noreferrer" : undefined}
+                    className="flex w-max items-center gap-2 text-[15px] font-extralight tracking-[0.03em] hover:text-primary"
+                  >
+                    {content}
+                  </motion.a>
+                ) : (
+                  <motion.p
+                    key={item.id}
+                    variants={itemVariants}
+                    className="flex w-max items-center gap-2 text-[15px] font-extralight tracking-[0.03em]"
+                  >
+                    {content}
+                  </motion.p>
+                );
+              })}
+          </motion.div>
+        ))}
       </Container>
     </section>
   );

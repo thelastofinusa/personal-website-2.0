@@ -7,6 +7,8 @@ import { InfinityIcon } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import type { ComponentProps } from "react";
 import { useCallback, useRef, useState } from "react";
+import { Blend } from "reicon-react";
+import { useSoundFx } from "@/components/provider/sound-fx";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -20,6 +22,7 @@ import { workItemVariants } from "@/constants/variants";
 import { cn } from "@/lib/utils";
 import type { TimelineListQueryResult } from "~/sanity.types";
 import { Frame } from "../reui/frame";
+import { Badge } from "../shadcn/badge";
 import type { ChevronsUpDownIconHandle } from "./chevrons-up-down-icon";
 import { ChevronsUpDownIcon } from "./chevrons-up-down-icon";
 
@@ -73,15 +76,15 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
         <div className="flex items-center gap-2">
           {group.logo ? (
             <LocalImg
-              width={16}
-              height={16}
+              width={20}
+              height={20}
               src={group.logo}
               alt={group.organization ?? ""}
-              className="size-4 object-contain"
+              className="size-5 object-contain"
               aria-hidden
             />
           ) : (
-            <span className="rounded-xs size-4 bg-secondary" />
+            <Blend className="size-5 text-muted-foreground" />
           )}
           <h3 className="text-sm font-normal leading-snug text-foreground">
             {group.website ? (
@@ -132,21 +135,26 @@ export type TimelineItemProps = {
 };
 
 export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
+  const { play } = useSoundFx();
   const [isOpen, setIsOpen] = useState(item.isExpanded ?? false);
   const [isHovered, setIsHovered] = useState(false);
   const chevronsUpDownIconRef = useRef<ChevronsUpDownIconHandle>(null);
 
-  const handleOpenChange = useCallback((open: boolean) => {
-    setIsOpen(open);
-    const controls = chevronsUpDownIconRef.current;
-    if (!controls) return;
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      setIsOpen(open);
+      play(open ? "expand" : "collapse");
+      const controls = chevronsUpDownIconRef.current;
+      if (!controls) return;
 
-    if (open) {
-      controls.startAnimation();
-    } else {
-      controls.stopAnimation();
-    }
-  }, []);
+      if (open) {
+        controls.startAnimation();
+      } else {
+        controls.stopAnimation();
+      }
+    },
+    [play],
+  );
 
   const start = item.period?.start;
   const end = item.period?.end;
@@ -163,14 +171,14 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
       borderColor: "var(--border)",
     },
     hover: {
-      backgroundColor: isOpen ? "var(--primary)" : "var(--foreground)",
+      // backgroundColor: isOpen ? "var(--primary)" : "var(--foreground)",
       borderColor: isOpen ? "var(--primary)" : "var(--foreground)",
       transition: { duration: 0.15, delay: 0 },
     },
     expanded: {
       backgroundColor: isOpen ? "var(--primary)" : "var(--foreground)",
       borderColor: isOpen ? "var(--primary)" : "var(--foreground)",
-      transition: { duration: 0.15, delay: 0 },
+      transition: { duration: 0.25, delay: 0 },
     },
   };
 
@@ -200,14 +208,14 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
       borderColor: "var(--border)",
     },
     hover: {
-      backgroundColor: isOpen ? "var(--primary)" : "var(--foreground)",
+      // backgroundColor: isOpen ? "var(--primary)" : "var(--foreground)",
       borderColor: isOpen ? "var(--primary)" : "var(--foreground)",
       transition: { duration: 0.15, delay: 0.1 },
     },
     expanded: {
       backgroundColor: isOpen ? "var(--primary)" : "var(--foreground)",
       borderColor: isOpen ? "var(--primary)" : "var(--foreground)",
-      transition: { duration: 0.15, delay: 0.4 },
+      transition: { duration: 0.25, delay: 0.4 },
     },
   };
 
@@ -228,7 +236,7 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
               variants={node1Variants}
               animate={state}
               className={cn(
-                "absolute size-2.5 -left-4.25 md:-left-5.75 z-10 top-4.75 border bg-background",
+                "absolute size-2.5 -left-4.25 md:-left-5.75 z-10 top-4.25 border bg-background",
                 isEdu ? "rounded-xs rotate-45 scale-90" : "rounded-full",
               )}
             />
@@ -262,13 +270,7 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
             >
               {/* Title & Metadata */}
               <div className="flex-1 space-y-1.5">
-                <h4
-                  className={cn(
-                    "flex items-center gap-2 text-base font-normal text-foreground transition-colors",
-                    item.description &&
-                      "group-hover/timeline-item:text-primary",
-                  )}
-                >
+                <div className="flex items-center gap-2">
                   {item.icon && (
                     <span className="text-muted-foreground [&_svg]:size-4.5">
                       <Reicon
@@ -277,8 +279,16 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
                       />
                     </span>
                   )}
-                  {item.title}
-                </h4>
+                  <h3
+                    className={cn(
+                      "text-sm font-normal leading-snug text-foreground",
+                      item.description &&
+                        "group-hover/timeline-item:text-primary",
+                    )}
+                  >
+                    {item.title}
+                  </h3>
+                </div>
 
                 <dl className="flex flex-wrap items-center gap-2 text-xs font-normal text-muted-foreground sm:text-sm">
                   {start && (
@@ -362,7 +372,12 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
               <ul className="flex flex-wrap gap-x-1.5 gap-y-0.5">
                 {item.skills.map((skill, index) => (
                   <li key={index}>
-                    <Skill>{skill}</Skill>
+                    <Badge
+                      variant="secondary"
+                      className="group-hover/timeline-item:bg-primary/10 group-hover/timeline-item:text-primary text-muted-foreground"
+                    >
+                      {skill}
+                    </Badge>
                   </li>
                 ))}
               </ul>
@@ -408,18 +423,6 @@ export function Prose({ className, ...props }: ComponentProps<"div">) {
     <div
       className={cn(
         "prose prose-ncdai max-w-none text-[15px] font-light text-foreground",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-function Skill({ className, ...props }: ComponentProps<"span">) {
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium text-muted-foreground",
         className,
       )}
       {...props}

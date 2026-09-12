@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/reusable/shadcn/skeleton";
@@ -94,7 +95,6 @@ const PageLoading = () => {
           </Container>
           <div className="flex flex-col">
             {Array.from({ length: 5 }).map((_, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
               <div key={i} className="border-t last:border-b">
                 <Container size="md" className="py-5 md:py-7">
                   <div className="flex items-start justify-between gap-6 md:items-center">

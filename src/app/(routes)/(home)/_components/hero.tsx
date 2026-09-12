@@ -40,7 +40,7 @@ export const HomeHero = () => {
               className="flex items-center gap-2 text-sm md:text-lg"
             >
               <span className="font-extralight">Your friendly</span>
-              <Avatar size="xs" className="mb-0.5">
+              <Avatar size="xs" className="mb-px">
                 <AvatarImage
                   src={siteConfig.author.avatar}
                   alt={siteConfig.author.name}
