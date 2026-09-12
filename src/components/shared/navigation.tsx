@@ -1,12 +1,10 @@
 "use client";
 
-import type { Route } from "next";
 import Link from "next/link";
 import { siteConfig } from "@/config/site.config";
 import { getInitials } from "@/lib/utils";
 import { useSoundFx } from "../provider/sound-fx";
 import { Avatar, AvatarFallback, AvatarImage } from "../reusable/shadcn/avatar";
-import { buttonVariants } from "../reusable/shadcn/button";
 import { containerVariants } from "./container";
 import { MenuToggle } from "./menu-toggle";
 import { SoundFXToggle } from "./sound-fx-toggle";
@@ -45,16 +43,6 @@ export const Navigation = () => {
             <MenuToggle variant="inverse" />
             <ThemeToggle variant="inverse" />
           </div>
-
-          {process.env.NODE_ENV === "development" && (
-            <Link
-              target="_blank"
-              href={"/studio" as Route}
-              className={buttonVariants()}
-            >
-              Open Studio
-            </Link>
-          )}
         </div>
       </header>
     </nav>
