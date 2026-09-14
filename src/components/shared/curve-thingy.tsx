@@ -41,7 +41,7 @@ export const CurveThingy: React.FC<Props> = (props) => {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="absolute w-full hidden lg:block bottom-full left-1/2 -translate-x-1/2 pointer-events-none"
       >
-        <Container className="py-2 bg-linear-to-b from-transparent via-background/50 to-background">
+        <Container className="py-2 bg-linear-to-b from-transparent via-background/50 to-background select-none">
           <div className="flex items-center justify-between gap-8">
             {keyOptions.map((item) => (
               <p

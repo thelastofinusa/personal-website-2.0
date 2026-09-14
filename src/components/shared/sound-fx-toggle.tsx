@@ -272,10 +272,10 @@ export const SoundFXToggle: React.FC<
           >
             <Frame
               variant="inverse"
-              className="rounded-[20px]! bg-background dark:bg-card"
+              className="rounded-3xl bg-background dark:bg-card"
             >
               {/* ─── Card Grid ──────────────────────── */}
-              <FramePanel className="overflow-y-auto overscroll-contain bg-background p-3 flex flex-col gap-4">
+              <FramePanel className="overflow-y-auto rounded-[20px] overscroll-contain bg-background p-3 flex flex-col gap-4">
                 {/* ─── Header ─────────────────────────── */}
                 <div className="flex items-center justify-between relative">
                   <div className="flex items-center gap-2">

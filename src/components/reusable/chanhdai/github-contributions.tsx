@@ -148,10 +148,11 @@ export function GitHubContributions({
                 </g>
               }
             />
-            <TooltipContent className="font-sans">
-              <p>
+            <TooltipContent className="font-sans" sideOffset={8}>
+              <p className="text-center">
                 {activity.count} contribution{activity.count !== 1 ? "s" : ""}{" "}
-                on {format(new Date(activity.date), "dd.MM.yyyy")}
+                <br />
+                on {format(new Date(activity.date), "do MMM, yyyy")}
               </p>
             </TooltipContent>
           </Tooltip>

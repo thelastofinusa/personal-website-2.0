@@ -146,7 +146,7 @@ export const Footer = () => {
                             </Link>
                           }
                         />
-                        <TooltipContent className="text-center">
+                        <TooltipContent className="text-center" sideOffset={12}>
                           {social.platform} <br />@{siteConfig.author.username}
                         </TooltipContent>
                       </Tooltip>

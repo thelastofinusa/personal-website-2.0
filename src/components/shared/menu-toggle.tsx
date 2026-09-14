@@ -123,9 +123,9 @@ export const MenuToggle: React.FC<
           >
             <Frame
               variant="inverse"
-              className="rounded-[20px]! bg-background dark:bg-card"
+              className="rounded-3xl bg-background dark:bg-card"
             >
-              <FramePanel className="flex flex-col gap-1 p-2 bg-background">
+              <FramePanel className="flex rounded-[20px]! flex-col gap-1 p-2 bg-background">
                 {navLinks.map((route) => {
                   const isActive = isRouteActive(route.href);
                   const Icon = route.icon;

@@ -37,12 +37,10 @@ export const Navigation = () => {
           </Avatar>
         </Link>
 
-        <div className="flex items-center gap-4 pointer-events-auto">
-          <div className="wrapper flex relative items-center rounded-full">
-            <SoundFXToggle variant="inverse" />
-            <MenuToggle variant="inverse" />
-            <ThemeToggle variant="inverse" />
-          </div>
+        <div className="wrapper flex relative pointer-events-auto items-center rounded-full">
+          <SoundFXToggle variant="inverse" />
+          <MenuToggle variant="inverse" />
+          <ThemeToggle variant="inverse" />
         </div>
       </header>
     </nav>
