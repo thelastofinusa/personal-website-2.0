@@ -13,6 +13,7 @@ const articleList = `
   description,
   publishedAt,
   pinned,
+  isAiGenerated,
 
   body[] {
     ...,

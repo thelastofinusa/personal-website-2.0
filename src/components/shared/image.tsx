@@ -62,6 +62,7 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
       height = 600,
       loading = "lazy",
       alt = "",
+      quality = 70,
       ...props
     },
     ref,

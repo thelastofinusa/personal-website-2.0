@@ -37,7 +37,7 @@ export function PronounceMyName({
       <span className="absolute size-12 pointer-fine:hidden" aria-hidden />
       <VolumeIcon
         ref={volumeIconRef}
-        className="size-5.5 -mb-1.5!"
+        className="size-5 -mb-1.25!"
         aria-hidden
       />
     </button>

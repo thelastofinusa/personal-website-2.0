@@ -105,6 +105,10 @@
                   {
                     "type": "string",
                     "value": "upload"
+                  },
+                  {
+                    "type": "string",
+                    "value": "icon"
                   }
                 ]
               },
@@ -161,6 +165,13 @@
                     }
                   }
                 }
+              },
+              "optional": true
+            },
+            "icon": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "string"
               },
               "optional": true
             }
@@ -1010,6 +1021,13 @@
         "optional": true
       },
       "pinned": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
+      "isAiGenerated": {
         "type": "objectAttribute",
         "value": {
           "type": "boolean"

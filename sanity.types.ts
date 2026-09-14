@@ -31,7 +31,7 @@ export type Timeline = {
   category?: "experience" | "education";
   organization?: string;
   logo?: {
-    type?: "url" | "upload";
+    type?: "url" | "upload" | "icon";
     url?: string;
     image?: {
       asset?: SanityImageAssetReference;
@@ -40,6 +40,7 @@ export type Timeline = {
       crop?: SanityImageCrop;
       _type: "image";
     };
+    icon?: string;
   };
   website?: string;
   isCurrent?: boolean;
@@ -176,6 +177,7 @@ export type Article = {
   };
   publishedAt?: string;
   pinned?: boolean;
+  isAiGenerated?: boolean;
   body?: BlockContent;
 };
 
@@ -389,7 +391,7 @@ export type AllSanitySchemaTypes =
 
 // Source: src/sanity/queries/article.query.ts
 // Variable: articlesListQuery
-// Query: *[_type == "article"]    | order(pinned desc, publishedAt desc, _createdAt desc) {        _id,  title,  "slug": slug.current,  description,  publishedAt,  pinned,  body[] {    ...,    _type == "image" => {      ...,      "asset": asset-> {        "_id": _id,        "url": url,        "width": metadata.dimensions.width,        "height": metadata.dimensions.height      }    }  },  "mainImage": {    "image": mainImage.asset->url,    "width": mainImage.asset->metadata.dimensions.width,    "height": mainImage.asset->metadata.dimensions.height  },    }
+// Query: *[_type == "article"]    | order(pinned desc, publishedAt desc, _createdAt desc) {        _id,  title,  "slug": slug.current,  description,  publishedAt,  pinned,  isAiGenerated,  body[] {    ...,    _type == "image" => {      ...,      "asset": asset-> {        "_id": _id,        "url": url,        "width": metadata.dimensions.width,        "height": metadata.dimensions.height      }    }  },  "mainImage": {    "image": mainImage.asset->url,    "width": mainImage.asset->metadata.dimensions.width,    "height": mainImage.asset->metadata.dimensions.height  },    }
 export type ArticlesListQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -397,6 +399,7 @@ export type ArticlesListQueryResult = Array<{
   description: string | null;
   publishedAt: string | null;
   pinned: boolean | null;
+  isAiGenerated: boolean | null;
   body: Array<
     | {
         children?: Array<{
@@ -468,7 +471,7 @@ export type ArticlesListQueryResult = Array<{
 
 // Source: src/sanity/queries/article.query.ts
 // Variable: pinnedArticlesQuery
-// Query: *[_type == "article" && pinned == true]    | order(publishedAt desc, _createdAt desc)[0...3] {        _id,  title,  "slug": slug.current,  description,  publishedAt,  pinned,  body[] {    ...,    _type == "image" => {      ...,      "asset": asset-> {        "_id": _id,        "url": url,        "width": metadata.dimensions.width,        "height": metadata.dimensions.height      }    }  },  "mainImage": {    "image": mainImage.asset->url,    "width": mainImage.asset->metadata.dimensions.width,    "height": mainImage.asset->metadata.dimensions.height  },    }
+// Query: *[_type == "article" && pinned == true]    | order(publishedAt desc, _createdAt desc)[0...3] {        _id,  title,  "slug": slug.current,  description,  publishedAt,  pinned,  isAiGenerated,  body[] {    ...,    _type == "image" => {      ...,      "asset": asset-> {        "_id": _id,        "url": url,        "width": metadata.dimensions.width,        "height": metadata.dimensions.height      }    }  },  "mainImage": {    "image": mainImage.asset->url,    "width": mainImage.asset->metadata.dimensions.width,    "height": mainImage.asset->metadata.dimensions.height  },    }
 export type PinnedArticlesQueryResult = Array<{
   _id: string;
   title: string | null;
@@ -476,6 +479,7 @@ export type PinnedArticlesQueryResult = Array<{
   description: string | null;
   publishedAt: string | null;
   pinned: true;
+  isAiGenerated: boolean | null;
   body: Array<
     | {
         children?: Array<{
@@ -547,7 +551,7 @@ export type PinnedArticlesQueryResult = Array<{
 
 // Source: src/sanity/queries/article.query.ts
 // Variable: articleBySlugQuery
-// Query: *[_type == "article" && slug.current == $slug][0] {      _id,  title,  "slug": slug.current,  description,  publishedAt,  pinned,  body[] {    ...,    _type == "image" => {      ...,      "asset": asset-> {        "_id": _id,        "url": url,        "width": metadata.dimensions.width,        "height": metadata.dimensions.height      }    }  },  "mainImage": {    "image": mainImage.asset->url,    "width": mainImage.asset->metadata.dimensions.width,    "height": mainImage.asset->metadata.dimensions.height  },  }
+// Query: *[_type == "article" && slug.current == $slug][0] {      _id,  title,  "slug": slug.current,  description,  publishedAt,  pinned,  isAiGenerated,  body[] {    ...,    _type == "image" => {      ...,      "asset": asset-> {        "_id": _id,        "url": url,        "width": metadata.dimensions.width,        "height": metadata.dimensions.height      }    }  },  "mainImage": {    "image": mainImage.asset->url,    "width": mainImage.asset->metadata.dimensions.width,    "height": mainImage.asset->metadata.dimensions.height  },  }
 export type ArticleBySlugQueryResult = {
   _id: string;
   title: string | null;
@@ -555,6 +559,7 @@ export type ArticleBySlugQueryResult = {
   description: string | null;
   publishedAt: string | null;
   pinned: boolean | null;
+  isAiGenerated: boolean | null;
   body: Array<
     | {
         children?: Array<{
@@ -684,12 +689,24 @@ export type ProjectFiltersListQueryResult = Array<{
 
 // Source: src/sanity/queries/timeline.query.ts
 // Variable: timelineListQuery
-// Query: *[    _type == "timeline"  ] | order(_createdAt asc) {    _id,    category,    organization,    "logo": select(      logo.type == "url" => logo.url,      logo.type == "upload" => logo.image.asset->url    ),    website,    isCurrent,        items[] {      _key,      title,            period {        start,        end      },              "images": images[]{        "url": asset->url,        "width": asset->metadata.dimensions.width,        "height": asset->metadata.dimensions.height,        "alt": coalesce(asset->altText, "")      },      type,      icon,      description,      skills,      isExpanded    }  }
+// Query: *[    _type == "timeline"  ] | order(_createdAt asc) {    _id,    category,    organization,    "logo": select(      logo.type == "url" => { "type": "url", "value": logo.url },      logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },      logo.type == "icon" => { "type": "icon", "value": logo.icon }    ),    website,    isCurrent,        items[] {      _key,      title,            period {        start,        end      },              "images": images[]{        "url": asset->url,        "width": asset->metadata.dimensions.width,        "height": asset->metadata.dimensions.height,        "alt": coalesce(asset->altText, "")      },      type,      icon,      description,      skills,      isExpanded    }  }
 export type TimelineListQueryResult = Array<{
   _id: string;
   category: "education" | "experience" | null;
   organization: string | null;
-  logo: string | null;
+  logo:
+    | {
+        type: "icon";
+        value: string | null;
+      }
+    | {
+        type: "upload";
+        value: string | null;
+      }
+    | {
+        type: "url";
+        value: string | null;
+      };
   website: string | null;
   isCurrent: boolean | null;
   items: Array<{
@@ -731,13 +748,13 @@ export type TimelineListQueryResult = Array<{
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_type == "article"]\n    | order(pinned desc, publishedAt desc, _createdAt desc) {\n      \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n    }\n': ArticlesListQueryResult;
-    '\n  *[_type == "article" && pinned == true]\n    | order(publishedAt desc, _createdAt desc)[0...3] {\n      \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n    }\n': PinnedArticlesQueryResult;
-    '\n  *[_type == "article" && slug.current == $slug][0] {\n    \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n  }\n': ArticleBySlugQueryResult;
+    '\n  *[_type == "article"]\n    | order(pinned desc, publishedAt desc, _createdAt desc) {\n      \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n  isAiGenerated,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n    }\n': ArticlesListQueryResult;
+    '\n  *[_type == "article" && pinned == true]\n    | order(publishedAt desc, _createdAt desc)[0...3] {\n      \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n  isAiGenerated,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n    }\n': PinnedArticlesQueryResult;
+    '\n  *[_type == "article" && slug.current == $slug][0] {\n    \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n  isAiGenerated,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n  }\n': ArticleBySlugQueryResult;
     '\n*[_type == "articleUrl"] | order(_createdAt asc) {\n  \n_id,\nname,\nurl,\n\n}': ArticleUrlsListQueryResult;
     '\n*[_type == "project"] | order(date desc) {\n  \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n}': ProjectsListQueryResult;
     '\n  *[_type == "project" && featured == true]\n  | order(_createdAt desc)[0...4] {\n    \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n  }\n': FeaturedProjectsQueryResult;
     '\n*[_type == "projectFilter"] | order(_createdAt asc) {\n  \n_id,\nname,\n"slug": value.current,\ndescription,\nicon,\n\n}': ProjectFiltersListQueryResult;
-    '\n  *[\n    _type == "timeline"\n  ] | order(_createdAt asc) {\n    _id,\n    category,\n    organization,\n\n    "logo": select(\n      logo.type == "url" => logo.url,\n      logo.type == "upload" => logo.image.asset->url\n    ),\n\n    website,\n    isCurrent,\n    \n    items[] {\n      _key,\n      title,\n      \n      period {\n        start,\n        end\n      },\n        \n      "images": images[]{\n        "url": asset->url,\n        "width": asset->metadata.dimensions.width,\n        "height": asset->metadata.dimensions.height,\n        "alt": coalesce(asset->altText, "")\n      },\n\n      type,\n      icon,\n      description,\n      skills,\n      isExpanded\n    }\n  }\n': TimelineListQueryResult;
+    '\n  *[\n    _type == "timeline"\n  ] | order(_createdAt asc) {\n    _id,\n    category,\n    organization,\n\n    "logo": select(\n      logo.type == "url" => { "type": "url", "value": logo.url },\n      logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },\n      logo.type == "icon" => { "type": "icon", "value": logo.icon }\n    ),\n\n    website,\n    isCurrent,\n    \n    items[] {\n      _key,\n      title,\n      \n      period {\n        start,\n        end\n      },\n        \n      "images": images[]{\n        "url": asset->url,\n        "width": asset->metadata.dimensions.width,\n        "height": asset->metadata.dimensions.height,\n        "alt": coalesce(asset->altText, "")\n      },\n\n      type,\n      icon,\n      description,\n      skills,\n      isExpanded\n    }\n  }\n': TimelineListQueryResult;
   }
 }

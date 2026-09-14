@@ -1,5 +1,88 @@
 import type { Variants } from "motion/react";
 
+const getTimelineVariants = (isOpen: boolean) => {
+  const nodeColor = isOpen ? "var(--primary)" : "var(--foreground)";
+
+  const node1Variants: Variants = {
+    idle: {
+      backgroundColor: "var(--background)",
+      borderColor: "var(--border)",
+    },
+    hover: {
+      backgroundColor: nodeColor,
+      borderColor: nodeColor,
+      transition: {
+        duration: 0.15,
+        delay: 0,
+      },
+    },
+    expanded: {
+      backgroundColor: nodeColor,
+      borderColor: nodeColor,
+      transition: {
+        duration: 0.25,
+        delay: 0,
+      },
+    },
+  };
+
+  const lineVariants: Variants = {
+    idle: {
+      scaleY: 0,
+      opacity: 0,
+    },
+    hover: {
+      scaleY: 0,
+      opacity: 0,
+    },
+    expanded: {
+      scaleY: 1,
+      opacity: 1,
+      backgroundColor: nodeColor,
+      transition: {
+        scaleY: {
+          duration: 0.3,
+          delay: 0.12,
+          ease: "easeInOut",
+        },
+        opacity: {
+          duration: 0.01,
+          delay: 0.12,
+        },
+      },
+    },
+  };
+
+  const node2Variants: Variants = {
+    idle: {
+      backgroundColor: "var(--background)",
+      borderColor: "var(--border)",
+    },
+    hover: {
+      backgroundColor: nodeColor,
+      borderColor: nodeColor,
+      transition: {
+        duration: 0.15,
+        delay: 0.1,
+      },
+    },
+    expanded: {
+      backgroundColor: nodeColor,
+      borderColor: nodeColor,
+      transition: {
+        duration: 0.25,
+        delay: 0.4,
+      },
+    },
+  };
+
+  return {
+    node1Variants,
+    lineVariants,
+    node2Variants,
+  };
+};
+
 const parentVariants: Variants = {
   hidden: {},
   visible: {
@@ -93,4 +176,5 @@ export {
   workItemVariants,
   menuVariants,
   menuItemVariants,
+  getTimelineVariants,
 };

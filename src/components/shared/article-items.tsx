@@ -6,7 +6,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import React from "react";
 import type { IconType } from "react-icons";
-import { Clock, SquareTopDown, Thumbtack } from "reicon-react";
+import { Clock, SquareTopDown, Thumbtack, WandSparkle } from "reicon-react";
 import {
   Empty,
   EmptyDescription,
@@ -131,21 +131,33 @@ function ArticleItem({
       href={`/articles/${article.slug}`}
       onClick={() => play("forward")}
       className={cn(
-        "group relative flex bg-card flex-col gap-4 md:rounded-[20px] md:border transition-all duration-300 md:grid md:grid-cols-12 md:items-start md:p-6 md:hover:bg-background",
+        "group relative flex bg-card flex-col gap-4 md:rounded-[20px] md:border transition-all duration-300 md:p-6 md:hover:bg-background",
+        "md:grid md:grid-cols-12 md:items-start",
         className,
       )}
     >
-      {/* Left Column (Desktop): Meta & Pinned Status */}
-      <div className="flex items-center gap-3 md:col-span-3 md:flex-col md:items-start md:gap-2.5">
-        {article.pinned && (
-          <Badge
-            variant="secondary"
-            className="pl-1.5 bg-muted/80 group-hover:bg-primary/10 group-hover:text-primary text-muted-foreground"
-          >
-            <Thumbtack className="size-3" />
-            <span>Featured</span>
-          </Badge>
-        )}
+      {/* Left Column (Desktop): Meta & Status */}
+      <div className="flex items-center gap-3 md:col-span-4 md:flex-col md:items-start md:gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
+          {article.isAiGenerated && (
+            <Badge
+              variant="secondary"
+              className="bg-muted/80 pl-1.5 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
+            >
+              <WandSparkle className="size-3.5!" />
+              <span>AI Assisted</span>
+            </Badge>
+          )}
+          {article.pinned && (
+            <Badge
+              variant="secondary"
+              className="bg-muted/80 pl-1.5 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
+            >
+              <Thumbtack className="size-3.5!" />
+              <span>Featured</span>
+            </Badge>
+          )}
+        </div>
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Clock className="size-3.5" />
@@ -156,7 +168,7 @@ function ArticleItem({
       </div>
 
       {/* Right Column (Desktop): Main Content */}
-      <div className="flex flex-col gap-1 md:col-span-9">
+      <div className="flex flex-col gap-1 md:col-span-8">
         <div className="flex items-center gap-4">
           <h2 className="font-sans flex-1 line-clamp-1 text-base md:text-lg font-medium tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary">
             {article.title}

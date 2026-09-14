@@ -9,7 +9,7 @@ export const siteConfig = {
     nickname: "Osilama",
     nicknameShorten: "Osi",
     namePronunciationUrl:
-      "https://cdn.sanity.io/files/l1eyjyqo/production/9c1a2500da26f507d6b221f761095446516de14a.mp3",
+      "https://cdn.sanity.io/files/l1eyjyqo/production/5bc4adb49053f62e13529d23fa46de67382dc887.mp3",
     position: "Web3 Frontend Developer",
     email: "dGhlbGFzdG9maW51c2FAZ21haWwuY29t",
     phone: "KzIzNDgxMjgxNTc1MTA=",

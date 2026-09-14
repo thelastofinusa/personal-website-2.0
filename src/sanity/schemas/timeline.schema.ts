@@ -44,6 +44,7 @@ export const timelineSchema = defineType({
             list: [
               { title: "URL", value: "url" },
               { title: "Upload", value: "upload" },
+              { title: "Icon", value: "icon" },
             ],
             layout: "radio",
           },
@@ -70,17 +71,37 @@ export const timelineSchema = defineType({
           },
           hidden: ({ parent }) => parent?.type !== "upload",
         }),
+
+        defineField({
+          name: "icon",
+          title: "Logo Icon",
+          type: "string",
+          description:
+            "The name of a Reicon icon. Example: Code, GraduationCap, BriefcaseBusiness.",
+          hidden: ({ parent }) => parent?.type !== "icon",
+        }),
       ],
       preview: {
         select: {
           type: "type",
           url: "url",
           image: "image",
+          icon: "icon",
         },
-        prepare({ type, url, image }) {
+        prepare({ type, url, image, icon }) {
           return {
-            title: type === "upload" ? "Uploaded logo" : url || "Logo URL",
-            media: type === "upload" ? image : undefined,
+            title:
+              type === "upload"
+                ? "Uploaded logo"
+                : type === "icon"
+                  ? icon || "Logo Icon"
+                  : url || "Logo URL",
+            media:
+              type === "icon"
+                ? resolveReicon(icon)
+                : type === "upload"
+                  ? image
+                  : undefined,
           };
         },
       },

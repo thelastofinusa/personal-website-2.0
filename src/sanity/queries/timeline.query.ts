@@ -13,8 +13,9 @@ const timelineListQuery = defineQuery(`
     organization,
 
     "logo": select(
-      logo.type == "url" => logo.url,
-      logo.type == "upload" => logo.image.asset->url
+      logo.type == "url" => { "type": "url", "value": logo.url },
+      logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },
+      logo.type == "icon" => { "type": "icon", "value": logo.icon }
     ),
 
     website,

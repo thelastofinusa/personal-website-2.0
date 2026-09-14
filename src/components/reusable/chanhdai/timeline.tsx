@@ -4,7 +4,7 @@
 
 import { differenceInMonths } from "date-fns";
 import { InfinityIcon } from "lucide-react";
-import { AnimatePresence, motion, type Variants } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import type { ComponentProps } from "react";
 import { useCallback, useRef, useState } from "react";
 import { Blend } from "reicon-react";
@@ -18,7 +18,7 @@ import { FadeLine } from "@/components/shared/fade-line";
 import { LocalImg } from "@/components/shared/image";
 import { PortableText } from "@/components/shared/portable-text";
 import { Reicon } from "@/components/shared/reicon";
-import { workItemVariants } from "@/constants/variants";
+import { getTimelineVariants, workItemVariants } from "@/constants/variants";
 import { cn } from "@/lib/utils";
 import type { TimelineListQueryResult } from "~/sanity.types";
 import { Frame } from "../reui/frame";
@@ -74,17 +74,22 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
       {/* LEFT COLUMN: Organization Info (Sticky on scroll) */}
       <div className="flex-1 h-max">
         <div className="flex items-center gap-2">
-          {group.logo ? (
+          {group.logo?.type === "icon" ? (
+            <Reicon
+              name={group.logo.value}
+              className="size-4.5 text-muted-foreground"
+            />
+          ) : group.logo?.value ? (
             <LocalImg
               width={20}
               height={20}
-              src={group.logo}
+              src={group.logo.value}
               alt={group.organization ?? ""}
-              className="size-5 object-contain"
+              className="size-4.5 object-contain"
               aria-hidden
             />
           ) : (
-            <Blend className="size-5 text-muted-foreground" />
+            <Blend className="size-4.5 text-muted-foreground" />
           )}
           <h3 className="text-sm font-normal leading-snug text-foreground">
             {group.website ? (
@@ -140,6 +145,9 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const chevronsUpDownIconRef = useRef<ChevronsUpDownIconHandle>(null);
 
+  const { lineVariants, node1Variants, node2Variants } =
+    getTimelineVariants(isOpen);
+
   const handleOpenChange = useCallback(
     (open: boolean) => {
       setIsOpen(open);
@@ -163,61 +171,6 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
 
   // Current animation state
   const state = isOpen ? "expanded" : isHovered ? "hover" : "idle";
-
-  // Animation variants
-  const node1Variants: Variants = {
-    idle: {
-      backgroundColor: "var(--background)",
-      borderColor: "var(--border)",
-    },
-    hover: {
-      // backgroundColor: isOpen ? "var(--primary)" : "var(--foreground)",
-      borderColor: isOpen ? "var(--primary)" : "var(--foreground)",
-      transition: { duration: 0.15, delay: 0 },
-    },
-    expanded: {
-      backgroundColor: isOpen ? "var(--primary)" : "var(--foreground)",
-      borderColor: isOpen ? "var(--primary)" : "var(--foreground)",
-      transition: { duration: 0.25, delay: 0 },
-    },
-  };
-
-  const lineVariants: Variants = {
-    idle: {
-      scaleY: 0,
-      opacity: 0,
-    },
-    hover: {
-      scaleY: 0,
-      opacity: 0,
-    },
-    expanded: {
-      scaleY: 1,
-      opacity: 1,
-      backgroundColor: isOpen ? "var(--primary)" : "var(--foreground)",
-      transition: {
-        scaleY: { duration: 0.3, delay: 0.12, ease: "easeInOut" },
-        opacity: { duration: 0.01, delay: 0.12 },
-      },
-    },
-  };
-
-  const node2Variants: Variants = {
-    idle: {
-      backgroundColor: "var(--background)",
-      borderColor: "var(--border)",
-    },
-    hover: {
-      // backgroundColor: isOpen ? "var(--primary)" : "var(--foreground)",
-      borderColor: isOpen ? "var(--primary)" : "var(--foreground)",
-      transition: { duration: 0.15, delay: 0.1 },
-    },
-    expanded: {
-      backgroundColor: isOpen ? "var(--primary)" : "var(--foreground)",
-      borderColor: isOpen ? "var(--primary)" : "var(--foreground)",
-      transition: { duration: 0.25, delay: 0.4 },
-    },
-  };
 
   return (
     <Collapsible
@@ -359,7 +312,7 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   className="overflow-hidden px-3"
                 >
-                  <Prose>
+                  <Prose className="pb-4 pt-3">
                     <PortableText value={item.description} />
                   </Prose>
                 </motion.div>

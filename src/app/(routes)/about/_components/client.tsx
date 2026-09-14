@@ -124,14 +124,14 @@ export const AboutPageClient: React.FC<{
             <Container size="sm">
               <div className="flex items-center justify-between gap-4">
                 <Eyebrow
-                  label="Latest Articles"
+                  label="Freshly Escaped"
                   icon={navLinksData("/articles")?.icon}
                 />
 
                 <motion.div variants={itemVariants}>
                   <Link href="/articles" onClick={() => play("forward")}>
                     <Button variant="outline" size="sm">
-                      Explore the rest
+                      Feed the Brain
                     </Button>
                   </Link>
                 </motion.div>
