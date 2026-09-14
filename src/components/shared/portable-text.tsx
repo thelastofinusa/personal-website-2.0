@@ -11,7 +11,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { CopyButton } from "@/components/reusable/chanhdai/copy-button";
 import { LocalImg } from "@/components/shared/image";
 import { cn } from "@/lib/utils";
-
+import { LinkPreview } from "../reusable/aceternity/link-preview";
 import { Frame } from "../reusable/reui/frame";
 import { Button } from "../reusable/shadcn/button";
 import { FadeLine } from "./fade-line";
@@ -410,14 +410,14 @@ export const PortableText = ({ value, className }: Props) => {
 
         if (isExternal || value?.blank) {
           return (
-            <a
-              href={href}
+            <LinkPreview
               target="_blank"
+              url={href}
               rel="noopener noreferrer"
               className="text-primary underline"
             >
               {children}
-            </a>
+            </LinkPreview>
           );
         }
 

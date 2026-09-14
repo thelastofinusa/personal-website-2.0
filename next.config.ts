@@ -57,6 +57,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "api.microlink.io", // Microlink Image Preview
+      },
+      {
+        protocol: "https",
         hostname: "placehold.co",
       },
     ],

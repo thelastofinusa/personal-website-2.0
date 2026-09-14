@@ -21,6 +21,7 @@ import { Reicon } from "@/components/shared/reicon";
 import { getTimelineVariants, workItemVariants } from "@/constants/variants";
 import { cn } from "@/lib/utils";
 import type { TimelineListQueryResult } from "~/sanity.types";
+import { LinkPreview } from "../aceternity/link-preview";
 import { Frame } from "../reui/frame";
 import { Badge } from "../shadcn/badge";
 import type { ChevronsUpDownIconHandle } from "./chevrons-up-down-icon";
@@ -93,14 +94,13 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
           )}
           <h3 className="text-sm font-normal leading-snug text-foreground">
             {group.website ? (
-              <a
-                className="link-underline transition-colors hover:text-primary"
-                href={group.website}
+              <LinkPreview
                 target="_blank"
-                rel="noopener noreferrer"
+                url={group.website}
+                className="link-underline transition-colors hover:text-primary"
               >
                 {group.organization}
-              </a>
+              </LinkPreview>
             ) : (
               <span>{group.organization}</span>
             )}
