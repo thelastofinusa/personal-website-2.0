@@ -1,6 +1,6 @@
 import { cn } from "cn";
 import React from "react";
-import { CarouselH, SliderVertical2, Xmark } from "reicon-react";
+import { SliderHorizontal2, SliderVertical2, Xmark } from "reicon-react";
 import { useSoundFx } from "@/components/provider/sound-fx";
 import { Button } from "@/components/reusable/shadcn/button";
 import {
@@ -32,7 +32,7 @@ const views = [
     value: "grid",
     name: "Spread 'Em Out",
     default: "Grid",
-    icon: CarouselH,
+    icon: SliderHorizontal2,
   },
 ];
 
@@ -184,7 +184,7 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
           <Button
             type="button"
             onClick={onClear}
-            variant="destructive"
+            variant="ghost"
             size="icon"
             aria-label="Clear filters"
           >

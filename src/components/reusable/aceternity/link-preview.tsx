@@ -1,4 +1,5 @@
 "use client";
+
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
 import {
   AnimatePresence,
@@ -10,6 +11,7 @@ import { encode } from "qss";
 import React from "react";
 
 import { cn } from "@/lib/utils";
+import { Frame } from "../reui/frame";
 
 type LinkPreviewProps = {
   children: React.ReactNode;
@@ -21,6 +23,11 @@ type LinkPreviewProps = {
   height?: number;
   quality?: number;
   layout?: string;
+  side?: React.ComponentProps<typeof HoverCardPrimitive.Content>["side"];
+  align?: React.ComponentProps<typeof HoverCardPrimitive.Content>["align"];
+  sideOffset?: React.ComponentProps<
+    typeof HoverCardPrimitive.Content
+  >["sideOffset"];
 } & (
   | { isStatic: true; imageSrc: string }
   | { isStatic?: false; imageSrc?: never }
@@ -36,6 +43,9 @@ export const LinkPreview = ({
   height = 125,
   quality = 50,
   layout = "fixed",
+  side = "top",
+  align = "center",
+  sideOffset = 10,
   isStatic = false,
   imageSrc = "",
 }: LinkPreviewProps) => {
@@ -53,96 +63,125 @@ export const LinkPreview = ({
       "viewport.width": width * 3,
       "viewport.height": height * 3,
     });
+
     src = `https://api.microlink.io/?${params}`;
   } else {
     src = imageSrc;
   }
 
   const [isOpen, setOpen] = React.useState(false);
-
   const [isMounted, setIsMounted] = React.useState(false);
 
   React.useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const springConfig = { stiffness: 100, damping: 15 };
   const x = useMotionValue(0);
 
-  const translateX = useSpring(x, springConfig);
+  const translateX = useSpring(x, {
+    stiffness: 180,
+    damping: 18,
+    mass: 0.7,
+  });
 
-  const handleMouseMove = (event: any) => {
-    const targetRect = event.target.getBoundingClientRect();
-    const eventOffsetX = event.clientX - targetRect.left;
-    const offsetFromCenter = (eventOffsetX - targetRect.width / 2) / 2; // Reduce the effect to make it subtle
-    x.set(offsetFromCenter);
+  const handleMouseMove = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+
+    const mouseX = event.clientX - rect.left;
+    const centerX = rect.width / 2;
+
+    const offset = (mouseX - centerX) * 0.35;
+
+    x.set(offset);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
   };
 
   return (
     <>
-      {isMounted ? (
-        <div className="hidden">
-          <img src={src} width={width} height={height} alt="hidden asset" />
-        </div>
-      ) : null}
+      {isMounted && (
+        <img
+          src={src}
+          width={width}
+          height={height}
+          alt=""
+          aria-hidden="true"
+          className="hidden"
+        />
+      )}
 
       <HoverCardPrimitive.Root
         openDelay={50}
         closeDelay={100}
-        onOpenChange={(open) => {
-          setOpen(open);
-        }}
+        onOpenChange={setOpen}
       >
-        <HoverCardPrimitive.Trigger
-          onMouseMove={handleMouseMove}
-          className={cn("text-black dark:text-white", className)}
-          href={url}
-        >
-          {children}
+        <HoverCardPrimitive.Trigger asChild>
+          <a
+            href={url}
+            target={target}
+            rel={rel}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            className={cn("inline text-black dark:text-white", className)}
+          >
+            {children}
+          </a>
         </HoverCardPrimitive.Trigger>
 
         <HoverCardPrimitive.Content
-          className="[transform-origin:var(--radix-hover-card-content-transform-origin)]"
-          side="top"
-          align="center"
-          sideOffset={10}
+          side={side}
+          align={align}
+          sideOffset={sideOffset}
+          className="z-50 [transform-origin:var(--radix-hover-card-content-transform-origin)]"
         >
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {isOpen && (
-              <motion.span
-                initial={{ opacity: 0, y: 20, scale: 0.6 }}
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 24,
+                  scale: 0.65,
+                }}
                 animate={{
                   opacity: 1,
                   y: 0,
                   scale: 1,
-                  transition: {
-                    type: "spring",
-                    stiffness: 260,
-                    damping: 20,
-                  },
                 }}
-                exit={{ opacity: 0, y: 20, scale: 0.6 }}
-                className="shadow-xl rounded-xl"
+                exit={{
+                  opacity: 0,
+                  y: 18,
+                  scale: 0.7,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 280,
+                  damping: 18,
+                  mass: 0.7,
+                }}
                 style={{
                   x: translateX,
                 }}
               >
-                <a
-                  ref={rel as any}
-                  target={target}
-                  href={url}
-                  className="block p-1 bg-white border-2 border-transparent shadow rounded-xl hover:border-neutral-200 dark:hover:border-neutral-800"
-                  style={{ fontSize: 0 }}
-                >
-                  <img
-                    src={isStatic ? imageSrc : src}
-                    width={width}
-                    height={height}
-                    className="rounded-lg"
-                    alt="preview asset"
-                  />
-                </a>
-              </motion.span>
+                <Frame variant="ghost" className="rounded-[20px]!">
+                  <a
+                    href={url}
+                    target={target}
+                    rel={rel}
+                    className="block rounded-2xl bg-card p-1"
+                    style={{ fontSize: 0 }}
+                  >
+                    <img
+                      src={isStatic ? imageSrc : src}
+                      width={width}
+                      height={height}
+                      className="rounded-lg"
+                      alt="Preview"
+                    />
+                  </a>
+                </Frame>
+              </motion.div>
             )}
           </AnimatePresence>
         </HoverCardPrimitive.Content>

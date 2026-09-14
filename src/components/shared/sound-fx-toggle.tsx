@@ -9,14 +9,11 @@ import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
   ArrowRight5,
-  Soundwave,
   Tuning2,
   VolumeHigh,
-  VolumeLow,
   VolumeLow2,
   VolumeMute,
   VolumeSlash,
-  VolumeUp3,
 } from "reicon-react";
 import { type PackName, packNames } from "uisfx";
 import { SOUND_KEY } from "@/constants/keys";
@@ -24,12 +21,12 @@ import { menuItemVariants, menuVariants } from "@/constants/variants";
 import { useOnClickOutside } from "@/hooks/use-click-outside";
 import { useSoundFx } from "../provider/sound-fx";
 import { useToggle } from "../provider/toggle";
+import { ElasticSlider } from "../reusable/chanhdai/elastic-slider";
 import { IconSwap, IconSwapItem } from "../reusable/chanhdai/icon-swap";
 import { Frame, FramePanel } from "../reusable/reui/frame";
 import { Button, type buttonVariants } from "../reusable/shadcn/button";
 import { ButtonGroup } from "../reusable/shadcn/button-group";
 import { Skeleton } from "../reusable/shadcn/skeleton";
-import { Slider } from "../reusable/shadcn/slider";
 import { CountingNumber } from "./count-number";
 import { FadeLine } from "./fade-line";
 
@@ -225,12 +222,6 @@ export const SoundFXToggle: React.FC<
     return <Skeleton className="h-8 w-8 rounded-full" />;
   }
 
-  const activePackIndex = allPacks.indexOf(pack);
-  const activePackColors =
-    activePackIndex >= 0
-      ? getPackColors(pack, activePackIndex)
-      : PACK_COLORS[0];
-
   const volumePercentage = Math.round(volume * 100);
 
   const VolumeIcon = !enabled
@@ -266,94 +257,16 @@ export const SoundFXToggle: React.FC<
             animate="open"
             exit="closed"
             className={cn(
-              "absolute right-0 top-full z-40 mt-3 w-72 origin-top-right rounded-[20px]!",
+              "absolute right-0 top-full z-40 mt-3 w-73 origin-top-right rounded-[20px]",
               "shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)]",
             )}
           >
             <Frame
               variant="inverse"
-              className="rounded-3xl bg-background dark:bg-card"
+              className="rounded-[20px] bg-background dark:bg-card"
             >
               {/* ─── Card Grid ──────────────────────── */}
-              <FramePanel className="overflow-y-auto rounded-[20px] overscroll-contain bg-background p-3 flex flex-col gap-4">
-                {/* ─── Header ─────────────────────────── */}
-                <div className="flex items-center justify-between relative">
-                  <div className="flex items-center gap-2">
-                    <Soundwave className="size-4.5 text-muted-foreground" />
-                    <span className="text-[13px] font-medium">
-                      Sound Effects
-                    </span>
-                  </div>
-
-                  <ButtonGroup>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon-xs"
-                      aria-label="More Options"
-                      className="h-7 w-8"
-                      onClick={() => {
-                        toggle();
-                        play(enabled ? "remove-from-cart" : "add-to-cart");
-                      }}
-                    >
-                      <IconSwap>
-                        <IconSwapItem
-                          key={`${enabled ? "on" : "off"}-${VolumeIcon.displayName ?? VolumeIcon.name}`}
-                        >
-                          <VolumeIcon className="size-4" />
-                        </IconSwapItem>
-                      </IconSwap>
-                    </Button>
-                    <Button
-                      size="xs"
-                      variant="outline"
-                      type="button"
-                      disabled={!enabled}
-                      onClick={() => {
-                        if (!enabled) return;
-
-                        setShowVolumeSlider((prev) => !prev);
-                        play(showVolumeSlider ? "toggle-off" : "toggle-on");
-                      }}
-                    >
-                      <span className="w-7 font-mono text-xs font-medium tabular-nums">
-                        <CountingNumber
-                          number={enabled ? Math.round(volume * 100) : 0}
-                          fromNumber={0}
-                        />
-                        %
-                      </span>
-                    </Button>
-                  </ButtonGroup>
-
-                  {/* Inline volume popover */}
-                  <AnimatePresence>
-                    {showVolumeSlider && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -4, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -4, scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full z-50 mt-2 w-full rounded-lg border bg-card p-3 shadow-xl"
-                      >
-                        <div className="flex items-center gap-3">
-                          <VolumeLow className="size-4.5 text-muted-foreground" />
-                          <Slider
-                            value={[Math.round(volume * 100)]}
-                            max={100}
-                            min={0}
-                            step={5}
-                            onValueChange={handleVolumeChange}
-                            className="flex-1"
-                          />
-                          <VolumeUp3 className="size-4.5 text-muted-foreground" />
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
+              <FramePanel className="overflow-y-auto rounded-2xl overscroll-contain bg-background p-3 flex flex-col gap-4">
                 <div className="grid grid-cols-2 gap-2">
                   {visiblePacks.map((packName, index) => {
                     const isActive = pack === packName && enabled;
@@ -464,50 +377,87 @@ export const SoundFXToggle: React.FC<
               </FramePanel>
 
               {/* ─── Footer ─────────────────────────── */}
-              <div className="flex items-center gap-2 px-5 py-4">
-                <motion.a
+              <div className="flex items-center relative gap-2 pl-4 pr-2.5 w-full py-2 justify-between">
+                <motion.span
                   variants={menuItemVariants}
-                  href="https://uisfx.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
                   onClick={() => play("forward")}
-                  className="group flex w-max items-center gap-1.5 text-xs font-light tracking-[0.03em] text-muted-foreground transition-colors hover:text-primary"
                 >
-                  <span>Powered by uisfx.com</span>
-                  <ArrowRight5 className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-                </motion.a>
+                  <a
+                    href="https://uisfx.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex w-max items-center gap-1.5 text-xs font-light tracking-[0.03em] text-muted-foreground! transition-colors hover:text-primary!"
+                  >
+                    <span>Powered by uisfx.com</span>
+                    <ArrowRight5 className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  </a>
+                </motion.span>
 
-                {enabled && (
-                  <div className="ml-auto flex items-center justify-center gap-2">
-                    <span className="relative flex size-1.75">
-                      <motion.span
-                        className={cn(
-                          "absolute inset-0 rounded-full opacity-75",
-                          activePackColors.dot,
-                        )}
-                        animate={{
-                          scale: [1, 2, 1],
-                          opacity: [0.6, 0, 0.6],
-                        }}
-                        transition={{
-                          duration: 1.8,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                      />
+                <ButtonGroup>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon-xs"
+                    aria-label="More Options"
+                    className="h-7 w-8"
+                    onClick={() => {
+                      toggle();
+                      play(enabled ? "remove-from-cart" : "add-to-cart");
+                    }}
+                  >
+                    <IconSwap>
+                      <IconSwapItem
+                        key={`${enabled ? "on" : "off"}-${VolumeIcon.displayName ?? VolumeIcon.name}`}
+                      >
+                        <VolumeIcon className="size-4" />
+                      </IconSwapItem>
+                    </IconSwap>
+                  </Button>
+                  <Button
+                    size="xs"
+                    variant="outline"
+                    type="button"
+                    disabled={!enabled}
+                    onClick={() => {
+                      if (!enabled) return;
 
-                      <span
-                        className={cn(
-                          "relative size-1.75 rounded-full",
-                          activePackColors.dot,
-                        )}
+                      setShowVolumeSlider((prev) => !prev);
+                      play(showVolumeSlider ? "toggle-off" : "toggle-on");
+                    }}
+                  >
+                    <span className="w-7 font-mono text-xs font-medium tabular-nums">
+                      <CountingNumber
+                        number={enabled ? Math.round(volume * 100) : 0}
+                        fromNumber={0}
                       />
+                      %
                     </span>
-                    <span className="text-xs font-medium capitalize text-foreground">
-                      {pack}
-                    </span>
-                  </div>
-                )}
+                  </Button>
+                </ButtonGroup>
+
+                {/* Inline volume popover */}
+                <AnimatePresence>
+                  {showVolumeSlider && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full z-50 mt-2 w-full"
+                    >
+                      <Frame variant="inverse" className="rounded-xl">
+                        <ElasticSlider
+                          label="Volume"
+                          min={0}
+                          max={100}
+                          step={5}
+                          value={Math.round(volume * 100)}
+                          onValueChange={handleVolumeChange}
+                        />
+                      </Frame>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </Frame>
           </motion.div>
