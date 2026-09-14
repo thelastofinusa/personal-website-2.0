@@ -9,6 +9,11 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/reusable/shadcn/avatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/reusable/shadcn/popover";
 import { Container } from "@/components/shared/container";
 import { siteConfig } from "@/config/site.config";
 import { itemVariants, parentVariants } from "@/constants/variants";
@@ -40,15 +45,30 @@ export const HomeHero = () => {
               className="flex items-center gap-2 text-sm md:text-lg"
             >
               <span className="font-extralight">Your friendly</span>
-              <Avatar size="xs" className="mb-px">
-                <AvatarImage
-                  src={siteConfig.author.avatar}
-                  alt={siteConfig.author.name}
-                />
-                <AvatarFallback className="border">
-                  {getInitials(siteConfig.author.name)}
-                </AvatarFallback>
-              </Avatar>
+              <Popover defaultOpen>
+                <PopoverTrigger>
+                  <Avatar size="xs" className="mb-px">
+                    <AvatarImage
+                      src={siteConfig.author.avatar}
+                      alt={siteConfig.author.name}
+                    />
+                    <AvatarFallback className="border">
+                      {getInitials(siteConfig.author.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                </PopoverTrigger>
+                <PopoverContent
+                  side="top"
+                  sideOffset={12}
+                  className="w-auto p-1 overflow-hidden rounded-3xl"
+                >
+                  <img
+                    src={siteConfig.author.avatar}
+                    alt={siteConfig.author.name}
+                    className="h-36 w-36 rounded-[20px] object-cover"
+                  />
+                </PopoverContent>
+              </Popover>
               <span className="font-extralight">neighborhood developer</span>
             </motion.p>
 
