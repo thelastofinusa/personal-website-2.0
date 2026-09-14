@@ -165,7 +165,7 @@ function ArticleItem({
           <SquareTopDown className="size-4 group-hover:text-primary shrink-0 transition-colors duration-300" />
         </div>
 
-        <p className="line-clamp-2 font-light leading-relaxed text-muted-foreground/80 text-sm">
+        <p className="line-clamp-2 font-light pr-8 leading-relaxed text-muted-foreground/80 text-sm">
           {article.description}
         </p>
       </div>

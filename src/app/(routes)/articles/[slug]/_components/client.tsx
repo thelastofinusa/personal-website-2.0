@@ -26,27 +26,31 @@ export const ArticleDetailsClient: React.FC<{
     <article className="flex-1 overflow-x-clip">
       <QuickHero
         eyebrow={{
-          label: "Back To Articles",
+          label: "Abort Reading",
           href: "/articles",
           icon: ArrowLeft5,
         }}
         title={article?.title as string}
         description={article?.description as string}
-        component={{
-          content: (
-            <Frame className="rounded-[20px]!">
-              <div className="border aspect-video rounded-2xl overflow-hidden">
-                <LocalImg
-                  src={article?.mainImage.image as string}
-                  alt={article?.title as string}
-                  className="size-full object-cover"
-                  loading="eager"
-                />
-              </div>
-            </Frame>
-          ),
-          maxWidth: "md",
-        }}
+        component={
+          article?.mainImage
+            ? {
+                content: (
+                  <Frame className="rounded-[20px]!">
+                    <div className="border size-auto rounded-2xl overflow-hidden">
+                      <LocalImg
+                        src={article?.mainImage.image as string}
+                        alt={article?.title as string}
+                        className="w-full h-auto object-cover"
+                        loading="eager"
+                      />
+                    </div>
+                  </Frame>
+                ),
+                maxWidth: "md",
+              }
+            : undefined
+        }
       />
 
       <CurveThingy tCurve>

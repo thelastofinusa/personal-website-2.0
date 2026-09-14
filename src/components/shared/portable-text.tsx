@@ -347,27 +347,35 @@ export const PortableText = ({ value, className }: Props) => {
   const components: PortableTextComponents = {
     block: {
       normal: ({ children }) => (
-        <p className="my-4 leading-relaxed">{children}</p>
+        <p className="my-4 leading-relaxed first:mt-0 last:mb-0">{children}</p>
       ),
 
       h1: ({ children }) => (
-        <h1 className="my-6 text-4xl font-bold">{children}</h1>
+        <h1 className="my-6 text-4xl font-bold first:mt-0 last:mb-0">
+          {children}
+        </h1>
       ),
 
       h2: ({ children }) => (
-        <h2 className="my-5 text-3xl font-bold">{children}</h2>
+        <h2 className="my-5 text-3xl font-bold first:mt-0 last:mb-0">
+          {children}
+        </h2>
       ),
 
       h3: ({ children }) => (
-        <h3 className="my-4 text-2xl font-semibold">{children}</h3>
+        <h3 className="my-4 text-2xl font-semibold first:mt-0 last:mb-0">
+          {children}
+        </h3>
       ),
 
       h4: ({ children }) => (
-        <h4 className="my-3 text-xl font-semibold">{children}</h4>
+        <h4 className="my-3 text-xl font-semibold first:mt-0 last:mb-0">
+          {children}
+        </h4>
       ),
 
       blockquote: ({ children }) => (
-        <blockquote className="my-6 border-l-4 border-primary pl-4 italic">
+        <blockquote className="my-6 border-l-3 border-primary pl-3 py-1 bg-muted/60 italic first:mt-0 last:mb-0">
           {children}
         </blockquote>
       ),
@@ -375,11 +383,15 @@ export const PortableText = ({ value, className }: Props) => {
 
     list: {
       bullet: ({ children }) => (
-        <ul className="my-4 list-disc space-y-1 pl-6">{children}</ul>
+        <ul className="my-4 list-disc space-y-1 pl-6 first:mt-0 last:mb-0">
+          {children}
+        </ul>
       ),
 
       number: ({ children }) => (
-        <ol className="my-4 list-decimal space-y-1 pl-6">{children}</ol>
+        <ol className="my-4 list-decimal space-y-1 pl-6 first:mt-0 last:mb-0">
+          {children}
+        </ol>
       ),
     },
 
