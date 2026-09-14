@@ -45,7 +45,7 @@ export const HomeHero = () => {
               className="flex items-center gap-2 text-sm md:text-lg"
             >
               <span className="font-extralight">Your friendly</span>
-              <Popover defaultOpen>
+              <Popover>
                 <PopoverTrigger>
                   <Avatar size="xs" className="mb-px">
                     <AvatarImage
