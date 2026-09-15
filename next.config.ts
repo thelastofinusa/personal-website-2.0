@@ -18,7 +18,7 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://maps.googleapis.com https://vercel.live",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: blob: https://cdn.sanity.io https://*.googleapis.com https://*.gstatic.com https://i.ytimg.com https://*.ytimg.com",
+      "img-src 'self' data: blob: https://cdn.sanity.io https://*.googleapis.com https://*.gstatic.com https://i.ytimg.com https://*.ytimg.com https://api.microlink.io https://placehold.co",
       "font-src 'self' https://fonts.gstatic.com",
       "connect-src 'self' https://cdn.sanity.io https://*.stripe.com https://*.sanity.io wss://*.sanity.io https://*.googleapis.com https://vercel.live https://www.youtube.com https://www.youtube-nocookie.com",
       "frame-src 'self' https:",
