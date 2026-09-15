@@ -130,61 +130,70 @@ export const LinkPreview = ({
           </a>
         </HoverCardPrimitive.Trigger>
 
-        <HoverCardPrimitive.Content
-          side={side}
-          align={align}
-          sideOffset={sideOffset}
-          className="z-50 [transform-origin:var(--radix-hover-card-content-transform-origin)]"
-        >
-          <AnimatePresence mode="wait">
-            {isOpen && (
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  y: 24,
-                  scale: 0.65,
-                }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  scale: 1,
-                }}
-                exit={{
-                  opacity: 0,
-                  y: 18,
-                  scale: 0.7,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 280,
-                  damping: 18,
-                  mass: 0.7,
-                }}
-                style={{
-                  x: translateX,
-                }}
-              >
-                <Frame variant="ghost" className="rounded-[20px]!">
-                  <a
-                    href={url}
-                    target={target}
-                    rel={rel}
-                    className="block rounded-2xl bg-card p-1"
-                    style={{ fontSize: 0 }}
-                  >
-                    <img
-                      src={isStatic ? imageSrc : src}
-                      width={width}
-                      height={height}
-                      className="rounded-lg"
-                      alt="Preview"
-                    />
-                  </a>
-                </Frame>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </HoverCardPrimitive.Content>
+        {/*
+          Portal is required here: without it Radix renders Content in
+          place in the DOM tree. Since <LinkPreview> is used as an inline
+          mark inside portable-text <p> blocks, the Frame/div inside
+          Content would end up nested inside that <p> — invalid HTML and
+          a hydration error. The Portal teleports it to document.body.
+        */}
+        <HoverCardPrimitive.Portal>
+          <HoverCardPrimitive.Content
+            side={side}
+            align={align}
+            sideOffset={sideOffset}
+            className="z-50 [transform-origin:var(--radix-hover-card-content-transform-origin)]"
+          >
+            <AnimatePresence mode="wait">
+              {isOpen && (
+                <motion.div
+                  initial={{
+                    opacity: 0,
+                    y: 24,
+                    scale: 0.65,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: 18,
+                    scale: 0.7,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 280,
+                    damping: 18,
+                    mass: 0.7,
+                  }}
+                  style={{
+                    x: translateX,
+                  }}
+                >
+                  <Frame variant="ghost" className="rounded-[20px]!">
+                    <a
+                      href={url}
+                      target={target}
+                      rel={rel}
+                      className="block rounded-2xl bg-card p-1"
+                      style={{ fontSize: 0 }}
+                    >
+                      <img
+                        src={isStatic ? imageSrc : src}
+                        width={width}
+                        height={height}
+                        className="rounded-lg"
+                        alt="Preview"
+                      />
+                    </a>
+                  </Frame>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </HoverCardPrimitive.Content>
+        </HoverCardPrimitive.Portal>
       </HoverCardPrimitive.Root>
     </>
   );

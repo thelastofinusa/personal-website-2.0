@@ -47,7 +47,7 @@ export const HomeHero = () => {
               <span className="font-extralight">Your friendly</span>
               <Popover>
                 <PopoverTrigger>
-                  <Avatar size="xs" className="mb-px">
+                  <Avatar size="xs" className="mb-0.5">
                     <AvatarImage
                       src={siteConfig.author.avatar}
                       alt={siteConfig.author.name}

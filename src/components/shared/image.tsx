@@ -2,7 +2,7 @@
 "use client";
 
 import Image, { type ImageProps as NextImageProps } from "next/image";
-import React from "react";
+import { forwardRef, type ReactEventHandler, useEffect, useState } from "react";
 
 interface LocalImgProps
   extends Omit<NextImageProps, "src" | "onError" | "onLoad"> {
@@ -10,8 +10,8 @@ interface LocalImgProps
   fallbackSrc?: string;
   loadingGif?: string;
   ogUrl?: string;
-  onError?: React.ReactEventHandler<HTMLImageElement>;
-  onLoad?: React.ReactEventHandler<HTMLImageElement>;
+  onError?: ReactEventHandler<HTMLImageElement>;
+  onLoad?: ReactEventHandler<HTMLImageElement>;
 }
 
 /**
@@ -35,7 +35,7 @@ function isLocalUrl(url: string): boolean {
 function getProxiedUrl(src?: string): string | undefined {
   if (!src) return undefined;
 
-  // Relative URLs вАФ leave alone
+  // Relative URLs — leave alone
   if (src.startsWith("/") && !src.startsWith("//")) {
     return src;
   }
@@ -45,11 +45,11 @@ function getProxiedUrl(src?: string): string | undefined {
     return src;
   }
 
-  // External вЖТ proxy through our own origin
+  // External → proxy through our own origin
   return `/api/og-image/proxy?url=${encodeURIComponent(src)}`;
 }
 
-export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
+export const LocalImg = forwardRef<HTMLImageElement, LocalImgProps>(
   (
     {
       src,
@@ -60,122 +60,99 @@ export const LocalImg = React.forwardRef<HTMLImageElement, LocalImgProps>(
       onLoad,
       width = 800,
       height = 600,
-      loading = "lazy",
       alt = "",
       quality = 70,
+      className,
+      style,
       ...props
     },
     ref,
   ) => {
-    const [imageSrc, setImageSrc] = React.useState<string>(loadingGif);
-    const [isLoading, setIsLoading] = React.useState(true);
-    const [attempt, setAttempt] = React.useState(0);
+    // The only thing that still needs a network round trip up front is
+    // resolving an OG screenshot when `ogUrl` is provided — everything
+    // else (loading state, broken state) is handled by next/image itself.
+    const [ogSrc, setOgSrc] = useState<string | null | undefined>(
+      ogUrl ? undefined : null,
+    );
+    const [loaded, setLoaded] = useState(false);
+    const [failed, setFailed] = useState(false);
 
-    // Reset attempt when src or ogUrl changes (new image)
-    React.useEffect(() => {
-      setAttempt(0);
-    }, [src, ogUrl]);
+    useEffect(() => {
+      if (!ogUrl) {
+        setOgSrc(null);
+        return;
+      }
 
-    const resolvedKeyRef = React.useRef<string | null>(null);
-
-    React.useEffect(() => {
       let cancelled = false;
-      const key = `${src ?? ""}|${ogUrl ?? ""}`;
+      setOgSrc(undefined);
 
-      const testImage = (url: string): Promise<boolean> =>
-        new Promise((resolve) => {
-          const img = new window.Image();
-          img.onload = () => resolve(true);
-          img.onerror = () => resolve(false);
-          img.src = url;
+      fetch(`/api/og-image?url=${encodeURIComponent(ogUrl)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: { image?: string | null } | null) => {
+          if (!cancelled) setOgSrc(data?.image ?? null);
+        })
+        .catch(() => {
+          if (!cancelled) setOgSrc(null);
         });
-
-      const resolveImage = async () => {
-        if (cancelled) return;
-
-        // Already resolved this exact src/ogUrl pair
-        if (resolvedKeyRef.current === key && imageSrc !== loadingGif) {
-          return;
-        }
-
-        setIsLoading(true);
-        setImageSrc(loadingGif);
-
-        // вФАвФАвФА 1. Prefer OG image when ogUrl is provided вФАвФАвФА
-        if (ogUrl) {
-          try {
-            const response = await fetch(
-              `/api/og-image?url=${encodeURIComponent(ogUrl)}`,
-            );
-            if (response.ok) {
-              const data: { image?: string | null } = await response.json();
-              if (data.image) {
-                // /api/og-image already returns a same-origin proxy path
-                const works = await testImage(data.image);
-                if (cancelled) return;
-                if (works) {
-                  resolvedKeyRef.current = key;
-                  setImageSrc(data.image);
-                  setIsLoading(false);
-                  return;
-                }
-              }
-            }
-          } catch (error) {
-            console.warn("OG image fetch failed:", error);
-          }
-        }
-
-        // вФАвФАвФА 2. Fall back to src вАФ proxied if external вФАвФАвФА
-        const proxiedSrc = getProxiedUrl(src);
-        if (proxiedSrc) {
-          const works = await testImage(proxiedSrc);
-          if (cancelled) return;
-          if (works) {
-            resolvedKeyRef.current = key;
-            setImageSrc(proxiedSrc);
-            setIsLoading(false);
-            return;
-          }
-        }
-
-        // вФАвФАвФА 3. Final fallback вФАвФАвФА
-        if (!cancelled) {
-          resolvedKeyRef.current = key;
-          setImageSrc(fallbackSrc);
-          setIsLoading(false);
-        }
-      };
-
-      resolveImage();
 
       return () => {
         cancelled = true;
       };
-    }, [src, ogUrl, fallbackSrc, loadingGif, attempt, imageSrc]);
+    }, [ogUrl]);
 
-    const handleError: React.ReactEventHandler<HTMLImageElement> = (event) => {
-      // If the current image is not the fallback, retry the entire chain once
-      if (imageSrc !== fallbackSrc) {
-        setAttempt((prev) => prev + 1);
+    const stillResolvingOg = Boolean(ogUrl) && ogSrc === undefined;
+    const resolvedSrc = ogSrc || getProxiedUrl(src);
+
+    // Reset load/error state whenever the effective source changes so a
+    // new image (e.g. after filtering/pagination) gets its own lifecycle.
+    useEffect(() => {
+      setLoaded(false);
+      setFailed(false);
+    }, [resolvedSrc]);
+
+    const finalSrc = failed
+      ? fallbackSrc
+      : stillResolvingOg
+        ? loadingGif
+        : resolvedSrc || fallbackSrc;
+
+    const handleLoad: ReactEventHandler<HTMLImageElement> = (event) => {
+      setLoaded(true);
+      onLoad?.(event);
+    };
+
+    const handleError: ReactEventHandler<HTMLImageElement> = (event) => {
+      // First failure: fall back to the broken-image placeholder.
+      // Second failure (the fallback itself somehow errors): bubble up.
+      if (!failed) {
+        setFailed(true);
         return;
       }
       onError?.(event);
     };
 
+    const isLoading = !loaded && !failed && !stillResolvingOg;
+
     return (
       <Image
         {...props}
         ref={ref}
-        src={imageSrc}
+        src={finalSrc}
         alt={alt}
         aria-label={alt || undefined}
         data-loading={isLoading}
-        loading={loading}
-        onLoad={onLoad}
-        onError={handleError}
+        data-error={failed}
         width={width}
         height={height}
+        quality={quality}
+        className={className}
+        style={{
+          transition: "opacity 0.2s ease",
+          opacity: isLoading ? 0 : 1,
+          ...style,
+        }}
+        onLoad={handleLoad}
+        onError={handleError}
       />
     );
   },

@@ -48,8 +48,7 @@ export const CurveThingy: React.FC<Props> = (props) => {
                 key={item.key}
                 className="text-[10px] font-mono tracking-[0.12em] max-w-33.75 text-center w-full text-muted-foreground uppercase"
               >
-                <span className="text-foreground">{item.key}</span>
-                <span className="mx-1.5 opacity-40">/</span>
+                <span className="text-foreground">[{item.key}]</span>
                 <span>{item.label}</span>
               </p>
             ))}
