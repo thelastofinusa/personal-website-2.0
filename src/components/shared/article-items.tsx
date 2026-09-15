@@ -159,12 +159,15 @@ function ArticleItem({
           )}
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Clock className="size-3.5" />
+        <Badge
+          variant="ghost"
+          className="text-muted-foreground hover:bg-transparent px-0"
+        >
+          <Clock className="size-3.5!" />
           <span className="font-light tracking-wider">
             {formatDate(article.publishedAt as string)}
           </span>
-        </div>
+        </Badge>
       </div>
 
       {/* Right Column (Desktop): Main Content */}

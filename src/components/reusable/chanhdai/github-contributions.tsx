@@ -1,6 +1,5 @@
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: ignore */
 "use client";
-import { format } from "date-fns";
 import { useEffect, useRef } from "react";
 import {
   Tooltip,
@@ -8,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/reusable/shadcn/tooltip";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { LinkPreview } from "../aceternity/link-preview";
 import {
   Empty,
@@ -153,7 +152,7 @@ export function GitHubContributions({
               <p className="text-center">
                 {activity.count} contribution{activity.count !== 1 ? "s" : ""}{" "}
                 <br />
-                on {format(new Date(activity.date), "do MMM, yyyy")}
+                on {formatDate(activity.date)}
               </p>
             </TooltipContent>
           </Tooltip>

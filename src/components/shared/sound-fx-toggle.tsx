@@ -9,7 +9,7 @@ import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
   ArrowRight5,
-  Tuning2,
+  Sound,
   VolumeHigh,
   VolumeLow2,
   VolumeMute,
@@ -246,7 +246,7 @@ export const SoundFXToggle: React.FC<
         onClick={toggleOpenMenu}
         aria-label="Sound settings"
       >
-        <Tuning2 />
+        <Sound />
       </Button>
 
       <AnimatePresence>

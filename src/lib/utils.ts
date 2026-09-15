@@ -17,7 +17,7 @@ export function getInitials(value: string): string {
 }
 
 export function formatDate(date: string | Date) {
-  return format(new Date(date), "dd MMMM yyyy");
+  return format(new Date(date), "do MMM, yyyy");
 }
 
 export function getRandomImage(seed: string, width = 800) {
