@@ -85,6 +85,7 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
               width={20}
               height={20}
               src={group.logo.value}
+              ogUrl={group.website as string}
               alt={group.organization ?? ""}
               className="size-4.5 object-contain"
               aria-hidden
