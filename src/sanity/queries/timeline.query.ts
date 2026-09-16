@@ -5,9 +5,9 @@ import { readClient } from "../lib/client";
 
 // Removed the `$category` variable requirement so we pull ALL timelines into a single list
 const timelineListQuery = defineQuery(`
-  *[
+ *[
     _type == "timeline"
-  ] | order(_createdAt asc) {
+  ] {
     _id,
     category,
     organization,
@@ -20,30 +20,30 @@ const timelineListQuery = defineQuery(`
 
     website,
     isCurrent,
-    
+
     items[] {
       _key,
       title,
-      
       period {
         start,
         end
       },
-        
       "images": images[]{
         "url": asset->url,
         "width": asset->metadata.dimensions.width,
         "height": asset->metadata.dimensions.height,
         "alt": coalesce(asset->altText, "")
       },
-
       type,
       icon,
       description,
       skills,
       isExpanded
-    }
-  }
+    },
+
+    "timelineStart": items[0].period.start,
+    "timelineEnd": items[0].period.end
+  } | order(timelineStart desc, timelineEnd desc)
 `);
 
 export async function fetchTimeline(): Promise<TimelineListQueryResult> {

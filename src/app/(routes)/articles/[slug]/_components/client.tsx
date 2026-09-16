@@ -37,7 +37,7 @@ export const ArticleDetailsClient: React.FC<{
             ? {
                 content: (
                   <Frame className="rounded-[20px]!">
-                    <div className="border size-auto rounded-2xl overflow-hidden">
+                    <div className="border aspect-video rounded-2xl overflow-hidden">
                       <LocalImg
                         src={article?.mainImage.image as string}
                         alt={article?.title as string}

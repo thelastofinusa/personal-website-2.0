@@ -271,9 +271,7 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
                       />
                       <div>
                         <dt className="sr-only">Duration</dt>
-                        <dd className="text-xs tabular-nums">
-                          {duration} {!isCurrent && "ago"}
-                        </dd>
+                        <dd className="text-xs tabular-nums">{duration}</dd>
                       </div>
                     </>
                   )}
@@ -341,12 +339,12 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
           {Array.isArray(item.images) && item.images.length > 0 && (
             <div
               className={cn(
-                "grid gap-3 px-3 pt-4",
+                "grid gap-2 px-3 pt-4",
                 item.images.length > 2
-                  ? "grid-cols-3"
+                  ? "grid-cols-4"
                   : item.images.length === 2
-                    ? "grid-cols-2"
-                    : "grid-cols-1",
+                    ? "grid-cols-3"
+                    : "grid-cols-2",
               )}
             >
               {item.images.map((image) => (

@@ -347,35 +347,37 @@ export const PortableText = ({ value, className }: Props) => {
   const components: PortableTextComponents = {
     block: {
       normal: ({ children }) => (
-        <p className="my-4 leading-relaxed first:mt-0 last:mb-0">{children}</p>
+        <p className="my-4 text-sm md:text-[15px] leading-relaxed first:mt-0 last:mb-0">
+          {children}
+        </p>
       ),
 
       h1: ({ children }) => (
-        <h1 className="my-6 text-4xl font-bold first:mt-0 last:mb-0">
+        <h1 className="my-4 text-2xl md:text-3xl font-bold first:mt-0 last:mb-0">
           {children}
         </h1>
       ),
 
       h2: ({ children }) => (
-        <h2 className="my-5 text-3xl font-bold first:mt-0 last:mb-0">
+        <h2 className="my-4 text-xl md:text-2xl font-bold first:mt-0 last:mb-0">
           {children}
         </h2>
       ),
 
       h3: ({ children }) => (
-        <h3 className="my-4 text-2xl font-semibold first:mt-0 last:mb-0">
+        <h3 className="my-4 text-lg md:text-xl font-semibold first:mt-0 last:mb-0">
           {children}
         </h3>
       ),
 
       h4: ({ children }) => (
-        <h4 className="my-3 text-xl font-semibold first:mt-0 last:mb-0">
+        <h4 className="my-3 text-[17px] md:text-lg font-semibold first:mt-0 last:mb-0">
           {children}
         </h4>
       ),
 
       blockquote: ({ children }) => (
-        <blockquote className="my-6 border-l-3 border-primary pl-3 py-1 bg-muted/60 italic first:mt-0 last:mb-0">
+        <blockquote className="my-4 border-l-3 border-primary pl-3 py-1 bg-muted/60 italic first:mt-0 last:mb-0">
           {children}
         </blockquote>
       ),
@@ -396,11 +398,52 @@ export const PortableText = ({ value, className }: Props) => {
     },
 
     listItem: {
-      bullet: ({ children }) => <li>{children}</li>,
-      number: ({ children }) => <li>{children}</li>,
+      bullet: ({ children }) => (
+        <li className="pl-1 leading-6 text-sm md:text-[15px] text-foreground/90">
+          {children}
+        </li>
+      ),
+
+      number: ({ children }) => (
+        <li className="pl-1 leading-6 text-sm md:text-[15px] text-foreground/90">
+          {children}
+        </li>
+      ),
     },
 
     marks: {
+      // Bold
+
+      strong: ({ children }) => (
+        <strong className="font-semibold text-foreground">{children}</strong>
+      ),
+
+      // Italic
+
+      em: ({ children }) => (
+        <em className="text-foreground/90 italic">{children}</em>
+      ),
+
+      // Underline
+
+      underline: ({ children }) => (
+        <span className="underline decoration-current/40 underline-offset-3">
+          {children}
+        </span>
+      ),
+
+      // Strikethrough
+
+      "strike-through": ({ children }) => (
+        <del className="text-muted-foreground line-through">{children}</del>
+      ),
+
+      code: ({ children }) => (
+        <code className="rounded-md border border-border bg-muted/60 px-1.5 py-0.5 font-mono text-sm md:text-[15px] text-foreground">
+          {children}
+        </code>
+      ),
+
       link: ({ children, value }) => {
         const href = value?.href;
 
@@ -427,12 +470,6 @@ export const PortableText = ({ value, className }: Props) => {
           </Link>
         );
       },
-
-      code: ({ children }) => (
-        <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.9em]">
-          {children}
-        </code>
-      ),
     },
 
     types: {
@@ -522,11 +559,28 @@ export const PortableText = ({ value, className }: Props) => {
           <FadeLine className="w-[80%] top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2" />
         </div>
       ),
+
+      // ─────────────────────────────────────────
+      // Hard breaks
+      // ─────────────────────────────────────────
+      hardBreak: () => <br />,
     },
   };
 
   return (
-    <div className={cn(className)}>
+    <div
+      className={cn(
+        "text-foreground",
+        "prose-headings:tracking-tight",
+        "prose-p:text-foreground/90",
+        "prose-strong:text-foreground",
+        "prose-li:text-foreground/90",
+        "prose-blockquote:text-muted-foreground",
+        "prose-hr:border-border",
+        "prose-a:text-primary",
+        className,
+      )}
+    >
       <PortableTextComponent value={value} components={components} />
     </div>
   );
