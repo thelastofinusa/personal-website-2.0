@@ -47,8 +47,8 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-stretch">
-      <Frame className="rounded-[28px]">
-        <div className="relative rounded-3xl bg-card min-h-55 flex w-full shrink-0 flex-col overflow-hidden border lg:w-85">
+      <Frame className="rounded-[28px] h-max">
+        <div className="relative rounded-3xl h-max bg-card min-h-55 flex w-full shrink-0 flex-col overflow-hidden border lg:w-85">
           <div className="relative z-10 flex h-full flex-col justify-between rounded-[20px] bg-background/40 p-6">
             <AnimatePresence mode="wait">
               <motion.div
