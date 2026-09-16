@@ -118,11 +118,7 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
       <div className="group relative flex flex-col space-y-8">
         {items.map((item) => (
           <motion.div key={item._key} layout className="relative">
-            <TimelineItem
-              item={item}
-              isCurrent={Boolean(group.isCurrent)}
-              isEdu={isEdu}
-            />
+            <TimelineItem item={item} isEdu={isEdu} />
           </motion.div>
         ))}
       </div>
@@ -135,11 +131,10 @@ type TimelineItem = NonNullable<TimelineGroup["items"]>[number];
 
 export type TimelineItemProps = {
   item: TimelineItem;
-  isCurrent: boolean;
   isEdu: boolean;
 };
 
-export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
+export function TimelineItem({ item, isEdu }: TimelineItemProps) {
   const { play } = useSoundFx();
   const [isOpen, setIsOpen] = useState(item.isExpanded ?? false);
   const [isHovered, setIsHovered] = useState(false);
@@ -423,8 +418,8 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
           ))}
         </div>
 
-        <span className="text-sm text-muted-foreground transition-colors group-hover/deck:text-foreground">
-          {isExpanded ? "Hide gallery" : `View gallery (${images.length})`}
+        <span className="text-xs font-mono text-muted-foreground transition-colors group-hover/deck:text-foreground">
+          {isExpanded ? "$ cd .." : `$ cd gallery (${images.length})`}
         </span>
       </button>
 
