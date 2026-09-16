@@ -457,7 +457,7 @@ export const PortableText = ({ value, className }: Props) => {
               target="_blank"
               url={href}
               rel="noopener noreferrer"
-              className="text-primary! underline"
+              className="underline"
             >
               {children}
             </LinkPreview>
@@ -465,7 +465,7 @@ export const PortableText = ({ value, className }: Props) => {
         }
 
         return (
-          <Link href={href} className="text-primary underline">
+          <Link href={href} className="underline">
             {children}
           </Link>
         );

@@ -3,11 +3,10 @@
 "use client";
 
 import { differenceInMonths } from "date-fns";
-import { InfinityIcon } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import type { ComponentProps } from "react";
 import { useCallback, useRef, useState } from "react";
-import { Blend } from "reicon-react";
+import { Blend, Infinite } from "reicon-react";
 import { useSoundFx } from "@/components/provider/sound-fx";
 import {
   Collapsible,
@@ -220,6 +219,7 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
                 "flex w-full select-none items-start -mt-3 p-3 gap-0! rounded-lg transition-all justify-between text-left outline-none",
                 "data-disabled:cursor-default",
                 item.description && "group-hover/timeline-item:bg-background",
+                isOpen && "bg-background",
               )}
             >
               {/* Title & Metadata */}
@@ -238,6 +238,7 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
                       "text-sm font-normal leading-snug text-foreground",
                       item.description &&
                         "group-hover/timeline-item:text-primary",
+                      isOpen && "text-primary",
                     )}
                   >
                     {item.title}
@@ -250,12 +251,15 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
                       <dt className="sr-only">Period</dt>
                       <dd className="flex items-center gap-1 text-xs tabular-nums">
                         <span>{formatPeriod(start)}</span>
-                        <span className="text-muted">—</span>
+                        <Separator
+                          className="data-horizontal:w-2 data-horizontal:self-center"
+                          orientation="horizontal"
+                        />
                         {isOngoing ? (
-                          <InfinityIcon
-                            className="size-3.5 text-primary"
-                            aria-label="Present"
-                          />
+                          <span className="flex items-center gap-1 5">
+                            <Infinite className="size-4" aria-label="Present" />
+                            <span>Till date</span>
+                          </span>
                         ) : (
                           <span>{formatPeriod(end)}</span>
                         )}
@@ -293,7 +297,13 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
 
               {/* Expand Chevron Icon */}
               {item.description && (
-                <div className="mt-1 shrink-0 text-muted-foreground transition-colors group-hover/timeline-item:text-foreground group-disabled/timeline-item:hidden [&_svg]:h-lh [&_svg]:w-4">
+                <div
+                  className={cn(
+                    "mt-1 shrink-0 text-muted-foreground transition-colors group-disabled/timeline-item:hidden [&_svg]:h-lh [&_svg]:w-4",
+                    "group-hover/timeline-item:text-foreground",
+                    isOpen && "text-foreground",
+                  )}
+                >
                   <ChevronsUpDownIcon
                     ref={chevronsUpDownIconRef}
                     duration={0.15}
@@ -326,7 +336,12 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
                   <li key={index}>
                     <Badge
                       variant="secondary"
-                      className="group-hover/timeline-item:bg-primary/10 group-hover/timeline-item:text-primary text-muted-foreground"
+                      className={cn(
+                        "text-muted-foreground",
+                        item.description &&
+                          "group-hover/timeline-item:bg-primary/10 group-hover/timeline-item:text-primary",
+                        isOpen && "bg-primary/10 text-primary",
+                      )}
                     >
                       {skill}
                     </Badge>
@@ -336,37 +351,134 @@ export function TimelineItem({ item, isCurrent, isEdu }: TimelineItemProps) {
             </div>
           )}
 
+          {/* Interactive Animated Images Gallery */}
           {Array.isArray(item.images) && item.images.length > 0 && (
-            <div
-              className={cn(
-                "grid gap-2 px-3 pt-4",
-                item.images.length > 2
-                  ? "grid-cols-4"
-                  : item.images.length === 2
-                    ? "grid-cols-3"
-                    : "grid-cols-2",
-              )}
-            >
-              {item.images.map((image) => (
-                <Frame
-                  key={image.url}
-                  className="rounded-md p-0.5"
-                  variant="inverse"
-                >
-                  <div className="aspect-[1.5] overflow-hidden rounded-sm border bg-card">
-                    <LocalImg
-                      src={image.url as string}
-                      alt={image.alt}
-                      className="size-full object-cover"
-                    />
-                  </div>
-                </Frame>
-              ))}
-            </div>
+            <LayoutGroup>
+              <div className="px-3 pt-3">
+                <TimelineItemImages images={item.images} />
+              </div>
+            </LayoutGroup>
           )}
         </div>
       }
     />
+  );
+}
+
+export type TimelineItemImagesProps = {
+  images: NonNullable<TimelineItem["images"]>;
+};
+
+export function TimelineItemImages({ images }: TimelineItemImagesProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { play } = useSoundFx();
+
+  const handleToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const nextState = !isExpanded;
+    setIsExpanded(nextState);
+    play(nextState ? "expand" : "collapse");
+  };
+
+  const stackPreviews = images.slice(0, 3);
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Toggle / Header Controls */}
+      <button
+        type="button"
+        onClick={handleToggle}
+        className="group/deck w-max outline-0 border-0 p-0 flex items-center gap-3 cursor-pointer select-none"
+      >
+        {/* Deck Container stays permanently mounted */}
+        <div className="relative h-5 w-7 ml-2 shrink-0">
+          {stackPreviews.map((img, idx) => (
+            <div
+              key={img.url ?? idx}
+              className={cn(
+                "absolute inset-0 rounded-[4px] border border-border/60 bg-background shadow-2xs transition-transform duration-300 ease-out",
+                idx === 0 &&
+                  "z-30 group-hover/deck:-rotate-6 group-hover/deck:-translate-x-1.5",
+                idx === 1 &&
+                  "z-20 rotate-6 scale-95 opacity-80 group-hover/deck:rotate-12 group-hover/deck:translate-x-1.5",
+                idx === 2 &&
+                  "z-10 -rotate-3 scale-90 opacity-60 group-hover/deck:-rotate-12 group-hover/deck:-translate-x-3",
+              )}
+            >
+              {/* Image card sits in stack slot when collapsed */}
+              {!isExpanded && (
+                <motion.div
+                  layoutId={`gallery-img-${img.url ?? idx}`}
+                  transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                  className="size-full overflow-hidden rounded-[3px] bg-card"
+                >
+                  <LocalImg
+                    src={img.url as string}
+                    alt={img.alt ?? ""}
+                    className="size-full object-cover"
+                  />
+                </motion.div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <span className="text-sm text-muted-foreground transition-colors group-hover/deck:text-foreground">
+          {isExpanded ? "Hide gallery" : `View gallery (${images.length})`}
+        </span>
+      </button>
+
+      {/* Morphing Expanded Grid View */}
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden"
+          >
+            <div
+              className={cn(
+                "grid gap-2.5",
+                images.length > 2
+                  ? "grid-cols-2 sm:grid-cols-4"
+                  : images.length === 2
+                    ? "grid-cols-2 sm:grid-cols-3"
+                    : "grid-cols-2",
+              )}
+            >
+              {images.map((image, idx) => (
+                <motion.div
+                  key={image.url ?? idx}
+                  layoutId={`gallery-img-${image.url ?? idx}`}
+                  transition={{
+                    type: "spring",
+                    stiffness: 350,
+                    damping: 28,
+                    delay: isExpanded ? idx * 0.03 : 0,
+                  }}
+                  className="relative"
+                >
+                  <Frame
+                    className="rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/5"
+                    variant="inverse"
+                  >
+                    <div className="aspect-[1.5] overflow-hidden rounded-sm border bg-card">
+                      <LocalImg
+                        src={image.url as string}
+                        alt={image.alt}
+                        className="size-full object-cover"
+                      />
+                    </div>
+                  </Frame>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 

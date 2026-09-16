@@ -37,11 +37,11 @@ export const ArticleDetailsClient: React.FC<{
             ? {
                 content: (
                   <Frame className="rounded-[20px]!">
-                    <div className="border aspect-video rounded-2xl overflow-hidden">
+                    <div className="border rounded-2xl overflow-hidden">
                       <LocalImg
                         src={article?.mainImage.image as string}
                         alt={article?.title as string}
-                        className="w-full h-auto object-cover"
+                        className="w-full aspect-video object-cover"
                         loading="eager"
                       />
                     </div>

@@ -45,7 +45,6 @@ export const TextContent: React.FC<TextContentProps> = ({
                 if (href === "pronunciation") {
                   return (
                     <PronounceMyName
-                      className="text-primary"
                       namePronunciationUrl={namePronunciationUrl as string}
                     />
                   );
@@ -57,7 +56,7 @@ export const TextContent: React.FC<TextContentProps> = ({
                   return (
                     <Link
                       href={href as Route}
-                      className="text-primary underline underline-offset-4"
+                      className="underline underline-offset-4"
                     >
                       {children}
                     </Link>
@@ -69,7 +68,7 @@ export const TextContent: React.FC<TextContentProps> = ({
                     url={href as string}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-primary underline underline-offset-4"
+                    className="underline underline-offset-4"
                   >
                     {children}
                   </LinkPreview>
