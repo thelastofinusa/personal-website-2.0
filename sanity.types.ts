@@ -22,6 +22,65 @@ export type SanityImageAssetReference = {
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
 };
 
+export type DailyApp = {
+  _id: string;
+  _type: "dailyApp";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  category?:
+    | "Productivity"
+    | "Developer Tools"
+    | "Design & Creative"
+    | "Utilities"
+    | "AI"
+    | "Finance"
+    | "Business"
+    | "Education"
+    | "Entertainment"
+    | "Social & Communication"
+    | "Photography & Video"
+    | "Audio & Music"
+    | "Writing"
+    | "Security"
+    | "System & Customization"
+    | "Internet & Browsers"
+    | "Games"
+    | "Lifestyle"
+    | "Other";
+  description?: string;
+  logo?: {
+    type?: "url" | "upload" | "icon";
+    url?: string;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+    icon?: string;
+  };
+  url?: string;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
 export type Timeline = {
   _id: string;
   _type: "timeline";
@@ -78,22 +137,6 @@ export type Timeline = {
     isExpanded?: boolean;
     _key: string;
   }>;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
 };
 
 export type BlockContent = Array<
@@ -366,9 +409,10 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
-  | Timeline
+  | DailyApp
   | SanityImageCrop
   | SanityImageHotspot
+  | Timeline
   | BlockContent
   | ArticleUrl
   | Article
@@ -638,6 +682,50 @@ export type ArticleUrlsListQueryResult = Array<{
   url: string | null;
 }>;
 
+// Source: src/sanity/queries/dailyApp.query.ts
+// Variable: dailyAppListQuery
+// Query: *[_type == "dailyApp"] {    _id,    name,    description,    category,    "logo": select(      logo.type == "url" => { "type": "url", "value": logo.url },      logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },      logo.type == "icon" => { "type": "icon", "value": logo.icon }    ),    url  }
+export type DailyAppListQueryResult = Array<{
+  _id: string;
+  name: string | null;
+  description: string | null;
+  category:
+    | "AI"
+    | "Audio & Music"
+    | "Business"
+    | "Design & Creative"
+    | "Developer Tools"
+    | "Education"
+    | "Entertainment"
+    | "Finance"
+    | "Games"
+    | "Internet & Browsers"
+    | "Lifestyle"
+    | "Other"
+    | "Photography & Video"
+    | "Productivity"
+    | "Security"
+    | "Social & Communication"
+    | "System & Customization"
+    | "Utilities"
+    | "Writing"
+    | null;
+  logo:
+    | {
+        type: "icon";
+        value: string | null;
+      }
+    | {
+        type: "upload";
+        value: string | null;
+      }
+    | {
+        type: "url";
+        value: string | null;
+      };
+  url: string | null;
+}>;
+
 // Source: src/sanity/queries/project.query.ts
 // Variable: projectsListQuery
 // Query: *[_type == "project"] | order(date desc) {  _id,name,url,embeddable,"mainImage": {  "image": mainImage.asset->url,  "width": mainImage.asset->metadata.dimensions.width,  "height": mainImage.asset->metadata.dimensions.height},date,description,tags,"filters": filters[]->value.current}
@@ -689,7 +777,7 @@ export type ProjectFiltersListQueryResult = Array<{
 
 // Source: src/sanity/queries/timeline.query.ts
 // Variable: timelineListQuery
-// Query: *[    _type == "timeline"  ] | order(_createdAt asc) {    _id,    category,    organization,    "logo": select(      logo.type == "url" => { "type": "url", "value": logo.url },      logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },      logo.type == "icon" => { "type": "icon", "value": logo.icon }    ),    website,    isCurrent,        items[] {      _key,      title,            period {        start,        end      },              "images": images[]{        "url": asset->url,        "width": asset->metadata.dimensions.width,        "height": asset->metadata.dimensions.height,        "alt": coalesce(asset->altText, "")      },      type,      icon,      description,      skills,      isExpanded    }  }
+// Query: *[    _type == "timeline"  ] {    _id,    category,    organization,    "logo": select(      logo.type == "url" => { "type": "url", "value": logo.url },      logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },      logo.type == "icon" => { "type": "icon", "value": logo.icon }    ),    website,    isCurrent,    items[] {      _key,      title,      period {        start,        end      },      "images": images[]{        "url": asset->url,        "width": asset->metadata.dimensions.width,        "height": asset->metadata.dimensions.height,        "alt": coalesce(asset->altText, "")      },      type,      icon,      description,      skills,      isExpanded    },    "timelineStart": items[0].period.start,    "timelineEnd": items[0].period.end  } | order(timelineStart desc, timelineEnd desc)
 export type TimelineListQueryResult = Array<{
   _id: string;
   category: "education" | "experience" | null;
@@ -742,6 +830,8 @@ export type TimelineListQueryResult = Array<{
     skills: Array<string> | null;
     isExpanded: boolean | null;
   }> | null;
+  timelineStart: string | null;
+  timelineEnd: string | null;
 }>;
 
 // Query TypeMap
@@ -752,9 +842,10 @@ declare module "@sanity/client" {
     '\n  *[_type == "article" && pinned == true]\n    | order(publishedAt desc, _createdAt desc)[0...3] {\n      \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n  isAiGenerated,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n    }\n': PinnedArticlesQueryResult;
     '\n  *[_type == "article" && slug.current == $slug][0] {\n    \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n  isAiGenerated,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n  }\n': ArticleBySlugQueryResult;
     '\n*[_type == "articleUrl"] | order(_createdAt asc) {\n  \n_id,\nname,\nurl,\n\n}': ArticleUrlsListQueryResult;
+    '\n *[_type == "dailyApp"] {\n    _id,\n    name,\n    description,\n    category,\n\n    "logo": select(\n      logo.type == "url" => { "type": "url", "value": logo.url },\n      logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },\n      logo.type == "icon" => { "type": "icon", "value": logo.icon }\n    ),\n\n    url\n  }\n': DailyAppListQueryResult;
     '\n*[_type == "project"] | order(date desc) {\n  \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n}': ProjectsListQueryResult;
     '\n  *[_type == "project" && featured == true]\n  | order(_createdAt desc)[0...4] {\n    \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n  }\n': FeaturedProjectsQueryResult;
     '\n*[_type == "projectFilter"] | order(_createdAt asc) {\n  \n_id,\nname,\n"slug": value.current,\ndescription,\nicon,\n\n}': ProjectFiltersListQueryResult;
-    '\n  *[\n    _type == "timeline"\n  ] | order(_createdAt asc) {\n    _id,\n    category,\n    organization,\n\n    "logo": select(\n      logo.type == "url" => { "type": "url", "value": logo.url },\n      logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },\n      logo.type == "icon" => { "type": "icon", "value": logo.icon }\n    ),\n\n    website,\n    isCurrent,\n    \n    items[] {\n      _key,\n      title,\n      \n      period {\n        start,\n        end\n      },\n        \n      "images": images[]{\n        "url": asset->url,\n        "width": asset->metadata.dimensions.width,\n        "height": asset->metadata.dimensions.height,\n        "alt": coalesce(asset->altText, "")\n      },\n\n      type,\n      icon,\n      description,\n      skills,\n      isExpanded\n    }\n  }\n': TimelineListQueryResult;
+    '\n *[\n    _type == "timeline"\n  ] {\n    _id,\n    category,\n    organization,\n\n    "logo": select(\n      logo.type == "url" => { "type": "url", "value": logo.url },\n      logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },\n      logo.type == "icon" => { "type": "icon", "value": logo.icon }\n    ),\n\n    website,\n    isCurrent,\n\n    items[] {\n      _key,\n      title,\n      period {\n        start,\n        end\n      },\n      "images": images[]{\n        "url": asset->url,\n        "width": asset->metadata.dimensions.width,\n        "height": asset->metadata.dimensions.height,\n        "alt": coalesce(asset->altText, "")\n      },\n      type,\n      icon,\n      description,\n      skills,\n      isExpanded\n    },\n\n    "timelineStart": items[0].period.start,\n    "timelineEnd": items[0].period.end\n  } | order(timelineStart desc, timelineEnd desc)\n': TimelineListQueryResult;
   }
 }

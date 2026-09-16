@@ -1,4 +1,5 @@
 "use client";
+
 import { motion } from "motion/react";
 import type { Route } from "next";
 import dynamic from "next/dynamic";
@@ -15,6 +16,7 @@ const ImagePreviewProvider = dynamic(
   { ssr: false, loading: () => null },
 );
 
+import { Cpu3 } from "reicon-react";
 import {
   GitHubContributions,
   GitHubContributionsFallback,
@@ -34,8 +36,10 @@ import { itemVariants, parentVariants } from "@/constants/variants";
 import type { IImagePreviewPortalProps } from "@/types";
 import type {
   ArticlesListQueryResult,
+  DailyAppListQueryResult,
   TimelineListQueryResult,
 } from "~/sanity.types";
+import { DailyApps } from "./dailyApps";
 
 const introduction = `Hey, I’m **${siteConfig.author.name}**, though most people call me **${siteConfig.author.nickname}** [🔊](pronunciation) or **${siteConfig.author.nicknameShorten}**.
 
@@ -49,7 +53,8 @@ export const AboutPageClient: React.FC<{
   timeline: TimelineListQueryResult;
   contributions: GitHubContributionsResult;
   articles: ArticlesListQueryResult;
-}> = ({ timeline, contributions, articles }) => {
+  dailyApps: DailyAppListQueryResult;
+}> = ({ timeline, contributions, articles, dailyApps }) => {
   const { play } = useSoundFx();
   const pathname = usePathname();
   const githubProfileUrl = siteConfig.socials.find(
@@ -114,6 +119,7 @@ export const AboutPageClient: React.FC<{
           </Container>
         )}
 
+        {/* Articles Section */}
         {articles.length > 0 && (
           <motion.div
             variants={parentVariants}
@@ -142,6 +148,23 @@ export const AboutPageClient: React.FC<{
               <ImagePreviewProvider images={articleImages}>
                 <ArticleList articles={articles} />
               </ImagePreviewProvider>
+            </Container>
+          </motion.div>
+        )}
+
+        {dailyApps.length > 0 && (
+          <motion.div
+            variants={parentVariants}
+            initial="hidden"
+            whileInView="visible"
+            className="flex flex-col gap-6"
+          >
+            <Container size="sm">
+              <Eyebrow label="Daily Drivers" icon={Cpu3} />
+            </Container>
+
+            <Container size="md">
+              <DailyApps apps={dailyApps} />
             </Container>
           </motion.div>
         )}

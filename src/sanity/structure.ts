@@ -61,4 +61,5 @@ export const structure: StructureResolver = (S) =>
 
       S.documentTypeListItem("projectFilter"),
       S.documentTypeListItem("articleUrl"),
+      S.documentTypeListItem("dailyApp"),
     ]);
