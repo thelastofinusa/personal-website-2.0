@@ -22,7 +22,6 @@ import { Frame } from "../reusable/reui/frame";
 import { Badge } from "../reusable/shadcn/badge";
 import { Container } from "./container";
 import { FadeLine } from "./fade-line";
-import { LocalImg } from "./image";
 import { Reicon } from "./reicon";
 
 // 1. Shared Framer Motion animation configuration
@@ -249,11 +248,9 @@ const ProjectGridItem: React.FC<{
         className="rounded-3xl transition-transform duration-500 ease-out group-hover:-translate-y-1"
       >
         <div className="relative h-auto overflow-hidden rounded-[20px]! border border-border/60 bg-muted/20">
-          <LocalImg
+          <img
             src={item.mainImage?.image as string}
-            ogUrl={item.url as string}
             alt={item.name as string}
-            unoptimized
             className="size-auto object-contain transition-transform duration-700 ease-out group-hover:scale-105"
           />
 

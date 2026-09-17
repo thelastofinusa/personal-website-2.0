@@ -45,7 +45,6 @@ const nextConfig: NextConfig = {
   ],
 
   images: {
-    unoptimized: process.env.NODE_ENV === "development",
     qualities: [100, 70],
     formats: ["image/webp", "image/avif"],
 
@@ -54,14 +53,6 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "cdn.sanity.io",
         pathname: `/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}/**`,
-      },
-      {
-        protocol: "https",
-        hostname: "api.microlink.io", // Microlink Image Preview
-      },
-      {
-        protocol: "https",
-        hostname: "placehold.co",
       },
     ],
   },

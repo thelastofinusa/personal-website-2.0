@@ -27,7 +27,6 @@ import type {
   IImagePreviewProviderProps,
 } from "@/types";
 import { Frame, FramePanel } from "../reusable/reui/frame";
-import { LocalImg } from "../shared/image";
 import { useSoundFx } from "./sound-fx";
 
 const ImagePreviewContext = createContext<IImagePreviewContextType | null>(
@@ -191,9 +190,11 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
             </div>
 
             <div className="flex h-6 max-w-32.5 relative flex-1 items-center gap-1.5 rounded-t-sm bg-card px-2">
-              <LocalImg
+              <img
                 src={siteConfig.author.avatar}
                 alt={siteConfig.author.name}
+                width={10}
+                height={10}
                 className="size-2.5 rounded-sm"
               />
 
@@ -245,14 +246,12 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
           <div ref={imageTrackRef} className="absolute left-0 top-0 w-full">
             {images.map((img) => (
               <div key={img.alt ?? img.url} className="relative h-auto w-full">
-                <LocalImg
+                <img
                   src={img.url}
-                  ogUrl={img.ogUrl}
                   alt={img.alt ?? img.url}
                   className="block h-auto w-full object-cover"
-                  width={img.width}
-                  height={img.height}
-                  unoptimized
+                  width={img.width || 800}
+                  height={img.height || 800}
                 />
               </div>
             ))}

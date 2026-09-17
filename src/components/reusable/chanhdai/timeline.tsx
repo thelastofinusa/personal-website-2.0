@@ -18,7 +18,6 @@ import {
 } from "@/components/reusable/shadcn/collapsible";
 import { Separator } from "@/components/reusable/shadcn/separator";
 import { FadeLine } from "@/components/shared/fade-line";
-import { LocalImg } from "@/components/shared/image";
 import { PortableText } from "@/components/shared/portable-text";
 import { Reicon } from "@/components/shared/reicon";
 import { getTimelineVariants, workItemVariants } from "@/constants/variants";
@@ -84,12 +83,11 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
               className="size-4.5 text-muted-foreground"
             />
           ) : group.logo?.value ? (
-            <LocalImg
+            <img
+              src={group.logo.value}
+              alt={group.organization ?? ""}
               width={20}
               height={20}
-              src={group.logo.value}
-              ogUrl={group.website as string}
-              alt={group.organization ?? ""}
               className="size-4.5 object-contain"
               aria-hidden
             />
@@ -411,7 +409,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                   transition={{ type: "spring", stiffness: 350, damping: 28 }}
                   className="size-full overflow-hidden rounded-[3px] bg-card"
                 >
-                  <LocalImg
+                  <img
                     src={img.url as string}
                     alt={img.alt ?? ""}
                     className="size-full object-cover"
@@ -464,7 +462,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                     variant="inverse"
                   >
                     <div className="aspect-[1.5] overflow-hidden rounded-sm border bg-card">
-                      <LocalImg
+                      <img
                         src={image.url as string}
                         alt={image.alt}
                         className="size-full object-cover"

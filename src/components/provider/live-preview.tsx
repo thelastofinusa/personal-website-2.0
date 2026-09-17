@@ -9,6 +9,7 @@ import {
   useMotionValue,
 } from "motion/react";
 import type { Route } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import React, {
   createContext,
@@ -36,7 +37,6 @@ import { cn } from "@/lib/utils";
 import type { ProjectsListQueryResult } from "~/sanity.types";
 import { Button } from "../reusable/shadcn/button";
 import { FadeLine } from "../shared/fade-line";
-import { LocalImg } from "../shared/image";
 import { useSoundFx } from "./sound-fx";
 
 interface ILivePreviewContextType {
@@ -374,10 +374,12 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
 
                       {/* Active Tab */}
                       <div className="relative flex h-7 max-w-48 flex-1 cursor-default items-center gap-1.5 rounded-t-lg bg-background px-2.5 shadow-sm">
-                        <LocalImg
+                        <Image
                           src={siteConfig.author.avatar}
                           alt={siteConfig.author.name}
                           className="size-2.5 rounded-sm"
+                          width={10}
+                          height={10}
                         />
                         <span className="truncate text-[11px] font-medium text-foreground">
                           {project.name}
