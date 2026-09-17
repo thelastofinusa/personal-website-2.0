@@ -45,6 +45,8 @@ const nextConfig: NextConfig = {
   ],
 
   images: {
+    dangerouslyAllowLocalIP: true,
+
     qualities: [100, 70],
     formats: ["image/webp", "image/avif"],
 
@@ -52,7 +54,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "cdn.sanity.io",
-        pathname: `/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}/**`,
+        pathname: "/**",
       },
     ],
   },
