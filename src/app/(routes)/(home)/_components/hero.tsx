@@ -9,13 +9,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/reusable/shadcn/avatar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/reusable/shadcn/popover";
 import { Container } from "@/components/shared/container";
-import { CustomImage } from "@/components/shared/image";
 import { siteConfig } from "@/config/site.config";
 import { itemVariants, parentVariants } from "@/constants/variants";
 import { getInitials } from "@/lib/utils";
@@ -46,32 +40,15 @@ export const HomeHero = () => {
               className="flex items-center gap-2 text-sm md:text-lg"
             >
               <span className="font-extralight">Your friendly</span>
-              <Popover>
-                <PopoverTrigger>
-                  <Avatar size="xs" className="mb-0.5">
-                    <AvatarImage
-                      src={siteConfig.author.avatar}
-                      alt={siteConfig.author.name}
-                    />
-                    <AvatarFallback className="border">
-                      {getInitials(siteConfig.author.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                </PopoverTrigger>
-                <PopoverContent
-                  side="top"
-                  sideOffset={12}
-                  className="w-auto p-1 overflow-hidden rounded-3xl"
-                >
-                  <CustomImage
-                    src={siteConfig.author.avatar}
-                    alt={siteConfig.author.name}
-                    className="h-36 w-36 rounded-[20px] object-cover"
-                    width={144}
-                    height={144}
-                  />
-                </PopoverContent>
-              </Popover>
+              <Avatar size="xs" className="mb-0.5">
+                <AvatarImage
+                  src={siteConfig.author.avatar}
+                  alt={siteConfig.author.name}
+                />
+                <AvatarFallback className="border">
+                  {getInitials(siteConfig.author.name)}
+                </AvatarFallback>
+              </Avatar>
               <span className="font-extralight">neighborhood developer</span>
             </motion.p>
 
