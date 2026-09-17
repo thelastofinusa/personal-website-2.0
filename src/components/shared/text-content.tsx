@@ -6,7 +6,6 @@ import Link from "next/link";
 import type React from "react";
 import ReactMarkdown from "react-markdown";
 import { itemVariants, parentVariants } from "@/constants/variants";
-import { LinkPreview } from "../reusable/aceternity/link-preview";
 import { Container } from "./container";
 import { PronounceMyName } from "./pronunce-my-name";
 
@@ -64,14 +63,14 @@ export const TextContent: React.FC<TextContentProps> = ({
                 }
 
                 return (
-                  <LinkPreview
-                    url={href as string}
+                  <a
+                    href={href as string}
                     target="_blank"
                     rel="noreferrer"
                     className="underline underline-offset-4"
                   >
                     {children}
-                  </LinkPreview>
+                  </a>
                 );
               },
             }}

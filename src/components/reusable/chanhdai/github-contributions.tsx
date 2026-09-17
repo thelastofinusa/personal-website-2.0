@@ -8,7 +8,6 @@ import {
 } from "@/components/reusable/shadcn/tooltip";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn, formatDate } from "@/lib/utils";
-import { LinkPreview } from "../aceternity/link-preview";
 import {
   Empty,
   EmptyDescription,
@@ -163,14 +162,14 @@ export function GitHubContributions({
           {({ totalCount, year }) => (
             <div className="text-muted-foreground">
               {totalCount.toLocaleString("en")} contributions in {year} on{" "}
-              <LinkPreview
+              <a
                 className="text-primary! underline"
-                url={githubProfileUrl}
+                href={githubProfileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 GitHub
-              </LinkPreview>
+              </a>
               .
             </div>
           )}
