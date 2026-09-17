@@ -18,11 +18,11 @@ import type {
 } from "~/sanity.types";
 import { useLivePreview } from "../provider/live-preview";
 import { useImagePreview } from "../provider/preview";
-import { LinkPreview } from "../reusable/aceternity/link-preview";
 import { Frame } from "../reusable/reui/frame";
 import { Badge } from "../reusable/shadcn/badge";
 import { Container } from "./container";
 import { FadeLine } from "./fade-line";
+import { CustomImage } from "./image";
 import { Reicon } from "./reicon";
 
 // 1. Shared Framer Motion animation configuration
@@ -148,14 +148,15 @@ const ProjectListItem: React.FC<{
                         ),
                         em: ({ children }) => <em>{children}</em>,
                         a: ({ children, href }) => (
-                          <LinkPreview
-                            href={href as string}
+                          <a
+                            href={href}
                             target="_blank"
                             rel="noreferrer"
                             className="underline underline-offset-4 transition-colors hover:text-primary"
+                            onClick={(event) => event.stopPropagation()}
                           >
                             {children}
-                          </LinkPreview>
+                          </a>
                         ),
                       }}
                     >
@@ -179,14 +180,15 @@ const ProjectListItem: React.FC<{
                       ),
                       em: ({ children }) => <em>{children}</em>,
                       a: ({ children, href }) => (
-                        <LinkPreview
-                          href={href as string}
+                        <a
+                          href={href}
                           target="_blank"
                           rel="noreferrer"
                           className="underline underline-offset-4 transition-colors hover:text-primary"
+                          onClick={(event) => event.stopPropagation()}
                         >
                           {children}
-                        </LinkPreview>
+                        </a>
                       ),
                     }}
                   >
@@ -247,9 +249,11 @@ const ProjectGridItem: React.FC<{
         className="rounded-3xl transition-transform duration-500 ease-out group-hover:-translate-y-1"
       >
         <div className="relative h-auto overflow-hidden rounded-[20px]! border border-border/60 bg-muted/20">
-          <img
+          <CustomImage
             src={item.mainImage?.image as string}
+            ogUrl={item.url as string}
             alt={item.name as string}
+            unoptimized
             className="size-auto object-contain transition-transform duration-700 ease-out group-hover:scale-105"
           />
 
@@ -295,14 +299,15 @@ const ProjectGridItem: React.FC<{
               ),
               em: ({ children }) => <em>{children}</em>,
               a: ({ children, href }) => (
-                <LinkPreview
-                  href={href as string}
+                <a
+                  href={href}
                   target="_blank"
                   rel="noreferrer"
                   className="underline underline-offset-4 transition-colors hover:text-primary"
+                  onClick={(event) => event.stopPropagation()}
                 >
                   {children}
-                </LinkPreview>
+                </a>
               ),
             }}
           >

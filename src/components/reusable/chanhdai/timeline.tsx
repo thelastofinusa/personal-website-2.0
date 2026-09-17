@@ -411,7 +411,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                   transition={{ type: "spring", stiffness: 350, damping: 28 }}
                   className="size-full overflow-hidden rounded-[3px] bg-card"
                 >
-                  <img
+                  <CustomImage
                     src={img.url as string}
                     alt={img.alt ?? ""}
                     className="size-full object-cover"
@@ -464,7 +464,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                     variant="inverse"
                   >
                     <div className="aspect-[1.5] overflow-hidden rounded-sm border bg-card">
-                      <img
+                      <CustomImage
                         src={image.url as string}
                         alt={image.alt}
                         className="size-full object-cover"
