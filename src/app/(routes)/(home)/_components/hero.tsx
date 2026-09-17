@@ -15,6 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/reusable/shadcn/popover";
 import { Container } from "@/components/shared/container";
+import { CustomImage } from "@/components/shared/image";
 import { siteConfig } from "@/config/site.config";
 import { itemVariants, parentVariants } from "@/constants/variants";
 import { getInitials } from "@/lib/utils";
@@ -62,10 +63,12 @@ export const HomeHero = () => {
                   sideOffset={12}
                   className="w-auto p-1 overflow-hidden rounded-3xl"
                 >
-                  <img
+                  <CustomImage
                     src={siteConfig.author.avatar}
                     alt={siteConfig.author.name}
                     className="h-36 w-36 rounded-[20px] object-cover"
+                    width={144}
+                    height={144}
                   />
                 </PopoverContent>
               </Popover>

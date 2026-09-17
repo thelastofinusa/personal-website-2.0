@@ -7,6 +7,7 @@ import { Blend } from "reicon-react";
 import { Frame } from "@/components/reusable/reui/frame";
 import { Badge } from "@/components/reusable/shadcn/badge";
 import { buttonVariants } from "@/components/reusable/shadcn/button";
+import { CustomImage } from "@/components/shared/image";
 import { Reicon } from "@/components/shared/reicon";
 import type { DailyAppListQueryResult } from "~/sanity.types";
 
@@ -31,13 +32,14 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
     }
     if (app.logo?.value) {
       return (
-        <img
+        <CustomImage
           width={64}
           height={64}
           src={app.logo.value as string}
           alt={app.name as string}
           className={cn("object-contain", className)}
           aria-hidden
+          unoptimized
         />
       );
     }
