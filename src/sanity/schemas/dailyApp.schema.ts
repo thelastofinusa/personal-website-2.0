@@ -51,7 +51,6 @@ export const dailyAppSchema = defineType({
       name: "description",
       title: "Description",
       type: "string",
-      validation: (Rule) => Rule.required(),
     }),
 
     defineField({

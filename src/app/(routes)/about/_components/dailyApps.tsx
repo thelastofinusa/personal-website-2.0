@@ -47,9 +47,9 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-stretch">
-      <Frame className="rounded-[28px] h-max">
-        <div className="relative rounded-3xl h-max bg-card min-h-55 flex w-full shrink-0 flex-col overflow-hidden border lg:w-85">
-          <div className="relative z-10 flex h-full flex-col justify-between rounded-[20px] bg-background/40 p-6">
+      <div className="lg:h-87.5">
+        <Frame className="rounded-[28px] h-max!">
+          <div className="relative rounded-3xl bg-card min-h-44 flex w-full shrink-0 flex-col overflow-hidden border lg:w-85">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeApp._id}
@@ -57,16 +57,13 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="flex h-full flex-col"
+                className="flex h-full flex-col rounded-[20px] bg-background/40 p-6"
               >
                 <div className="flex items-start justify-between gap-4">
                   {/* Large Spotlight Icon */}
                   {renderIcon(activeApp, "transition-colors text-primary")}
 
-                  <Badge
-                    variant="secondary"
-                    className="bg-muted/50 text-[10px] font-medium mt-1"
-                  >
+                  <Badge variant="secondary" className="font-medium mt-1">
                     {activeApp.category}
                   </Badge>
                 </div>
@@ -79,29 +76,27 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                     {activeApp.description}
                   </p>
                 </div>
+
+                {/* Action Button */}
+                {activeApp.url && (
+                  <motion.a
+                    href={activeApp.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={buttonVariants({ className: "mt-6" })}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Launch App
+                  </motion.a>
+                )}
               </motion.div>
             </AnimatePresence>
-
-            {/* Action Button */}
-            {activeApp.url ? (
-              <motion.a
-                href={activeApp.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={buttonVariants({ className: "mt-6" })}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Launch App
-              </motion.a>
-            ) : (
-              <div className="mt-6 h-10" />
-            )}
           </div>
-        </div>
-      </Frame>
+        </Frame>
+      </div>
 
-      <div className="grid h-max flex-1 grid-cols-4 content-start gap-3 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid h-max flex-1 grid-cols-5 content-start gap-3 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-5">
         {apps.map((app, idx) => {
           const isActive = idx === activeIndex;
 
@@ -117,17 +112,23 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
               {isActive && (
                 <motion.div
                   layoutId="app-drawer-focus"
-                  className="absolute inset-0 rounded-[20px] border-2 border-primary/20 bg-primary/5 shadow-xs"
-                  transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                  className="absolute inset-0 rounded-2xl sm:rounded-[20px] border-2 border-primary bg-primary/15 shadow-xs"
+                  transition={{
+                    type: "spring",
+                    bounce: 0.25,
+                    duration: 0.5,
+                    stiffness: 350,
+                    damping: 28,
+                  }}
                 />
               )}
 
               {/* Base Button Background (shown when not active) */}
               <div
                 className={cn(
-                  "absolute inset-0 rounded-[20px] border border-border/40 transition-colors duration-300",
+                  "absolute inset-0 rounded-2xl sm:rounded-[20px] border border-transparent transition-colors duration-300",
                   !isActive &&
-                    "bg-card hover:bg-muted/50 group-focus-visible:ring-2 group-focus-visible:ring-primary",
+                    "bg-card hover:bg-muted/50 border-border group-focus-visible:ring-2 group-focus-visible:ring-primary",
                 )}
               />
 
@@ -141,7 +142,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                 {renderIcon(
                   app,
                   cn(
-                    "transition-colors duration-300",
+                    "size-10 sm:size-14 transition-colors duration-300",
                     isActive
                       ? "text-primary"
                       : "text-muted-foreground group-hover:text-foreground",

@@ -2,7 +2,11 @@
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 "use client";
 
-import { differenceInMonths } from "date-fns";
+import {
+  differenceInDays,
+  differenceInMonths,
+  differenceInYears,
+} from "date-fns";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import type { ComponentProps } from "react";
 import { useCallback, useRef, useState } from "react";
@@ -495,28 +499,65 @@ function formatPeriod(date?: string | null): string {
   if (Number.isNaN(parsed.getTime())) return "";
 
   return new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
     month: "short",
     year: "numeric",
     timeZone: "UTC",
   }).format(parsed);
 }
 
-function formatDuration(start?: string | null, end?: string | null): string {
+function formatDuration(
+  start?: string | null,
+
+  end?: string | null,
+): string {
   const startDate = parsePeriodDate(start);
+
   if (!startDate) return "";
 
   const endDate = end ? parsePeriodDate(end) : new Date();
+
   if (!endDate) return "";
 
-  const totalMonths = differenceInMonths(endDate, startDate) + 1;
-  if (totalMonths <= 0) return "";
+  if (endDate < startDate) return "";
 
-  if (totalMonths < 12) return `${totalMonths} mo`;
-  const years = Math.floor(totalMonths / 12);
-  const months = totalMonths % 12;
+  const totalDays = differenceInDays(endDate, startDate);
 
-  if (months === 0) return `${years} yr`;
-  return `${years} yr ${months} mo`;
+  // Less than a week
+
+  if (totalDays < 7) {
+    return `${totalDays || 1} ${totalDays === 1 ? "day" : "days"}`;
+  }
+
+  // Less than a month
+
+  if (totalDays < 30) {
+    const weeks = Math.floor(totalDays / 7);
+
+    return `${weeks} ${weeks === 1 ? "week" : "weeks"}`;
+  }
+
+  // Less than a year
+
+  const totalMonths = differenceInMonths(endDate, startDate);
+
+  if (totalMonths < 12) {
+    return `${totalMonths} ${totalMonths === 1 ? "mo" : "mos"}`;
+  }
+
+  // One year or more
+
+  const years = differenceInYears(endDate, startDate);
+
+  const remainingMonths = differenceInMonths(endDate, startDate) % 12;
+
+  if (remainingMonths === 0) {
+    return `${years} ${years === 1 ? "yr" : "yrs"}`;
+  }
+
+  return `${years} ${years === 1 ? "yr" : "yrs"} ${remainingMonths} ${
+    remainingMonths === 1 ? "mo" : "mos"
+  }`;
 }
 
 function parsePeriodDate(date?: string | null): Date | null {

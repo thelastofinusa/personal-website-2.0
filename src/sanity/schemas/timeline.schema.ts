@@ -153,7 +153,7 @@ export const timelineSchema = defineType({
                   type: "date",
                   validation: (Rule) => Rule.required(),
                   options: {
-                    dateFormat: "MM.YYYY",
+                    dateFormat: "MMMM D, YYYY",
                   },
                 }),
 
@@ -164,7 +164,7 @@ export const timelineSchema = defineType({
                   description:
                     "Leave empty for an ongoing position or education.",
                   options: {
-                    dateFormat: "MM.YYYY",
+                    dateFormat: "MMMM D, YYYY",
                   },
                 }),
               ],
@@ -179,7 +179,8 @@ export const timelineSchema = defineType({
                     if (!date) return undefined;
 
                     return new Intl.DateTimeFormat("en-US", {
-                      month: "2-digit",
+                      month: "long",
+                      day: "numeric",
                       year: "numeric",
                     }).format(new Date(date));
                   };
@@ -312,11 +313,13 @@ export const timelineSchema = defineType({
   preview: {
     select: {
       title: "organization",
-      media: "logo",
       category: "category",
       isCurrent: "isCurrent",
+      logoType: "logo.type",
+      logoImage: "logo.image",
+      logoIcon: "logo.icon",
     },
-    prepare({ title, media, category, isCurrent }) {
+    prepare({ title, category, isCurrent, logoType, logoImage, logoIcon }) {
       return {
         title,
         subtitle: [
@@ -325,7 +328,13 @@ export const timelineSchema = defineType({
         ]
           .filter(Boolean)
           .join(" · "),
-        media,
+
+        media:
+          logoType === "icon"
+            ? resolveReicon(logoIcon)
+            : logoType === "upload"
+              ? logoImage
+              : undefined,
       };
     },
   },
