@@ -39,7 +39,6 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
           alt={app.name as string}
           className={cn("object-contain", className)}
           aria-hidden
-          unoptimized
         />
       );
     }
