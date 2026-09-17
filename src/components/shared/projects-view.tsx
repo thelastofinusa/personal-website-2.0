@@ -18,6 +18,7 @@ import type {
 } from "~/sanity.types";
 import { useLivePreview } from "../provider/live-preview";
 import { useImagePreview } from "../provider/preview";
+import { LinkPreview } from "../reusable/aceternity/link-preview";
 import { Frame } from "../reusable/reui/frame";
 import { Badge } from "../reusable/shadcn/badge";
 import { Container } from "./container";
@@ -147,15 +148,14 @@ const ProjectListItem: React.FC<{
                         ),
                         em: ({ children }) => <em>{children}</em>,
                         a: ({ children, href }) => (
-                          <a
-                            href={href}
+                          <LinkPreview
+                            href={href as string}
                             target="_blank"
                             rel="noreferrer"
                             className="underline underline-offset-4 transition-colors hover:text-primary"
-                            onClick={(event) => event.stopPropagation()}
                           >
                             {children}
-                          </a>
+                          </LinkPreview>
                         ),
                       }}
                     >
@@ -179,15 +179,14 @@ const ProjectListItem: React.FC<{
                       ),
                       em: ({ children }) => <em>{children}</em>,
                       a: ({ children, href }) => (
-                        <a
-                          href={href}
+                        <LinkPreview
+                          href={href as string}
                           target="_blank"
                           rel="noreferrer"
                           className="underline underline-offset-4 transition-colors hover:text-primary"
-                          onClick={(event) => event.stopPropagation()}
                         >
                           {children}
-                        </a>
+                        </LinkPreview>
                       ),
                     }}
                   >
@@ -296,15 +295,14 @@ const ProjectGridItem: React.FC<{
               ),
               em: ({ children }) => <em>{children}</em>,
               a: ({ children, href }) => (
-                <a
-                  href={href}
+                <LinkPreview
+                  href={href as string}
                   target="_blank"
                   rel="noreferrer"
                   className="underline underline-offset-4 transition-colors hover:text-primary"
-                  onClick={(event) => event.stopPropagation()}
                 >
                   {children}
-                </a>
+                </LinkPreview>
               ),
             }}
           >

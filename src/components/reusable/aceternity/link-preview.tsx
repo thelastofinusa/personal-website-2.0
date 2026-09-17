@@ -15,7 +15,7 @@ import { Frame } from "../reui/frame";
 
 type LinkPreviewProps = {
   children: React.ReactNode;
-  url: string;
+  href: string;
   target?: string;
   rel?: string;
   className?: string;
@@ -35,7 +35,7 @@ type LinkPreviewProps = {
 
 export const LinkPreview = ({
   children,
-  url,
+  href,
   rel,
   target,
   className,
@@ -53,7 +53,7 @@ export const LinkPreview = ({
 
   if (!isStatic) {
     const params = encode({
-      url,
+      url: href,
       screenshot: true,
       meta: false,
       embed: "screenshot.url",
@@ -119,7 +119,7 @@ export const LinkPreview = ({
       >
         <HoverCardPrimitive.Trigger asChild>
           <a
-            href={url}
+            href={href}
             target={target}
             rel={rel}
             onMouseMove={handleMouseMove}
@@ -174,7 +174,7 @@ export const LinkPreview = ({
                 >
                   <Frame variant="ghost" className="rounded-[20px]!">
                     <a
-                      href={url}
+                      href={href}
                       target={target}
                       rel={rel}
                       className="block rounded-2xl bg-card p-1"

@@ -10,6 +10,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { CopyButton } from "@/components/reusable/chanhdai/copy-button";
 import { cn } from "@/lib/utils";
+import { LinkPreview } from "../reusable/aceternity/link-preview";
 import { Frame } from "../reusable/reui/frame";
 import { Button } from "../reusable/shadcn/button";
 import { FadeLine } from "./fade-line";
@@ -451,14 +452,14 @@ export const PortableText = ({ value, className }: Props) => {
 
         if (isExternal || value?.blank) {
           return (
-            <a
+            <LinkPreview
               target="_blank"
               href={href}
               rel="noopener noreferrer"
               className="underline"
             >
               {children}
-            </a>
+            </LinkPreview>
           );
         }
 

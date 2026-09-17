@@ -50,6 +50,12 @@ const nextConfig: NextConfig = {
     qualities: [100, 70],
     formats: ["image/webp", "image/avif"],
 
+    localPatterns: [
+      {
+        pathname: "/api/og-image/**",
+      },
+    ],
+
     remotePatterns: [
       {
         protocol: "https",
