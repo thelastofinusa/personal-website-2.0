@@ -48,8 +48,8 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-stretch">
       <div className="lg:h-87.5">
-        <Frame className="rounded-[28px] h-max!">
-          <div className="relative rounded-3xl bg-card min-h-44 flex w-full shrink-0 flex-col overflow-hidden border lg:w-85">
+        <Frame className="h-max! rounded-[28px]">
+          <div className="relative flex min-h-44 w-full shrink-0 flex-col overflow-hidden rounded-3xl border bg-card lg:w-85">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeApp._id}
@@ -66,12 +66,12 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                     "size-18 transition-colors text-primary",
                   )}
 
-                  <Badge variant="secondary" className="font-medium mt-1">
+                  <Badge variant="secondary" className="mt-1 font-medium">
                     {activeApp.category}
                   </Badge>
                 </div>
 
-                <div className="mt-6 flex flex-col gap-1 px-2">
+                <div className="mt-4 flex flex-col gap-1 px-2">
                   <h3 className="text-xl font-semibold tracking-tight text-foreground">
                     {activeApp.name}
                   </h3>
@@ -87,7 +87,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     className={buttonVariants({
-                      className: "mt-6",
+                      className: "mt-6 inline-flex md:hidden",
                     })}
                     style={{
                       backgroundColor:
@@ -110,23 +110,51 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
         </Frame>
       </div>
 
-      <div className="grid h-max flex-1 grid-cols-5 px-4 sm:px-0 content-start gap-3 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid h-max flex-1 content-start grid-cols-5 gap-1 sm:gap-3 px-4 sm:grid-cols-6 sm:px-0 lg:grid-cols-4 xl:grid-cols-5">
         {apps.map((app, idx) => {
           const isActive = idx === activeIndex;
+          const isLink = Boolean(app.url);
+          const Component = isLink ? "a" : "button";
 
           return (
-            <button
+            <Component
               key={app._id}
-              type="button"
-              onClick={() => setActiveIndex(idx)}
-              onMouseEnter={() => setActiveIndex(idx)}
-              className="group relative flex aspect-square w-full items-center justify-center outline-none"
+              {...(isLink
+                ? {
+                    href: app.url as string,
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                  }
+                : {
+                    type: "button",
+                  })}
+              onClick={(e: React.MouseEvent) => {
+                // Match the Tailwind `lg` breakpoint (1024px) for desktop vs mobile behavior
+                const isDesktop = window.innerWidth >= 1024;
+
+                if (!isDesktop) {
+                  // Mobile: Prevent navigation, just show it in the spotlight
+                  if (isLink) e.preventDefault();
+                  setActiveIndex(idx);
+                } else if (!isLink) {
+                  // Desktop (fallback): If no URL exists, still activate it on click
+                  setActiveIndex(idx);
+                }
+              }}
+              onMouseEnter={() => {
+                // Desktop: Hover sets it active
+                setActiveIndex(idx);
+              }}
+              className={cn(
+                "group relative flex w-full items-center justify-center outline-none aspect-square",
+                isLink ? "cursor-pointer" : "cursor-default",
+              )}
             >
               {/* Magic Sliding Focus Ring */}
               {isActive && (
                 <motion.div
                   layoutId="app-drawer-focus"
-                  className="absolute inset-0 rounded-xl sm:rounded-2xl md:rounded-[20px] border-2 border-primary bg-primary/15 shadow-xs"
+                  className="absolute inset-0 rounded-xl border-2 border-primary bg-primary/15 shadow-xs sm:rounded-2xl md:rounded-[20px]"
                   style={{
                     backgroundColor: `color-mix(in srgb, ${
                       activeApp.button?.backgroundColor ?? "var(--primary)"
@@ -148,9 +176,9 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
               {/* Base Button Background (shown when not active) */}
               <div
                 className={cn(
-                  "absolute inset-0 rounded-xl sm:rounded-2xl md:rounded-[20px] border border-transparent transition-colors duration-300",
+                  "absolute inset-0 rounded-xl border border-transparent transition-colors duration-300 sm:rounded-2xl md:rounded-[20px]",
                   !isActive &&
-                    "bg-card hover:bg-muted/50 border-border group-focus-visible:ring-2 group-focus-visible:ring-primary",
+                    "border-border bg-card hover:bg-muted/50 group-focus-visible:ring-2 group-focus-visible:ring-primary",
                 )}
               />
 
@@ -164,14 +192,14 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                 {renderIcon(
                   app,
                   cn(
-                    "size-10 sm:size-14 transition-colors duration-300",
+                    "size-10 transition-colors duration-300 sm:size-14",
                     isActive
                       ? "text-primary"
                       : "text-muted-foreground group-hover:text-foreground",
                   ),
                 )}
               </div>
-            </button>
+            </Component>
           );
         })}
       </div>
