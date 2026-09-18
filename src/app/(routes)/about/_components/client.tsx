@@ -16,7 +16,7 @@ const ImagePreviewProvider = dynamic(
   { ssr: false, loading: () => null },
 );
 
-import { Cpu3 } from "reicon-react";
+import { Router3 } from "reicon-react";
 import {
   GitHubContributions,
   GitHubContributionsFallback,
@@ -160,7 +160,7 @@ export const AboutPageClient: React.FC<{
             className="flex flex-col gap-6"
           >
             <Container size="sm">
-              <Eyebrow label="Daily Drivers" icon={Cpu3} />
+              <Eyebrow label="The Usual Suspects" icon={Router3} />
             </Container>
 
             <Container size="md">

@@ -5,6 +5,7 @@
  */
 
 import { codeInput } from "@sanity/code-input";
+import { colorInput } from "@sanity/color-input";
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
@@ -22,6 +23,7 @@ export default defineConfig({
   plugins: [
     structureTool({ structure }),
     codeInput(),
+    colorInput(),
     media(),
     visionTool({ defaultApiVersion: apiVersion }),
   ],

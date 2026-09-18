@@ -61,7 +61,10 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
               >
                 <div className="flex items-start justify-between gap-4">
                   {/* Large Spotlight Icon */}
-                  {renderIcon(activeApp, "transition-colors text-primary")}
+                  {renderIcon(
+                    activeApp,
+                    "size-18 transition-colors text-primary",
+                  )}
 
                   <Badge variant="secondary" className="font-medium mt-1">
                     {activeApp.category}
@@ -83,11 +86,22 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                     href={activeApp.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={buttonVariants({ className: "mt-6" })}
+                    className={buttonVariants({
+                      className: "mt-6",
+                    })}
+                    style={{
+                      backgroundColor:
+                        activeApp.button?.backgroundColor ?? "var(--primary)",
+                      color:
+                        activeApp.button?.textColor ??
+                        "var(--primary-foreground)",
+                    }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Launch App
+                    <span className="font-medium">
+                      {activeApp.button?.label || "Launch App"}
+                    </span>
                   </motion.a>
                 )}
               </motion.div>
@@ -96,7 +110,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
         </Frame>
       </div>
 
-      <div className="grid h-max flex-1 grid-cols-5 content-start gap-3 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid h-max flex-1 grid-cols-5 px-4 sm:px-0 content-start gap-3 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-5">
         {apps.map((app, idx) => {
           const isActive = idx === activeIndex;
 
@@ -112,7 +126,15 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
               {isActive && (
                 <motion.div
                   layoutId="app-drawer-focus"
-                  className="absolute inset-0 rounded-2xl sm:rounded-[20px] border-2 border-primary bg-primary/15 shadow-xs"
+                  className="absolute inset-0 rounded-xl sm:rounded-2xl md:rounded-[20px] border-2 border-primary bg-primary/15 shadow-xs"
+                  style={{
+                    backgroundColor: `color-mix(in srgb, ${
+                      activeApp.button?.backgroundColor ?? "var(--primary)"
+                    } 15%, transparent)`,
+
+                    borderColor:
+                      activeApp.button?.backgroundColor ?? "var(--primary)",
+                  }}
                   transition={{
                     type: "spring",
                     bounce: 0.25,
@@ -126,7 +148,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
               {/* Base Button Background (shown when not active) */}
               <div
                 className={cn(
-                  "absolute inset-0 rounded-2xl sm:rounded-[20px] border border-transparent transition-colors duration-300",
+                  "absolute inset-0 rounded-xl sm:rounded-2xl md:rounded-[20px] border border-transparent transition-colors duration-300",
                   !isActive &&
                     "bg-card hover:bg-muted/50 border-border group-focus-visible:ring-2 group-focus-visible:ring-primary",
                 )}

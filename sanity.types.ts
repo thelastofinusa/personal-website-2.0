@@ -63,6 +63,20 @@ export type DailyApp = {
     icon?: string;
   };
   url?: string;
+  button?: {
+    label?: string;
+    backgroundColor?: Color;
+    textColor?: Color;
+  };
+};
+
+export type Color = {
+  _type: "color";
+  hex?: string;
+  alpha?: number;
+  hsl?: HslaColor;
+  hsv?: HsvaColor;
+  rgb?: RgbaColor;
 };
 
 export type SanityImageCrop = {
@@ -302,6 +316,30 @@ export type MediaTag = {
   name?: Slug;
 };
 
+export type RgbaColor = {
+  _type: "rgbaColor";
+  r?: number;
+  g?: number;
+  b?: number;
+  a?: number;
+};
+
+export type HsvaColor = {
+  _type: "hsvaColor";
+  h?: number;
+  s?: number;
+  v?: number;
+  a?: number;
+};
+
+export type HslaColor = {
+  _type: "hslaColor";
+  h?: number;
+  s?: number;
+  l?: number;
+  a?: number;
+};
+
 export type Code = {
   _type: "code";
   language?: string;
@@ -410,6 +448,7 @@ export type Geopoint = {
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
   | DailyApp
+  | Color
   | SanityImageCrop
   | SanityImageHotspot
   | Timeline
@@ -423,6 +462,9 @@ export type AllSanitySchemaTypes =
   | MediaFolderReference
   | MediaFolder
   | MediaTag
+  | RgbaColor
+  | HsvaColor
+  | HslaColor
   | Code
   | SanityImagePaletteSwatch
   | SanityImagePalette
@@ -684,7 +726,7 @@ export type ArticleUrlsListQueryResult = Array<{
 
 // Source: src/sanity/queries/dailyApp.query.ts
 // Variable: dailyAppListQuery
-// Query: *[_type == "dailyApp"] {    _id,    name,    description,    category,    "logo": select(      logo.type == "url" => { "type": "url", "value": logo.url },      logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },      logo.type == "icon" => { "type": "icon", "value": logo.icon }    ),    url  }
+// Query: *[_type == "dailyApp"] | order(_createdAt desc) {    _id,    name,    description,    category,    "logo": select(      logo.type == "url" => {        "type": "url",        "value": logo.url      },      logo.type == "upload" => {        "type": "upload",        "value": logo.image.asset->url      },      logo.type == "icon" => {        "type": "icon",        "value": logo.icon      }    ),    url,    "button": {      "label": button.label,      "backgroundColor": button.backgroundColor.hex,      "textColor": button.textColor.hex    }  }
 export type DailyAppListQueryResult = Array<{
   _id: string;
   name: string | null;
@@ -724,6 +766,11 @@ export type DailyAppListQueryResult = Array<{
         value: string | null;
       };
   url: string | null;
+  button: {
+    label: string | null;
+    backgroundColor: string | null;
+    textColor: string | null;
+  };
 }>;
 
 // Source: src/sanity/queries/project.query.ts
@@ -842,7 +889,7 @@ declare module "@sanity/client" {
     '\n  *[_type == "article" && pinned == true]\n    | order(publishedAt desc, _createdAt desc)[0...3] {\n      \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n  isAiGenerated,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n    }\n': PinnedArticlesQueryResult;
     '\n  *[_type == "article" && slug.current == $slug][0] {\n    \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n  isAiGenerated,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n  }\n': ArticleBySlugQueryResult;
     '\n*[_type == "articleUrl"] | order(_createdAt asc) {\n  \n_id,\nname,\nurl,\n\n}': ArticleUrlsListQueryResult;
-    '\n *[_type == "dailyApp"] {\n    _id,\n    name,\n    description,\n    category,\n\n    "logo": select(\n      logo.type == "url" => { "type": "url", "value": logo.url },\n      logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },\n      logo.type == "icon" => { "type": "icon", "value": logo.icon }\n    ),\n\n    url\n  }\n': DailyAppListQueryResult;
+    '\n  *[_type == "dailyApp"] | order(_createdAt desc) {\n    _id,\n    name,\n    description,\n    category,\n\n    "logo": select(\n      logo.type == "url" => {\n        "type": "url",\n        "value": logo.url\n      },\n      logo.type == "upload" => {\n        "type": "upload",\n        "value": logo.image.asset->url\n      },\n      logo.type == "icon" => {\n        "type": "icon",\n        "value": logo.icon\n      }\n    ),\n\n    url,\n\n    "button": {\n      "label": button.label,\n      "backgroundColor": button.backgroundColor.hex,\n      "textColor": button.textColor.hex\n    }\n  }\n': DailyAppListQueryResult;
     '\n*[_type == "project"] | order(date desc) {\n  \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n}': ProjectsListQueryResult;
     '\n  *[_type == "project" && featured == true]\n  | order(_createdAt desc)[0...4] {\n    \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n  }\n': FeaturedProjectsQueryResult;
     '\n*[_type == "projectFilter"] | order(_createdAt asc) {\n  \n_id,\nname,\n"slug": value.current,\ndescription,\nicon,\n\n}': ProjectFiltersListQueryResult;

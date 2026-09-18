@@ -45,6 +45,7 @@ const nextConfig: NextConfig = {
   ],
 
   images: {
+    unoptimized: process.env.NODE_ENV === "development",
     dangerouslyAllowLocalIP: true,
 
     qualities: [100, 70],

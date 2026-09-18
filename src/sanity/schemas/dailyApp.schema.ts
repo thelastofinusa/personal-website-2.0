@@ -1,4 +1,4 @@
-import { Cpu3 } from "reicon-react";
+import { Router3 } from "reicon-react";
 import { defineField, defineType } from "sanity";
 import { resolveReicon } from "@/lib/icons";
 
@@ -6,7 +6,7 @@ export const dailyAppSchema = defineType({
   name: "dailyApp",
   title: "Daily Apps",
   type: "document",
-  icon: Cpu3,
+  icon: Router3,
 
   fields: [
     defineField({
@@ -50,13 +50,24 @@ export const dailyAppSchema = defineType({
     defineField({
       name: "description",
       title: "Description",
-      type: "string",
+      type: "text",
+    }),
+
+    defineField({
+      name: "url",
+      title: "URL",
+      type: "url",
+      validation: (Rule) =>
+        Rule.uri({
+          scheme: ["http", "https"],
+        }),
     }),
 
     defineField({
       name: "logo",
       title: "Logo",
       type: "object",
+      description: "Choose a logo, either upload, add image url or Reicon",
       fields: [
         defineField({
           name: "type",
@@ -103,6 +114,12 @@ export const dailyAppSchema = defineType({
           hidden: ({ parent }) => parent?.type !== "icon",
         }),
       ],
+
+      options: {
+        collapsible: true,
+        collapsed: false,
+      },
+
       preview: {
         select: {
           type: "type",
@@ -110,6 +127,7 @@ export const dailyAppSchema = defineType({
           image: "image",
           icon: "icon",
         },
+
         prepare({ type, url, image, icon }) {
           return {
             title:
@@ -118,6 +136,7 @@ export const dailyAppSchema = defineType({
                 : type === "icon"
                   ? icon || "Logo Icon"
                   : url || "Logo URL",
+
             media:
               type === "icon"
                 ? resolveReicon(icon)
@@ -129,14 +148,40 @@ export const dailyAppSchema = defineType({
       },
     }),
 
+    // Button configuration
     defineField({
-      name: "url",
-      title: "Url",
-      type: "url",
-      validation: (Rule) =>
-        Rule.uri({
-          scheme: ["http", "https"],
+      name: "button",
+      title: "Button",
+      type: "object",
+      description: "Customize the action button shown for this app.",
+      fields: [
+        defineField({
+          name: "label",
+          title: "Label",
+          type: "string",
+          description: 'Optional. Defaults to "Launch App" when left empty.',
+          validation: (Rule) => Rule.max(30),
         }),
+
+        defineField({
+          name: "backgroundColor",
+          title: "Background Color",
+          type: "color",
+          description: "Background color of the action button.",
+        }),
+
+        defineField({
+          name: "textColor",
+          title: "Text Color",
+          type: "color",
+          description: "Text color of the action button.",
+        }),
+      ],
+
+      options: {
+        collapsible: true,
+        collapsed: false,
+      },
     }),
   ],
 
@@ -144,8 +189,6 @@ export const dailyAppSchema = defineType({
     select: {
       title: "name",
       subtitle: "description",
-
-      // Correct path: icon is inside logo
       logoType: "logo.type",
       logoUrl: "logo.url",
       logoImage: "logo.image",
