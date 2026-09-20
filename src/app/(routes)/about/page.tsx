@@ -1,5 +1,3 @@
-// app/about/page.tsx
-
 import type { Metadata } from "next";
 import { siteConfig } from "@/config/site.config";
 import { navLinksData } from "@/constants/navigation";
@@ -7,7 +5,7 @@ import { fetchGitHubContributions } from "@/lib/github-contributions";
 import { getOgImage } from "@/lib/og";
 import { fetchPinnedArticles } from "@/sanity/queries/article.query";
 import { fetchDailyApp } from "@/sanity/queries/dailyApp.query";
-import { fetchTimeline } from "@/sanity/queries/timeline.query";
+import { fetchLatestTimelines } from "@/sanity/queries/timeline.query";
 import { AboutPageClient } from "./_components/client";
 
 const nav = navLinksData("/about");
@@ -48,7 +46,7 @@ export const metadata: Metadata = {
 };
 
 export default async function About() {
-  const timeline = await fetchTimeline(); // Fetch unified timeline
+  const timeline = await fetchLatestTimelines();
   const articles = await fetchPinnedArticles();
   const dailyApps = await fetchDailyApp();
   const contributions = await fetchGitHubContributions(

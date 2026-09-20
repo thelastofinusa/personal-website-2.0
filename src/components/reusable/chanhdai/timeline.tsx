@@ -50,7 +50,6 @@ export function Timeline({ className, items }: TimelineProps) {
               whileInView="visible"
               exit="exit"
               layout
-              viewport={{ once: true, margin: "-50px" }}
               className="relative"
             >
               <TimelineGroup group={group} />

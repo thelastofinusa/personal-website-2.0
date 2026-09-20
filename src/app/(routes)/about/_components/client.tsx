@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import type { Route } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -32,7 +32,7 @@ import { QuickHero } from "@/components/shared/quick-hero";
 import { TextContent } from "@/components/shared/text-content";
 import { siteConfig } from "@/config/site.config";
 import { navLinksData } from "@/constants/navigation";
-import { itemVariants, parentVariants } from "@/constants/variants";
+import { parentVariants, workItemVariants } from "@/constants/variants";
 import type { IImagePreviewPortalProps } from "@/types";
 import type {
   ArticlesListQueryResult,
@@ -49,6 +49,14 @@ But I’ve grown into it. It’s meaningful, even if it sounds like my parents w
 
 Anyway, that’s me — ${siteConfig.author.name.split(" ")[0]} on official documents, ${siteConfig.author.nickname} everywhere else, and somewhere in between is where I build things for the web.`;
 
+const moreContent = `So that's the official-ish version of the story.
+
+The rest is mostly me making things, breaking things, fixing things, and occasionally deciding that the problem would be easier to solve if I built an entirely new system around it.
+
+Naturally, this has resulted in a collection of side projects, tiny experiments, and apps that probably didn't need to exist.
+
+Made it this far? [come find me on Telegram](https://t.me/thelastofinusa).`;
+
 export const AboutPageClient: React.FC<{
   timeline: TimelineListQueryResult;
   contributions: GitHubContributionsResult;
@@ -57,6 +65,12 @@ export const AboutPageClient: React.FC<{
 }> = ({ timeline, contributions, articles, dailyApps }) => {
   const { play } = useSoundFx();
   const pathname = usePathname();
+
+  const articleRoute = navLinksData("/articles");
+  const Icon = articleRoute?.icon;
+  const timelineRoute = navLinksData("/about/timeline");
+  const TimelineIcon = timelineRoute?.icon;
+
   const githubProfileUrl = siteConfig.socials.find(
     (social) => social.platform.toLowerCase() === "github",
   )?.url;
@@ -103,6 +117,7 @@ export const AboutPageClient: React.FC<{
         <TextContent
           content={introduction}
           namePronunciationUrl={siteConfig.author.namePronunciationUrl}
+          className="pt-20 sm:pt-30 md:pt-36"
         />
 
         {/* Unified Timeline Container */}
@@ -115,43 +130,37 @@ export const AboutPageClient: React.FC<{
               className="flex flex-col gap-6 md:gap-8"
             >
               <Timeline className="w-full" items={timeline} />
+
+              <AnimatePresence mode="popLayout">
+                <motion.div
+                  variants={workItemVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  exit="exit"
+                  layout
+                  className="relative"
+                >
+                  <Link
+                    href={timelineRoute?.href as Route}
+                    onClick={() => play("forward")}
+                    className="flex mx-auto wrapper items-center w-max"
+                  >
+                    <Button variant="inverse">
+                      <span>{timelineRoute?.action}</span>
+                    </Button>
+                    <Button variant="inverse" size="icon">
+                      {TimelineIcon && <TimelineIcon />}
+                    </Button>
+                  </Link>
+                </motion.div>
+              </AnimatePresence>
             </motion.div>
           </Container>
         )}
 
-        {/* Articles Section */}
-        {articles.length > 0 && (
-          <motion.div
-            variants={parentVariants}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-col gap-6 md:gap-8"
-          >
-            <Container size="sm">
-              <div className="flex items-center justify-between gap-4">
-                <Eyebrow
-                  label="Freshly Escaped"
-                  icon={navLinksData("/articles")?.icon}
-                />
+        <TextContent content={moreContent} />
 
-                <motion.div variants={itemVariants}>
-                  <Link href="/articles" onClick={() => play("forward")}>
-                    <Button variant="outline" size="sm">
-                      Feed the Brain
-                    </Button>
-                  </Link>
-                </motion.div>
-              </div>
-            </Container>
-
-            <Container size="md">
-              <ImagePreviewProvider images={articleImages}>
-                <ArticleList articles={articles} />
-              </ImagePreviewProvider>
-            </Container>
-          </motion.div>
-        )}
-
+        {/* Apps Section */}
         {dailyApps.length > 0 && (
           <motion.div
             variants={parentVariants}
@@ -165,6 +174,48 @@ export const AboutPageClient: React.FC<{
 
             <Container size="md">
               <DailyApps apps={dailyApps} />
+            </Container>
+          </motion.div>
+        )}
+
+        {/* Articles Section */}
+        {articles.length > 0 && (
+          <motion.div
+            variants={parentVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col gap-6 md:gap-8"
+          >
+            <Container size="md">
+              <div className="flex flex-col gap-8 md:gap-12">
+                <ImagePreviewProvider images={articleImages}>
+                  <ArticleList articles={articles} />
+                </ImagePreviewProvider>
+
+                <AnimatePresence mode="popLayout">
+                  <motion.div
+                    variants={workItemVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    exit="exit"
+                    layout
+                    className="relative"
+                  >
+                    <Link
+                      href={articleRoute?.href as Route}
+                      onClick={() => play("forward")}
+                      className="flex mx-auto wrapper items-center w-max"
+                    >
+                      <Button variant="inverse">
+                        <span>{articleRoute?.action}</span>
+                      </Button>
+                      <Button variant="inverse" size="icon">
+                        {Icon && <Icon />}
+                      </Button>
+                    </Link>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </Container>
           </motion.div>
         )}

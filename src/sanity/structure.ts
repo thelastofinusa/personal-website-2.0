@@ -6,6 +6,20 @@ export const structure: StructureResolver = (S) =>
     .title("The Good Stuff")
     .items([
       // ==================================================
+      // CONTENT
+      // ==================================================
+
+      S.documentTypeListItem("project").title("Projects"),
+      S.documentTypeListItem("article").title("Articles"),
+      S.documentTypeListItem("dailyApp").title("Daily Apps"),
+
+      S.divider(),
+
+      S.documentTypeListItem("timeline").title("Timeline"),
+
+      S.divider(),
+
+      // ==================================================
       // WORK
       // ==================================================
 
@@ -42,16 +56,6 @@ export const structure: StructureResolver = (S) =>
               },
             ]),
         ),
-
-      S.divider(),
-
-      // ==================================================
-      // CONTENT
-      // ==================================================
-
-      S.documentTypeListItem("project").title("Projects"),
-      S.documentTypeListItem("article").title("Articles"),
-      S.documentTypeListItem("dailyApp").title("Daily Apps"),
 
       S.divider(),
 

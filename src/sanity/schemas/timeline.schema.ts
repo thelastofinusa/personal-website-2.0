@@ -1,12 +1,12 @@
-import { History3 } from "reicon-react";
 import { defineField, defineType } from "sanity";
+import { navLinksData } from "@/constants/navigation";
 import { resolveReicon } from "@/lib/icons";
 
 export const timelineSchema = defineType({
   name: "timeline",
   title: "Timeline",
   type: "document",
-  icon: History3,
+  icon: navLinksData("/about/timeline")?.icon,
 
   fields: [
     defineField({
@@ -29,6 +29,14 @@ export const timelineSchema = defineType({
       type: "string",
       description: "Company, university, school, or institution.",
       validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
+      name: "featured",
+      type: "boolean",
+      title: "Featured",
+      description: "Show this project in the featured projects section.",
+      initialValue: false,
     }),
 
     defineField({

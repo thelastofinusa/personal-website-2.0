@@ -14,15 +14,17 @@ interface TextContentProps {
   content: string;
   hash?: string;
   namePronunciationUrl?: string;
+  className?: string;
 }
 
 export const TextContent: React.FC<TextContentProps> = ({
   content,
   hash,
   namePronunciationUrl,
+  className,
 }) => {
   return (
-    <section id={hash} className="pt-20 sm:pt-30 md:pt-36">
+    <section id={hash} className={className}>
       <Container size="xs">
         <motion.div
           variants={parentVariants}
@@ -56,7 +58,7 @@ export const TextContent: React.FC<TextContentProps> = ({
                   return (
                     <Link
                       href={href as Route}
-                      className="underline underline-offset-4"
+                      className="link-underline transition-colors hover:text-primary!"
                     >
                       {children}
                     </Link>
@@ -68,7 +70,7 @@ export const TextContent: React.FC<TextContentProps> = ({
                     href={href as string}
                     target="_blank"
                     rel="noreferrer"
-                    className="underline underline-offset-4"
+                    className="link-underline transition-colors hover:text-primary!"
                   >
                     {children}
                   </LinkPreview>

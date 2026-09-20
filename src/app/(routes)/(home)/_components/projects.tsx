@@ -1,6 +1,8 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
+import type { Route } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import type React from "react";
@@ -10,6 +12,7 @@ import { Skeleton } from "@/components/reusable/shadcn/skeleton";
 import { Container } from "@/components/shared/container";
 import { ProjectsView } from "@/components/shared/projects-view";
 import { navLinksData } from "@/constants/navigation";
+import { workItemVariants } from "@/constants/variants";
 import type { IImagePreviewPortalProps } from "@/types";
 import type {
   ProjectFiltersListQueryResult,
@@ -62,13 +65,12 @@ export const ProjectsComp: React.FC<{
   filters: ProjectFiltersListQueryResult;
 }> = ({ projects, filters }) => {
   const { play } = useSoundFx();
-  const Icon = navLinksData("/projects")?.icon;
+
+  const projectsRoute = navLinksData("/projects");
+  const Icon = projectsRoute?.icon;
 
   if (projects.length === 0) return null;
 
-  // Same synthetic "All" entry client.tsx builds for the /projects page —
-  // ProjectsView resolves its Reicon by matching `activeTab` against this
-  // list, so without it there's nothing for the lookup to find.
   const tabFilters: ProjectFiltersListQueryResult = [
     {
       _id: "first-all",
@@ -110,18 +112,31 @@ export const ProjectsComp: React.FC<{
         </ImagePreviewProvider>
 
         <Container size="md">
-          <Link
-            href="/projects"
-            onClick={() => play("forward")}
-            className="flex mx-auto wrapper items-center w-max"
-          >
-            <Button variant="inverse">
-              <span>Go see what else exists</span>
-            </Button>
-            <Button variant="inverse" size="icon">
-              {Icon && <Icon />}
-            </Button>
-          </Link>
+          {projects.length > 0 && (
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                variants={workItemVariants}
+                initial="hidden"
+                whileInView="visible"
+                exit="exit"
+                layout
+                className="relative"
+              >
+                <Link
+                  href={projectsRoute?.href as Route}
+                  onClick={() => play("forward")}
+                  className="flex mx-auto wrapper items-center w-max"
+                >
+                  <Button variant="inverse">
+                    <span>{projectsRoute?.action}</span>
+                  </Button>
+                  <Button variant="inverse" size="icon">
+                    {Icon && <Icon />}
+                  </Button>
+                </Link>
+              </motion.div>
+            </AnimatePresence>
+          )}
         </Container>
       </div>
     </LivePreviewProvider>

@@ -126,76 +126,78 @@ export const MenuToggle: React.FC<
               className="rounded-[20px] bg-background dark:bg-card"
             >
               <FramePanel className="flex rounded-2xl flex-col gap-1 p-2 bg-background">
-                {navLinks.map((route) => {
-                  const isActive = isRouteActive(route.href);
-                  const Icon = route.icon;
+                {navLinks
+                  .filter((route) => route.show)
+                  .map((route) => {
+                    const isActive = isRouteActive(route.href);
+                    const Icon = route.icon;
 
-                  return (
-                    <motion.div key={route.href} variants={menuItemVariants}>
-                      <Link
-                        href={route.href}
-                        onClick={() => {
-                          closeMenu();
-                          play("forward");
-                        }}
-                        className="group block"
-                        title={`${route.eyebrow} - ${route.title}`}
-                        aria-describedby={`${route.href}-description`}
-                      >
-                        <div
-                          className={cn(
-                            "relative flex items-center justify-between rounded-lg p-3 transition-all duration-200",
-                            "hover:bg-muted/60",
-                            isActive
-                              ? "bg-muted font-medium text-foreground"
-                              : "text-muted-foreground hover:text-foreground",
-                          )}
+                    return (
+                      <motion.div key={route.href} variants={menuItemVariants}>
+                        <Link
+                          href={route.href}
+                          onClick={() => {
+                            closeMenu();
+                            play("forward");
+                          }}
+                          className="group block"
+                          title={`${route.eyebrow} - ${route.title}`}
+                          aria-describedby={`${route.href}-description`}
                         >
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
-                              {route.href === "/" ? (
-                                <Avatar size="xs" className="size-4!">
-                                  <AvatarImage
-                                    src={siteConfig.author.avatar}
-                                    alt={siteConfig.author.name}
-                                  />
+                          <div
+                            className={cn(
+                              "relative flex items-center justify-between rounded-lg p-3 transition-all duration-200",
+                              "hover:bg-muted/60",
+                              isActive
+                                ? "bg-muted font-medium text-foreground"
+                                : "text-muted-foreground hover:text-foreground",
+                            )}
+                          >
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-2">
+                                {route.href === "/" ? (
+                                  <Avatar size="xs" className="size-4!">
+                                    <AvatarImage
+                                      src={siteConfig.author.avatar}
+                                      alt={siteConfig.author.name}
+                                    />
 
-                                  <AvatarFallback className="border">
-                                    {getInitials(siteConfig.author.name)}
-                                  </AvatarFallback>
-                                </Avatar>
-                              ) : (
-                                <Icon className="size-4" />
-                              )}
+                                    <AvatarFallback className="border">
+                                      {getInitials(siteConfig.author.name)}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                ) : (
+                                  <Icon className="size-4" />
+                                )}
 
-                              <span className="text-sm font-medium leading-none transition-transform duration-200 group-hover:translate-x-0.5">
-                                {route.eyebrow}
+                                <span className="text-sm font-medium leading-none transition-transform duration-200 group-hover:translate-x-0.5">
+                                  {route.eyebrow}
+                                </span>
+                              </div>
+
+                              <span
+                                id={`${route.href}-description`}
+                                className="text-xs font-light text-muted-foreground"
+                              >
+                                {route.title}
                               </span>
                             </div>
 
-                            <span
-                              id={`${route.href}-description`}
-                              className="text-xs font-light text-muted-foreground"
-                            >
-                              {route.title}
-                            </span>
+                            {isActive ? (
+                              <Discover2 className="size-4 text-primary motion-safe:animate-bell-ring" />
+                            ) : (
+                              <ArrowRight5
+                                className={cn(
+                                  "size-4 -translate-x-2 opacity-0 transition-all duration-200",
+                                  "group-hover:translate-x-0 group-hover:opacity-100",
+                                )}
+                              />
+                            )}
                           </div>
-
-                          {isActive ? (
-                            <Discover2 className="size-4 text-primary motion-safe:animate-bell-ring" />
-                          ) : (
-                            <ArrowRight5
-                              className={cn(
-                                "size-4 -translate-x-2 opacity-0 transition-all duration-200",
-                                "group-hover:translate-x-0 group-hover:opacity-100",
-                              )}
-                            />
-                          )}
-                        </div>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
               </FramePanel>
 
               <div className="flex flex-col gap-3 px-5.5 py-4">

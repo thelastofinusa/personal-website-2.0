@@ -27,7 +27,11 @@ export default async function Home() {
     <div className="flex-1 overflow-x-clip bg-background">
       <HomeHero />
       <CurveThingy tCurve tMargin>
-        <TextContent hash="about" content={aboutContent} />
+        <TextContent
+          hash="about"
+          content={aboutContent}
+          className="pt-20 sm:pt-30 md:pt-36"
+        />
         <React.Suspense
           fallback={
             <div className="flex flex-col">
