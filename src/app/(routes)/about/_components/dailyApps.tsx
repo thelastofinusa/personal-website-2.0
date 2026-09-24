@@ -4,6 +4,7 @@ import { cn } from "cn";
 import { AnimatePresence, motion } from "motion/react";
 import React from "react";
 import { Blend } from "reicon-react";
+import { useSoundFx } from "@/components/provider/sound-fx";
 import { Frame } from "@/components/reusable/reui/frame";
 import { Badge } from "@/components/reusable/shadcn/badge";
 import { buttonVariants } from "@/components/reusable/shadcn/button";
@@ -14,6 +15,7 @@ import type { DailyAppListQueryResult } from "~/sanity.types";
 export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
   apps,
 }) => {
+  const { play } = useSoundFx();
   const [activeIndex, setActiveIndex] = React.useState(0);
 
   if (!apps?.length) return null;
@@ -144,6 +146,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
               onMouseEnter={() => {
                 // Desktop: Hover sets it active
                 setActiveIndex(idx);
+                play("hover");
               }}
               className={cn(
                 "group relative flex w-full items-center justify-center outline-none aspect-square",
