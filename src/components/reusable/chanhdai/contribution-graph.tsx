@@ -66,9 +66,9 @@ const DEFAULT_LABELS: Labels = {
 };
 
 const THEME = cn(
-  'data-[level="0"]:fill-primary/10',
-  'data-[level="1"]:fill-primary/30',
-  'data-[level="2"]:fill-primary/50',
+  'data-[level="0"]:fill-primary/5',
+  'data-[level="1"]:fill-primary/20',
+  'data-[level="2"]:fill-primary/40',
   'data-[level="3"]:fill-primary/70',
   'data-[level="4"]:fill-primary',
 );
