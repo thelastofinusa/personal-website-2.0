@@ -169,7 +169,7 @@ export const AboutPageClient: React.FC<{
             className="flex flex-col gap-6"
           >
             <Container size="sm">
-              <Eyebrow label="The Usual Suspects" icon={Router3} />
+              <Eyebrow label="The Ones I Keep Opening" icon={Router3} />
             </Container>
 
             <Container size="md">
