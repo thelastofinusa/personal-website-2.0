@@ -35,7 +35,7 @@ export function PronounceMyName({
       onClick={handlePlayClick}
       disabled={isPlaying}
       aria-label="Pronounce my name"
-      className={cn(className)}
+      className={cn("disabled:pointer-events-none disabled:opacity-50",className)}
     >
       <span className="absolute size-12 pointer-fine:hidden" aria-hidden />
       <VolumeIcon
