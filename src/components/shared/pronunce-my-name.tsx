@@ -17,11 +17,13 @@ export function PronounceMyName({
   className?: string;
   namePronunciationUrl: string;
 }) {
-  const [play] = useSound(namePronunciationUrl);
+  const [play, { isPlaying }] = useSound(namePronunciationUrl);
 
   const volumeIconRef = useRef<VolumeIconHandle>(null);
 
   const handlePlayClick = () => {
+    if (isPlaying) return;
+
     volumeIconRef.current?.startAnimation();
     play();
   };
@@ -31,6 +33,7 @@ export function PronounceMyName({
   return (
     <button
       onClick={handlePlayClick}
+      disabled={isPlaying}
       aria-label="Pronounce my name"
       className={cn(className)}
     >
