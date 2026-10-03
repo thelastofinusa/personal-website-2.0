@@ -24,6 +24,7 @@ const shouldInclude: string[] = [
   "instagram",
   "github",
   "telegram",
+  "youtube",
 ];
 
 export const Footer = () => {

@@ -24,15 +24,16 @@ export const siteConfig = {
     { platform: "twitter", url: "https://twitter.com/thelastofinusa" },
     { platform: "github", url: "https://github.com/thelastofinusa" },
     { platform: "instagram", url: "https://www.instagram.com/thelastofinusa/" },
+    { platform: "telegram", url: "https://t.me/thelastofinusa" },
     {
       platform: "linkedin",
       url: "https://www.linkedin.com/in/thelastofinusa/",
     },
+    { platform: "youtube", url: "https://www.youtube.com/@thelastofinusa" },
     { platform: "medium", url: "https://medium.com/@thelastofinusa" },
     {
       platform: "producthunt",
       url: "https://www.producthunt.com/@thelastofinusa",
     },
-    { platform: "telegram", url: "https://t.me/thelastofinusa" },
   ],
 };

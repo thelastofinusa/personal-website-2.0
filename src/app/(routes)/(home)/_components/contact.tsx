@@ -75,13 +75,7 @@ export const ContactComp = () => {
                 const content = (
                   <>
                     {Icon && (
-                      <Icon
-                        className={`size-4 ${
-                          item.id === "time"
-                            ? "mb-px motion-safe:animate-bell-ring"
-                            : ""
-                        }`}
-                      />
+                      <Icon className="size-4 motion-safe:animate-bell-ring" />
                     )}
 
                     <span className={item.external ? "capitalize" : undefined}>

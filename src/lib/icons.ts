@@ -11,7 +11,7 @@ import {
   FaXTwitter,
 } from "react-icons/fa6";
 import { FiChrome } from "react-icons/fi";
-import { IoLogoGithub } from "react-icons/io5";
+import { IoLogoGithub, IoLogoYoutube } from "react-icons/io5";
 import { RiReactjsFill, RiVercelFill } from "react-icons/ri";
 import { SiDailydotdev } from "react-icons/si";
 import { TbBrandNextjs } from "react-icons/tb";
@@ -83,6 +83,10 @@ const DEFAULT_ICONS: IconMatcher[] = [
   {
     keywords: ["telegram", "t.me"],
     icon: FaTelegramPlane,
+  },
+  {
+    keywords: ["youtube", "youtube.com"],
+    icon: IoLogoYoutube,
   },
   {
     keywords: ["daily"],
