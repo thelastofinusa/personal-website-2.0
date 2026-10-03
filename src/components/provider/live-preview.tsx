@@ -1,4 +1,5 @@
-/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
+/** biome-ignore-all lint/correctness/useExhaustiveDependencies: just ignore */
+/** biome-ignore-all lint/suspicious/noExplicitAny: just ignore */
 "use client";
 
 import {
@@ -332,7 +333,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                   >
                     {/* Tab Bar */}
                     <div className="flex h-9 items-center gap-2 px-3 pt-1.5">
-                      <div className="flex items-center group/btn cursor-default gap-1.5 pr-2">
+                      <div className="group/btn flex cursor-default items-center gap-1.5 pr-2">
                         {/* Red Button: Close */}
                         <button
                           type="button"
@@ -341,7 +342,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                           title="Close"
                           className="flex size-3 items-center justify-center rounded-full border border-[#e0443e] bg-[#ff5f57] transition-transform active:scale-90"
                         >
-                          <Xmark className="size-2 opacity-0 text-black transition-opacity group-hover/btn:opacity-100 stroke-2" />
+                          <Xmark className="size-2 stroke-2 text-black opacity-0 transition-opacity group-hover/btn:opacity-100" />
                         </button>
 
                         {/* Yellow Button: Minimize */}
@@ -352,7 +353,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                           title="Minimize"
                           className="flex size-3 items-center justify-center rounded-full border border-[#d89e24] bg-[#febc2e] transition-transform active:scale-90"
                         >
-                          <Minus className="size-2 opacity-0 text-black transition-opacity group-hover/btn:opacity-100 stroke-2" />
+                          <Minus className="size-2 stroke-2 text-black opacity-0 transition-opacity group-hover/btn:opacity-100" />
                         </button>
 
                         {/* Green Button: Expand / Restore Size */}
@@ -368,7 +369,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                           title={expanded ? "Restore size" : "Expand"}
                           className="flex size-3 items-center justify-center rounded-full border border-[#1aab29] bg-[#28c840] transition-transform active:scale-90"
                         >
-                          <ChevronExpandY className="size-2 opacity-0 text-black transition-opacity group-hover/btn:opacity-100 stroke-2 -rotate-45" />
+                          <ChevronExpandY className="size-2 -rotate-45 stroke-2 text-black opacity-0 transition-opacity group-hover/btn:opacity-100" />
                         </button>
                       </div>
 
@@ -381,13 +382,13 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                           width={10}
                           height={10}
                         />
-                        <span className="truncate text-[11px] font-medium text-foreground">
+                        <span className="truncate font-medium text-[11px] text-foreground">
                           {project.name}
                         </span>
                         <button
                           type="button"
                           onClick={closePreview}
-                          className="ml-auto flex size-4 items-center cursor-pointer justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                          className="ml-auto flex size-4 cursor-pointer items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
                         >
                           <Xmark className="size-2.5" />
                         </button>
@@ -407,7 +408,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                     </div>
 
                     {/* Address Toolbar */}
-                    <div className="flex h-8 items-center gap-1.5 border-t cursor-default border-border/40 bg-background px-2.5 py-1">
+                    <div className="flex h-8 cursor-default items-center gap-1.5 border-border/40 border-t bg-background px-2.5 py-1">
                       <div className="flex items-center gap-1 text-muted-foreground">
                         <button
                           type="button"
@@ -473,10 +474,10 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                     {project.embeddable === false ? (
                       <div className="relative flex size-full flex-col items-center justify-center overflow-hidden bg-background p-6">
                         {/* Glowing Background Blob */}
-                        <div className="pointer-events-none absolute size-96 rounded-full bg-primary/15 blur-3xl animate-pulse" />
+                        <div className="pointer-events-none absolute size-96 animate-pulse rounded-full bg-primary/15 blur-3xl" />
 
                         {/* Fine-line architectural frame */}
-                        <div className="relative bg-background flex w-full max-w-md flex-col items-start p-8 md:p-10">
+                        <div className="relative flex w-full max-w-md flex-col items-start bg-background p-8 md:p-10">
                           {/* Corner Crosshairs */}
                           <FadeLine
                             orientation="horizontal"
@@ -496,34 +497,34 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                           />
 
                           {/* Header Status */}
-                          <div className="flex w-full items-center justify-between font-mono text-[10px] tracking-widest text-muted-foreground/60 uppercase">
+                          <div className="flex w-full items-center justify-between font-mono text-[10px] text-muted-foreground/60 uppercase tracking-widest">
                             <span>01 / FRAME_RESTRICTED</span>
                             <span className="size-1.5 rounded-full bg-primary/60" />
                           </div>
 
                           {/* Content */}
-                          <h3 className="mt-8 font-serif text-3xl font-light tracking-tight text-foreground md:text-4xl">
+                          <h3 className="mt-8 font-light font-serif text-3xl text-foreground tracking-tight md:text-4xl">
                             {project.name}
                           </h3>
 
-                          <p className="mt-3 text-xs font-light leading-relaxed text-muted-foreground/80">
+                          <p className="mt-3 font-light text-muted-foreground/80 text-xs leading-relaxed">
                             Direct preview blocked by host header policy. Launch
                             the project directly in a primary window.
                           </p>
 
                           {/* Footer Action */}
-                          <div className="mt-8 flex w-full items-center justify-between border-t border-border/40 pt-6">
+                          <div className="mt-8 flex w-full items-center justify-between border-border/40 border-t pt-6">
                             <Link
                               href={project.url as Route}
                               target="_blank"
                               rel="noreferrer"
                               onClick={closePreview}
-                              className="group inline-flex items-center gap-3 font-mono text-xs tracking-wider text-foreground transition-colors hover:text-primary"
+                              className="group inline-flex items-center gap-3 font-mono text-foreground text-xs tracking-wider transition-colors hover:text-primary"
                             >
                               <span className="relative py-0.5 after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all after:duration-300 group-hover:after:w-full">
                                 LAUNCH PROJECT
                               </span>
-                              <SquareTopDown className="size-3.5 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                              <SquareTopDown className="size-3.5 text-muted-foreground transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
                             </Link>
 
                             <span className="font-mono text-[10px] text-muted-foreground/40">
@@ -675,7 +676,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                         )}
 
                         {iframeSlow && !iframeLoaded && (
-                          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-background/95 px-3 py-2 text-xs text-muted-foreground border-t border-border/60 z-20">
+                          <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-between gap-3 border-border/60 border-t bg-background/95 px-3 py-2 text-muted-foreground text-xs">
                             <span>
                               This site may not allow being previewed here.
                             </span>
@@ -721,7 +722,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                         damping: 25,
                         delay: isMinimized ? 0.15 : 0,
                       }}
-                      className="fixed bottom-5 right-5 z-100"
+                      className="fixed right-5 bottom-5 z-100"
                       aria-label={`Restore live preview of ${project.name}`}
                     >
                       <Button
@@ -733,10 +734,10 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                         )}
                       >
                         <span className="relative flex size-2">
-                          <span className="absolute inset-0 rounded-full bg-white opacity-75 animate-ping" />
+                          <span className="absolute inset-0 animate-ping rounded-full bg-white opacity-75" />
                           <span className="relative size-2 rounded-full bg-white" />
                         </span>
-                        <span className="text-xs font-medium">
+                        <span className="font-medium text-xs">
                           {project.name}
                         </span>
                       </Button>

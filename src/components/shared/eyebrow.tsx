@@ -26,7 +26,7 @@ export const Eyebrow: React.FC<{
       {Icon && <Icon className="mb-px size-4 motion-safe:animate-bell-ring" />}
 
       <ShimmeringText
-        className="text-xs font-light uppercase tracking-[0.1em] sm:text-xs"
+        className="font-light text-xs uppercase tracking-[0.1em] sm:text-xs"
         text={label}
       />
     </>
@@ -39,7 +39,7 @@ export const Eyebrow: React.FC<{
         variants={itemVariants}
         onClick={() => play("back")}
         className={cn(
-          "flex items-center flex-row gap-2 w-max text-muted-foreground",
+          "flex w-max flex-row items-center gap-2 text-muted-foreground",
           reverse && "flex-row-reverse",
           className,
         )}
@@ -53,7 +53,7 @@ export const Eyebrow: React.FC<{
     <motion.p
       variants={itemVariants}
       className={cn(
-        "flex items-center flex-row w-max gap-2 text-muted-foreground",
+        "flex w-max flex-row items-center gap-2 text-muted-foreground",
         reverse && "flex-row-reverse",
         className,
       )}

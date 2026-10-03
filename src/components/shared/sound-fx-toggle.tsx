@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: just ignore */
 "use client";
 
 import type { Button as ButtonPrimitive } from "@base-ui/react/button";
@@ -257,7 +257,7 @@ export const SoundFXToggle: React.FC<
             animate="open"
             exit="closed"
             className={cn(
-              "absolute right-0 top-full z-40 mt-3 w-73 origin-top-right rounded-[20px]",
+              "absolute top-full right-0 z-40 mt-3 w-73 origin-top-right rounded-[20px]",
               "shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)]",
             )}
           >
@@ -266,7 +266,7 @@ export const SoundFXToggle: React.FC<
               className="rounded-[20px] bg-background dark:bg-card"
             >
               {/* ─── Card Grid ──────────────────────── */}
-              <FramePanel className="overflow-y-auto rounded-2xl overscroll-contain bg-background p-3 flex flex-col gap-4">
+              <FramePanel className="flex flex-col gap-4 overflow-y-auto overscroll-contain rounded-2xl bg-background p-3">
                 <div className="grid grid-cols-2 gap-2">
                   {visiblePacks.map((packName, index) => {
                     const isActive = pack === packName && enabled;
@@ -316,7 +316,7 @@ export const SoundFXToggle: React.FC<
 
                           <span
                             className={cn(
-                              "text-xs font-medium capitalize",
+                              "font-medium text-xs capitalize",
                               isActive ? colors.text : "text-foreground",
                             )}
                           >
@@ -343,7 +343,7 @@ export const SoundFXToggle: React.FC<
                         setPage((prev) => Math.max(0, prev - 1));
                       }}
                       className={cn(
-                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-lg border-border/50 bg-muted/20 py-2.5 text-xs font-medium text-muted-foreground transition-all duration-200",
+                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-lg border-border/50 bg-muted/20 py-2.5 font-medium text-muted-foreground text-xs transition-all duration-200",
                         "hover:border-muted-foreground/30 hover:bg-muted/30 hover:text-foreground active:scale-[0.98]",
                       )}
                     >
@@ -351,7 +351,7 @@ export const SoundFXToggle: React.FC<
                       <span>Prev</span>
                     </Button>
 
-                    <span className="flex min-w-10 items-center justify-center text-[11px] font-medium text-muted-foreground">
+                    <span className="flex min-w-10 items-center justify-center font-medium text-[11px] text-muted-foreground">
                       {page + 1} / {totalPages}
                     </span>
 
@@ -365,7 +365,7 @@ export const SoundFXToggle: React.FC<
                         setPage((prev) => Math.min(totalPages - 1, prev + 1));
                       }}
                       className={cn(
-                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-lg border-border/50 bg-muted/20 py-2.5 text-xs font-medium text-muted-foreground transition-all duration-200",
+                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-lg border-border/50 bg-muted/20 py-2.5 font-medium text-muted-foreground text-xs transition-all duration-200",
                         "hover:border-muted-foreground/30 hover:bg-muted/30 hover:text-foreground active:scale-[0.98]",
                       )}
                     >
@@ -377,7 +377,7 @@ export const SoundFXToggle: React.FC<
               </FramePanel>
 
               {/* ─── Footer ─────────────────────────── */}
-              <div className="flex items-center relative gap-2 pl-4 pr-2.5 w-full py-2 justify-between">
+              <div className="relative flex w-full items-center justify-between gap-2 py-2 pr-2.5 pl-4">
                 <motion.span
                   variants={menuItemVariants}
                   onClick={() => play("forward")}
@@ -386,7 +386,7 @@ export const SoundFXToggle: React.FC<
                     href="https://uisfx.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex w-max items-center gap-1.5 text-xs font-light tracking-[0.03em] text-muted-foreground! transition-colors hover:text-primary!"
+                    className="group flex w-max items-center gap-1.5 font-light text-muted-foreground! text-xs tracking-[0.03em] transition-colors hover:text-primary!"
                   >
                     <span>Powered by uisfx.com</span>
                     <ArrowRight5 className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -425,7 +425,7 @@ export const SoundFXToggle: React.FC<
                       play(showVolumeSlider ? "toggle-off" : "toggle-on");
                     }}
                   >
-                    <span className="w-7 font-mono text-xs font-medium tabular-nums">
+                    <span className="w-7 font-medium font-mono text-xs tabular-nums">
                       <CountingNumber
                         number={enabled ? Math.round(volume * 100) : 0}
                         fromNumber={0}
@@ -443,7 +443,7 @@ export const SoundFXToggle: React.FC<
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -4, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full z-50 mt-2 w-full"
+                      className="absolute top-full right-0 z-50 mt-2 w-full"
                     >
                       <Frame variant="inverse" className="rounded-xl">
                         <ElasticSlider

@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
+/** biome-ignore-all lint/correctness/useExhaustiveDependencies: just ignore */
 "use client";
 
 import type { Route } from "next";
@@ -255,7 +255,7 @@ export const ProjectsPageClient: React.FC<{
         <CurveThingy tCurve hash="showcase">
           <div
             id="showcase"
-            className="pt-20 sm:pt-30 md:pt-36 flex flex-col gap-8 md:gap-12"
+            className="flex flex-col gap-8 pt-20 sm:pt-30 md:gap-12 md:pt-36"
           >
             <Container size={view === "list" ? "sm" : "md"}>
               <SearchFilter
@@ -301,7 +301,7 @@ export const ProjectsPageClient: React.FC<{
             <div className="flex flex-col items-center justify-center gap-3 px-6">
               <span className="h-px w-8 bg-border" />
 
-              <p className="text-center text-sm font-extralight italic text-muted-foreground/60 md:text-base">
+              <p className="text-center font-extralight text-muted-foreground/60 text-sm italic md:text-base">
                 More things are being built.
                 <br />
                 They’ll show up when they’re ready.

@@ -97,13 +97,7 @@ function CountingNumber({
     });
 
     return unsubscribe;
-  }, [
-    springValue,
-    decimalPlaces,
-    decimalSeparator,
-    padStart,
-    integerLength,
-  ]);
+  }, [springValue, decimalPlaces, decimalSeparator, padStart, integerLength]);
 
   const initialText = formatNumber(
     fromNumber,

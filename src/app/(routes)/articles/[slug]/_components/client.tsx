@@ -37,11 +37,11 @@ export const ArticleDetailsClient: React.FC<{
             ? {
                 content: (
                   <Frame className="rounded-[20px]!">
-                    <div className="border rounded-2xl overflow-hidden">
+                    <div className="overflow-hidden rounded-2xl border">
                       <Image
                         src={article?.mainImage.image as string}
                         alt={article?.title as string}
-                        className="w-full h-full aspect-video object-cover"
+                        className="aspect-video h-full w-full object-cover"
                         width={article?.mainImage.width as number}
                         height={article?.mainImage.height as number}
                         loading="eager"
@@ -65,13 +65,13 @@ export const ArticleDetailsClient: React.FC<{
         <Container size="md">
           <nav
             aria-label="Article pagination"
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t"
+            className="grid grid-cols-1 gap-6 border-t pt-6 md:grid-cols-2"
           >
             {previousArticle && (
               <Link
                 href={`/articles/${previousArticle?.slug}`}
                 onClick={() => play("back")}
-                className="group flex border min-w-0 rounded-md p-6 flex-col gap-2 hover:border-primary transition-colors"
+                className="group flex min-w-0 flex-col gap-2 rounded-md border p-6 transition-colors hover:border-primary"
               >
                 <Eyebrow label="Previous Article" icon={ArrowLeft5} />
 
@@ -86,7 +86,7 @@ export const ArticleDetailsClient: React.FC<{
                 href={`/articles/${nextArticle?.slug}`}
                 onClick={() => play("forward")}
                 className={cn(
-                  "group flex border min-w-0 rounded-md p-6 flex-col items-end gap-2 text-right hover:border-primary transition-colors",
+                  "group flex min-w-0 flex-col items-end gap-2 rounded-md border p-6 text-right transition-colors hover:border-primary",
                   !previousArticle && "md:col-start-2",
                 )}
               >

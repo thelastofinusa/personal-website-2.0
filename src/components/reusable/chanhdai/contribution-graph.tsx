@@ -378,7 +378,7 @@ export const ContributionGraphCalendar = ({
     <div
       ref={calendarRef}
       className={cn(
-        "no-scrollbar max-w-full scroll-fade-x overflow-x-auto overflow-y-hidden",
+        "no-scrollbar scroll-fade-x max-w-full overflow-x-auto overflow-y-hidden",
         className,
       )}
       {...props}
@@ -506,7 +506,7 @@ export const ContributionGraphLegend = ({
               height: `${blockSize + 1}`,
               borderRadius: blockRadius,
             }}
-            className="bg-background -mx-1 z-10 flex items-center justify-center last-of-type:mr-0 border-2 border-background"
+            className="z-10 -mx-1 flex items-center justify-center border-2 border-background bg-background last-of-type:mr-0"
           >
             <svg height={blockSize} width={blockSize}>
               <title>{`${level} contributions`}</title>

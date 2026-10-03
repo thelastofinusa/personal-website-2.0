@@ -48,7 +48,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
   };
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-row lg:gap-6 lg:items-stretch">
+    <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-6">
       <div className="lg:h-87.5">
         <Frame className="h-max! rounded-[28px]">
           <div className="relative flex min-h-44 w-full shrink-0 flex-col overflow-hidden rounded-3xl border bg-card lg:w-85">
@@ -74,10 +74,10 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                 </div>
 
                 <div className="mt-4 flex flex-col gap-1 px-2">
-                  <h3 className="text-xl font-semibold tracking-tight text-foreground">
+                  <h3 className="font-semibold text-foreground text-xl tracking-tight">
                     {activeApp.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {activeApp.description}
                   </p>
                 </div>
@@ -112,7 +112,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
         </Frame>
       </div>
 
-      <div className="grid h-max flex-1 content-start grid-cols-5 gap-1 sm:gap-3 px-4 sm:grid-cols-6 sm:px-0 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid h-max flex-1 grid-cols-5 content-start gap-1 px-4 sm:grid-cols-6 sm:gap-3 sm:px-0 lg:grid-cols-4 xl:grid-cols-5">
         {apps.map((app, idx) => {
           const isActive = idx === activeIndex;
           const isLink = Boolean(app.url);
@@ -149,7 +149,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                 play("hover");
               }}
               className={cn(
-                "group relative flex w-full items-center justify-center outline-none aspect-square",
+                "group relative flex aspect-square w-full items-center justify-center outline-none",
                 isLink ? "cursor-pointer" : "cursor-default",
               )}
             >

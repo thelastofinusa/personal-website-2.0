@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/performance/noImgElement: just ignore */
 "use client";
 
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
@@ -41,8 +42,6 @@ export const LinkPreview = ({
   className,
   width = 200,
   height = 125,
-  quality = 50,
-  layout = "fixed",
   side = "top",
   align = "center",
   sideOffset = 10,

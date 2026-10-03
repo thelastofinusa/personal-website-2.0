@@ -37,7 +37,7 @@ export const Navigation = () => {
           </Avatar>
         </Link>
 
-        <div className="relative pointer-events-auto flex items-center gap-2">
+        <div className="pointer-events-auto relative flex items-center gap-2">
           <div className="wrapper flex items-center rounded-full">
             <ThemeToggle variant="inverse" />
           </div>

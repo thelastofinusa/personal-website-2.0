@@ -77,7 +77,7 @@ export const TabFilter: React.FC<{
           </SelectContent>
         </Select>
       ) : (
-        <div className="flex-wrap items-center gap-2 flex">
+        <div className="flex flex-wrap items-center gap-2">
           {props.filters.map((filter, index) => {
             const isActive = props.activeTab === filter.slug;
 

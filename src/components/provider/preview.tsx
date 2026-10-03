@@ -173,9 +173,9 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
 }) => (
   <motion.div
     style={{ x: springX, y: springY }}
-    className="pointer-events-none fixed left-0 top-0 z-50 hidden md:block"
+    className="pointer-events-none fixed top-0 left-0 z-50 hidden md:block"
   >
-    <Frame ref={previewRef} className="opacity-0 rounded-[20px]!">
+    <Frame ref={previewRef} className="rounded-[20px]! opacity-0">
       <div
         style={{ width: `${maxWidth}px` }}
         className="overflow-hidden rounded-2xl border border-border/60 bg-background"
@@ -183,14 +183,14 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
         {/* Browser chrome */}
         <div className="bg-muted/70">
           {/* Tab */}
-          <div className="flex pt-1 pb-0.5 items-center px-2.5">
-            <div className="flex items-center mr-2 gap-1">
+          <div className="flex items-center px-2.5 pt-1 pb-0.5">
+            <div className="mr-2 flex items-center gap-1">
               <span className="size-2 rounded-full border border-[#e0443e] bg-[#ff5f57]" />
               <span className="size-2 rounded-full border border-[#d89e24] bg-[#febc2e]" />
               <span className="size-2 rounded-full border border-[#1aab29] bg-[#28c840]" />
             </div>
 
-            <div className="flex h-6 max-w-32.5 relative flex-1 items-center gap-1.5 rounded-t-sm bg-card px-2">
+            <div className="relative flex h-6 max-w-32.5 flex-1 items-center gap-1.5 rounded-t-sm bg-card px-2">
               <CustomImage
                 src={siteConfig.author.avatar}
                 alt={siteConfig.author.name}
@@ -199,26 +199,26 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
                 className="size-2.5 rounded-sm"
               />
 
-              <span className="truncate text-[9px] flex-1 font-medium text-muted-foreground">
+              <span className="flex-1 truncate font-medium text-[9px] text-muted-foreground">
                 {activeIndex !== null
                   ? images[activeIndex]?.alt || "Preview"
                   : "New tab"}
               </span>
 
-              <Xmark className="text-muted-foreground ml-auto size-3" />
+              <Xmark className="ml-auto size-3 text-muted-foreground" />
 
-              <span className="absolute -bottom-1 left-0 w-full h-2 bg-inherit" />
+              <span className="absolute -bottom-1 left-0 h-2 w-full bg-inherit" />
             </div>
 
-            <Plus className="size-3 text-muted-foreground ml-2 my-auto" />
+            <Plus className="my-auto ml-2 size-3 text-muted-foreground" />
 
-            <div className="size-5 bg-card rounded-sm flex ml-auto items-center justify-center">
+            <div className="ml-auto flex size-5 items-center justify-center rounded-sm bg-card">
               <ChevronDown className="size-3 text-muted-foreground" />
             </div>
           </div>
 
           {/* Address bar */}
-          <div className="flex items-center bg-card gap-2 px-2 py-1.5">
+          <div className="flex items-center gap-2 bg-card px-2 py-1.5">
             <ChevronLeft className="size-3 text-muted-foreground" />
             <ChevronRight className="size-3 text-muted-foreground/60" />
             <ArrowRotate className="size-3 text-muted-foreground" />
@@ -226,14 +226,14 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
             <div className="flex h-6 min-w-0 flex-1 items-center gap-1.5 rounded-sm bg-muted px-2">
               <Lock className="size-2.5 shrink-0 text-muted-foreground" />
 
-              <span className="min-w-0 flex-1 truncate overflow-hidden text-[10px] font-light text-muted-foreground">
+              <span className="min-w-0 flex-1 overflow-hidden truncate font-light text-[10px] text-muted-foreground">
                 {activeIndex !== null
                   ? images[activeIndex]?.url || images[activeIndex]?.ogUrl
                   : "preview.local"}
               </span>
             </div>
 
-            <div className="size-5 flex ml-auto shrink-0 items-center justify-center">
+            <div className="ml-auto flex size-5 shrink-0 items-center justify-center">
               <EllipsisVerticalIcon className="size-3 text-muted-foreground" />
             </div>
           </div>
@@ -242,9 +242,9 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
         {/* Browser viewport */}
         <FramePanel
           ref={panelRef}
-          className="relative overflow-hidden h-28 rounded-none border-0! bg-card"
+          className="relative h-28 overflow-hidden rounded-none border-0! bg-card"
         >
-          <div ref={imageTrackRef} className="absolute left-0 top-0 w-full">
+          <div ref={imageTrackRef} className="absolute top-0 left-0 w-full">
             {images.map((img) => (
               <div key={img.alt ?? img.url} className="relative h-auto w-full">
                 <CustomImage

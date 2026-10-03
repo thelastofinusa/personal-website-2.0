@@ -101,7 +101,7 @@ export const Footer = () => {
       <div
         ref={trackerRef}
         aria-hidden="true"
-        className="w-full pointer-events-none opacity-0 -z-50"
+        className="pointer-events-none -z-50 w-full opacity-0"
         style={{
           height: `${footerHeight}px`,
           marginBottom: `-${footerHeight}px`,
@@ -118,8 +118,8 @@ export const Footer = () => {
           className="origin-bottom pt-28 pb-10 md:pt-36"
         >
           <Container size="md" className="mb-8 sm:mb-16 md:mb-24">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
-              <p className="text-sm font-extralight sm:text-base md:text-lg">
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end md:gap-6">
+              <p className="font-extralight text-sm sm:text-base md:text-lg">
                 Let's connect. <br /> I'm always down for a chat.
               </p>
 
@@ -187,7 +187,7 @@ export const Footer = () => {
 
           <Container size="md" className="relative pt-6 md:pt-10">
             <div className="text-center md:text-right">
-              <p className="text-[13px] font-extralight text-muted-foreground sm:text-base">
+              <p className="font-extralight text-[13px] text-muted-foreground sm:text-base">
                 © {new Date().getFullYear()} Still shipping. Still figuring it
                 out.
               </p>

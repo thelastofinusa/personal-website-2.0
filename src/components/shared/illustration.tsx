@@ -2,7 +2,7 @@ function StackedPagesIllustration() {
   return (
     <div className="relative h-24 w-64" aria-hidden="true">
       {/* Back page */}
-      <div className="absolute inset-x-8 top-0 h-7 rotate-[-4deg] opacity-80 rounded-t-lg border bg-background" />
+      <div className="absolute inset-x-8 top-0 h-7 rotate-[-4deg] rounded-t-lg border bg-background opacity-80" />
 
       {/* Middle page */}
       <div className="absolute inset-x-4 top-3 h-7 rotate-2 rounded-t-lg border bg-background" />

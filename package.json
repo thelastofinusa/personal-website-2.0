@@ -9,7 +9,9 @@
     "lint": "biome check",
     "format": "biome format --write",
     "typegen": "sanity schema extract && sanity typegen generate",
-    "generate:reicons": "tsx scripts/generate-reicon-names.ts"
+    "generate:reicons": "tsx scripts/generate-reicon-names.ts",
+    "biome:migrate": "bunx biome migrate",
+    "biome:migrate:write": "bunx biome migrate --write"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -59,7 +61,7 @@
     "web-haptics": "^0.0.6"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.2",
+    "@biomejs/biome": "^2.5.14",
     "@tailwindcss/postcss": "^4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",

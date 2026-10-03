@@ -195,7 +195,7 @@ export const dailyAppSchema = defineType({
       logoIcon: "logo.icon",
     },
 
-    prepare({ title, subtitle, logoType, logoUrl, logoImage, logoIcon }) {
+    prepare({ title, subtitle, logoType, logoImage, logoIcon }) {
       return {
         title: title || "Untitled Daily App",
         subtitle: subtitle || "",

@@ -123,7 +123,7 @@ export function GitHubContributions({
 
   return (
     <ContributionGraph
-      className={cn("mx-auto py-2 bg-background", className)}
+      className={cn("mx-auto bg-background py-2", className)}
       data={result.data}
       blockSize={isMobile ? 10 : 12}
       blockMargin={3}
@@ -131,7 +131,7 @@ export function GitHubContributions({
     >
       <ContributionGraphCalendar
         calendarRef={calendarRef}
-        className="no-scrollbar px-2 text-[11px] font-mono font-light uppercase sm:text-xs"
+        className="no-scrollbar px-2 font-light font-mono text-[11px] uppercase sm:text-xs"
         title="GitHub Contributions"
       >
         {({ activity, dayIndex, weekIndex }) => (
@@ -158,7 +158,7 @@ export function GitHubContributions({
           </Tooltip>
         )}
       </ContributionGraphCalendar>
-      <ContributionGraphFooter className="px-2 text-sm font-light">
+      <ContributionGraphFooter className="px-2 font-light text-sm">
         <ContributionGraphTotalCount>
           {({ totalCount, year }) => (
             <div className="text-muted-foreground">
@@ -184,10 +184,10 @@ export function GitHubContributions({
 
 export function GitHubContributionsFallback() {
   return (
-    <div className="flex w-full gap-2 flex-col items-center justify-center">
+    <div className="flex w-full flex-col items-center justify-center gap-2">
       <Skeleton className="h-4 w-full" />
-      <Skeleton className="w-full h-28" />
-      <div className="flex items-center w-full justify-between gap-4">
+      <Skeleton className="h-28 w-full" />
+      <div className="flex w-full items-center justify-between gap-4">
         <Skeleton className="h-3 w-48" />
         <Skeleton className="h-3 w-20" />
       </div>

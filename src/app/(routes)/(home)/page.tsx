@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: just ignore */
 
 import React from "react";
 import { Skeleton } from "@/components/reusable/shadcn/skeleton";

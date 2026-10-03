@@ -26,7 +26,7 @@ export const GlobalProvider: React.FC<React.PropsWithChildren> = (props) => {
             <NextJsToploader color="var(--primary)" showSpinner={false} />
 
             <Navigation />
-            <main className="min-h-full flex flex-col">
+            <main className="flex min-h-full flex-col">
               <div className="relative z-20 flex-1">{props.children}</div>
             </main>
             <Footer />

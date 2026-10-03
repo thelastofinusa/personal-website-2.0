@@ -37,7 +37,7 @@ export const TextContent: React.FC<TextContentProps> = ({
               p: ({ children }) => (
                 <motion.p
                   variants={itemVariants}
-                  className="mb-6 text-[15px] font-extralight tracking-[0.03em] last:mb-0 md:text-[17px]"
+                  className="mb-6 font-extralight text-[15px] tracking-[0.03em] last:mb-0 md:text-[17px]"
                 >
                   {children}
                 </motion.p>

@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: just ignore */
 "use client";
 
 import { useSearchParams } from "next/navigation";
@@ -65,7 +65,7 @@ export const ProjectsCardsSkeleton: React.FC<{
 // class names without the motion wrapper, and simulates the eyebrow as a
 // skeleton shape instead of rendering real label/icon data.
 const QuickHeroSkeleton = () => (
-  <section className="pt-26 pb-16 sticky top-0 md:py-30 lg:pt-36 bg-background">
+  <section className="sticky top-0 bg-background pt-26 pb-16 md:py-30 lg:pt-36">
     <Container size="sm">
       <div className="flex flex-col gap-1.5">
         <div className="mb-4 flex w-max items-center gap-2">
@@ -75,7 +75,7 @@ const QuickHeroSkeleton = () => (
 
         <Skeleton className="h-10 w-94 rounded-full" />
 
-        <Skeleton className="h-4 max-w-md mt-2.5 w-full rounded-full" />
+        <Skeleton className="mt-2.5 h-4 w-full max-w-md rounded-full" />
       </div>
     </Container>
 
@@ -102,7 +102,7 @@ export const ProjectsPageSkeleton = () => {
       <CurveThingy tCurve hash="showcase">
         <div className="flex flex-col gap-8 pt-20 sm:pt-30 md:gap-12 md:pt-36">
           <Container size={view === "list" ? "sm" : "md"}>
-            <Skeleton className="h-3 max-w-sm w-full rounded-full mb-2 ml-4" />
+            <Skeleton className="mb-2 ml-4 h-3 w-full max-w-sm rounded-full" />
             <Skeleton className="h-11 w-full max-w-md rounded-full" />
           </Container>
           <ProjectsCardsSkeleton view={view} />

@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
-/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: just ignore */
+/** biome-ignore-all lint/correctness/useExhaustiveDependencies: just ignore */
 "use client";
 
 import {
@@ -475,7 +475,7 @@ export function ElasticSlider({
         aria-valuenow={value}
         aria-valuetext={displayValue}
         className={cn(
-          "group/elastic-slider absolute inset-0 cursor-pointer touch-none overflow-hidden rounded-(--elastic-slider-radius) bg-(--elastic-slider-bg) outline-none select-none",
+          "group/elastic-slider absolute inset-0 cursor-pointer touch-none select-none overflow-hidden rounded-(--elastic-slider-radius) bg-(--elastic-slider-bg) outline-none",
           "data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-ring/50 data-[focus-visible=true]:ring-offset-1 data-[focus-visible=true]:ring-offset-background",
         )}
         style={{ width: rubberWidth, x: rubberX }}
@@ -544,7 +544,7 @@ export function ElasticSlider({
           ref={labelRef}
           data-slot="elastic-slider-label"
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 left-3 inline-flex -translate-y-1/2 items-center text-sm/none font-medium text-(--elastic-slider-label) transition-colors"
+          className="pointer-events-none absolute top-1/2 left-3 inline-flex -translate-y-1/2 items-center font-medium text-(--elastic-slider-label) text-sm/none transition-colors"
         >
           {label}
         </span>
@@ -554,7 +554,7 @@ export function ElasticSlider({
           data-slot="elastic-slider-value"
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 font-mono text-sm/none font-medium transition-colors",
+            "pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 font-medium font-mono text-sm/none transition-colors",
             "text-(--elastic-slider-label) group-data-[active=true]/elastic-slider:text-(--elastic-slider-focus)",
           )}
         >

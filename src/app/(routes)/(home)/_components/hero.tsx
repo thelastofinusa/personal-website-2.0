@@ -28,12 +28,12 @@ export const HomeHero = () => {
           variants={parentVariants}
           initial="hidden"
           animate="visible"
-          className="h-full pb-16 pt-36 md:py-0"
+          className="h-full pt-36 pb-16 md:py-0"
         >
           <motion.div
             style={{ opacity, scale }}
             transformTemplate={({ scale }) => `scale(${scale})`}
-            className="origin-center flex h-full flex-col items-start gap-4 md:items-center md:justify-center md:gap-6"
+            className="flex h-full origin-center flex-col items-start gap-4 md:items-center md:justify-center md:gap-6"
           >
             <motion.p
               variants={itemVariants}
@@ -54,7 +54,7 @@ export const HomeHero = () => {
 
             <motion.h1
               variants={itemVariants}
-              className="text-3xl relative sm:text-4xl max-w-xl lg:max-w-3xl md:text-5xl lg:text-6xl md:mx-auto md:text-center"
+              className="relative max-w-xl text-3xl sm:text-4xl md:mx-auto md:text-center md:text-5xl lg:max-w-3xl lg:text-6xl"
             >
               <i className="text-background dark:text-foreground">
                 <Highlighter action="highlight" color="var(--primary)">
@@ -97,7 +97,7 @@ export const HomeHero = () => {
 
             <motion.p
               variants={itemVariants}
-              className="mt-4 max-w-lg text-base font-extralight text-muted-foreground md:text-center"
+              className="mt-4 max-w-lg font-extralight text-base text-muted-foreground md:text-center md:text-[17px]"
             >
               Equal parts{" "}
               <span className="font-normal text-foreground">design</span> and{" "}

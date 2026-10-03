@@ -138,7 +138,7 @@ export function CodeBlockCommand({
         <ScrollArea.Root className="w-full pr-10 shadow-[inset_0_-1px_0_0] shadow-border">
           <TabsList
             className={cn(
-              "h-10 max-w-full justify-start rounded-none bg-transparent p-0 pl-4 inset-ring-0 dark:bg-transparent [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground",
+              "inset-ring-0 h-10 max-w-full justify-start rounded-none bg-transparent p-0 pl-4 dark:bg-transparent [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground",
               "[--scroll-area-overflow-x-end:inherit] [--scroll-area-overflow-x-start:inherit]",
               "mask-linear-[to_right,transparent_0,black_min(2.5rem,var(--scroll-area-overflow-x-start)),black_calc(100%-min(2.5rem,var(--scroll-area-overflow-x-end,2.5rem))),transparent_100%]",
             )}
@@ -171,12 +171,12 @@ export function CodeBlockCommand({
             <TabsContent key={key} value={key}>
               <pre
                 data-pm={key}
-                className="group/tabs-content-pre overscroll-x-contain p-4 leading-6 not-data-[pm=prompt]:overflow-x-auto"
+                className="group/tabs-content-pre not-data-[pm=prompt]:overflow-x-auto overscroll-x-contain p-4 leading-6"
               >
                 <code
                   data-slot="code-block"
                   data-language="bash"
-                  className="font-mono text-sm/none text-muted-foreground group-data-[pm=prompt]/tabs-content-pre:whitespace-normal"
+                  className="font-mono text-muted-foreground text-sm/none group-data-[pm=prompt]/tabs-content-pre:whitespace-normal"
                 >
                   <span className="select-none group-data-[pm=prompt]/tabs-content-pre:hidden">
                     ${" "}

@@ -10,7 +10,7 @@ import { useLocationTime } from "@/hooks/use-location-time";
 import { resolveIcon } from "@/lib/icons";
 import { decodeString } from "@/lib/utils";
 
-const shouldInclude = ["twitter", "linkedin", "telegram"];
+const shouldInclude = ["twitter", "linkedin", "telegram", "youtube"];
 
 export const ContactComp = () => {
   const email = decodeString(siteConfig.author.email);
@@ -91,7 +91,7 @@ export const ContactComp = () => {
                     href={item.href}
                     target={item.external ? "_blank" : undefined}
                     rel={item.external ? "noopener noreferrer" : undefined}
-                    className="flex w-max items-center gap-2 text-[15px] font-extralight tracking-[0.03em] hover:text-primary"
+                    className="flex w-max items-center gap-2 font-extralight text-[15px] tracking-[0.03em] hover:text-primary"
                   >
                     {content}
                   </motion.a>
@@ -99,7 +99,7 @@ export const ContactComp = () => {
                   <motion.p
                     key={item.id}
                     variants={itemVariants}
-                    className="flex w-max items-center gap-2 text-[15px] font-extralight tracking-[0.03em]"
+                    className="flex w-max items-center gap-2 font-extralight text-[15px] tracking-[0.03em]"
                   >
                     {content}
                   </motion.p>

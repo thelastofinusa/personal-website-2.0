@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: just ignore */
+/** biome-ignore-all lint/performance/noDynamicNamespaceImportAccess: just ignore */
 import type { IconType } from "react-icons";
 import { BsWikipedia } from "react-icons/bs";
 import { CgNpm } from "react-icons/cg";

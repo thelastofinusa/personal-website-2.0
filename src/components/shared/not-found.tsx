@@ -133,7 +133,7 @@ export const NotFoundComp = () => {
   );
 
   return (
-    <div className="flex-1 flex flex-col justify-center overflow-x-clip">
+    <div className="flex flex-1 flex-col justify-center overflow-x-clip">
       <CurveThingy hideHash className="h-dvh">
         <Empty>
           <EmptyHeader>
@@ -153,7 +153,7 @@ export const NotFoundComp = () => {
           </EmptyHeader>
 
           <EmptyContent>
-            <div className="w-full wrapper flex items-center">
+            <div className="wrapper flex w-full items-center">
               <Autocomplete
                 value={query}
                 onValueChange={setQuery}
@@ -166,7 +166,7 @@ export const NotFoundComp = () => {
                   showClear
                   autoFocus
                   onKeyDown={handleKeyDown}
-                  className="bg-background! rounded-full h-9 px-3"
+                  className="h-9 rounded-full bg-background! px-3"
                 />
 
                 <AutocompleteContent>
@@ -180,7 +180,7 @@ export const NotFoundComp = () => {
                         onClick={() => navigateToPage(item.to)}
                         className={cn(
                           "relative flex items-end justify-between p-3 transition-all duration-200",
-                          "hover:bg-muted/60 text-muted-foreground hover:text-foreground",
+                          "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                         )}
                       >
                         <div className="flex flex-col gap-1">
@@ -198,17 +198,17 @@ export const NotFoundComp = () => {
                             ) : (
                               <item.icon className="size-4" />
                             )}
-                            <span className="text-sm font-medium leading-none">
+                            <span className="font-medium text-sm leading-none">
                               {item.eyebrow}
                             </span>
                           </div>
 
-                          <span className="text-xs font-light text-muted-foreground">
+                          <span className="font-light text-muted-foreground text-xs">
                             {item.title}
                           </span>
                         </div>
 
-                        <span className="ml-auto text-xs text-muted-foreground">
+                        <span className="ml-auto text-muted-foreground text-xs">
                           {item.to === "/" ? "/home" : item.to}
                         </span>
                       </AutocompleteItem>
@@ -227,7 +227,7 @@ export const NotFoundComp = () => {
 
             <Separator
               orientation="horizontal"
-              className="my-6 mx-auto w-[75%]!"
+              className="mx-auto my-6 w-[75%]!"
             />
 
             <EmptyDescription>

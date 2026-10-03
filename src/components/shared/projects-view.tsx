@@ -97,7 +97,7 @@ const ProjectListItem: React.FC<{
               <div className="flex items-start gap-4 lg:col-span-7 lg:gap-6">
                 {/* Index + Icon Stack */}
                 <div className="flex flex-col items-center gap-1 pt-1 lg:pt-0">
-                  <span className="font-mono text-xs font-normal text-muted-foreground transition-colors group-hover:text-primary">
+                  <span className="font-mono font-normal text-muted-foreground text-xs transition-colors group-hover:text-primary">
                     {formattedIndex}
                   </span>
                   <Reicon
@@ -108,18 +108,18 @@ const ProjectListItem: React.FC<{
 
                 {/* Title & Micro Metadata */}
                 <div className="flex flex-1 flex-col gap-2 transition-transform duration-300 ease-out lg:group-hover:translate-x-2">
-                  <h1 className="font-serif text-3xl font-light tracking-tight transition-colors duration-300 group-hover:text-primary md:text-4xl lg:text-5xl">
+                  <h1 className="font-light font-serif text-3xl tracking-tight transition-colors duration-300 group-hover:text-primary md:text-4xl lg:text-5xl">
                     {item.name}
                   </h1>
 
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs text-muted-foreground/70">
+                    <span className="font-mono text-muted-foreground/70 text-xs">
                       {formatDate(item.date as string)}
                     </span>
 
                     {item.tags && item.tags.length > 0 && (
                       <>
-                        <span className="text-xs text-muted-foreground/30">
+                        <span className="text-muted-foreground/30 text-xs">
                           •
                         </span>
                         {item.tags.map((badge) => (
@@ -136,7 +136,7 @@ const ProjectListItem: React.FC<{
                   </div>
 
                   {/* Mobile Description */}
-                  <div className="mt-2 text-sm font-light leading-relaxed text-muted-foreground/80 lg:hidden">
+                  <div className="mt-2 font-light text-muted-foreground/80 text-sm leading-relaxed lg:hidden">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
@@ -168,7 +168,7 @@ const ProjectListItem: React.FC<{
 
               {/* Right Column: Desktop Description & Trailing Indicator */}
               <div className="hidden lg:col-span-5 lg:flex lg:items-center lg:justify-between lg:gap-6">
-                <div className="text-right text-sm font-light leading-relaxed text-muted-foreground/80 transition-colors duration-300 group-hover:text-foreground">
+                <div className="text-right font-light text-muted-foreground/80 text-sm leading-relaxed transition-colors duration-300 group-hover:text-foreground">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
@@ -258,7 +258,7 @@ const ProjectGridItem: React.FC<{
           />
 
           {/* Gradient Overlay with Glassmorphic Badges */}
-          <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 via-black/30 to-transparent px-5 pb-4 pt-12">
+          <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 via-black/30 to-transparent px-5 pt-12 pb-4">
             <div className="flex flex-wrap items-center gap-1.5">
               {item.tags &&
                 item.tags?.length > 0 &&
@@ -275,19 +275,19 @@ const ProjectGridItem: React.FC<{
         </div>
       </Frame>
 
-      <div className="flex flex-col gap-0.5 px-4 md:px-8 py-5">
+      <div className="flex flex-col gap-0.5 px-4 py-5 md:px-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Reicon name={icon} className="mb-1 size-4" />
-            <p className="font-serif text-lg font-normal">{item.name}</p>
+            <p className="font-normal font-serif text-lg">{item.name}</p>
           </div>
 
-          <p className="text-sm font-light">
+          <p className="font-light text-sm">
             {formatDate(item.date as string)}
           </p>
         </div>
 
-        <div className="text-[13px] font-extralight leading-relaxed">
+        <div className="font-extralight text-[13px] leading-relaxed">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
@@ -316,7 +316,7 @@ const ProjectGridItem: React.FC<{
         </div>
       </div>
 
-      <FadeLine orientation="horizontal" className="mx-auto w-[85%] bottom-0" />
+      <FadeLine orientation="horizontal" className="bottom-0 mx-auto w-[85%]" />
     </MotionLink>
   );
 };
@@ -330,7 +330,7 @@ export const ProjectsView: React.FC<{
 }> = ({ view = "list", projects, tabFilters, activeTab }) => {
   const { handleMouseLeave } = useImagePreview();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: just ignore
   React.useLayoutEffect(() => {
     handleMouseLeave();
   }, [view, handleMouseLeave]);
@@ -363,7 +363,7 @@ export const ProjectsView: React.FC<{
   return (
     <AnimatePresence mode="popLayout">
       {view === "list" ? (
-        <div className="flex flex-col group/list">
+        <div className="group/list flex flex-col">
           {projects.map((item, index) => (
             <ProjectListItem
               key={item.url}
@@ -379,7 +379,7 @@ export const ProjectsView: React.FC<{
       ) : (
         <Container>
           {/* MOBILE VIEW (1 Column) */}
-          <div className="flex flex-col gap-6 md:hidden group/list">
+          <div className="group/list flex flex-col gap-6 md:hidden">
             {projects.map((item, index) => (
               <ProjectGridItem
                 key={item.url}
@@ -393,7 +393,7 @@ export const ProjectsView: React.FC<{
           </div>
 
           {/* TABLET VIEW (2 Columns) */}
-          <div className="hidden md:flex lg:hidden items-start gap-4 group/list">
+          <div className="group/list hidden items-start gap-4 md:flex lg:hidden">
             {cols2.map((col, colIndex) => (
               <div key={colIndex} className="flex flex-1 flex-col gap-6">
                 {col.map(({ item, originalIndex }) => (
@@ -411,7 +411,7 @@ export const ProjectsView: React.FC<{
           </div>
 
           {/* DESKTOP VIEW (3 Columns) */}
-          <div className="hidden lg:flex items-start gap-4 group/list">
+          <div className="group/list hidden items-start gap-4 lg:flex">
             {cols3.map((col, colIndex) => (
               <div key={colIndex} className="flex flex-1 flex-col gap-6">
                 {col.map(({ item, originalIndex }) => (

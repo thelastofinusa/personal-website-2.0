@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: just ignore */
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
@@ -125,7 +125,7 @@ export const ProjectsComp: React.FC<{
                 <Link
                   href={projectsRoute?.href as Route}
                   onClick={() => play("forward")}
-                  className="flex mx-auto wrapper items-center w-max"
+                  className="wrapper mx-auto flex w-max items-center"
                 >
                   <Button variant="inverse">
                     <span>{projectsRoute?.action}</span>

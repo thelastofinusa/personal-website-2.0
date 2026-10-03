@@ -143,7 +143,7 @@ export const AboutPageClient: React.FC<{
                   <Link
                     href={timelineRoute?.href as Route}
                     onClick={() => play("forward")}
-                    className="flex mx-auto wrapper items-center w-max"
+                    className="wrapper mx-auto flex w-max items-center"
                   >
                     <Button variant="inverse">
                       <span>{timelineRoute?.action}</span>
@@ -204,7 +204,7 @@ export const AboutPageClient: React.FC<{
                     <Link
                       href={articleRoute?.href as Route}
                       onClick={() => play("forward")}
-                      className="flex mx-auto wrapper items-center w-max"
+                      className="wrapper mx-auto flex w-max items-center"
                     >
                       <Button variant="inverse">
                         <span>{articleRoute?.action}</span>

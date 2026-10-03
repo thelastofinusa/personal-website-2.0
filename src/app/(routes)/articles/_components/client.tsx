@@ -1,6 +1,6 @@
 "use client";
-import dynamic from "next/dynamic";
 import type { Route } from "next";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import type React from "react";
 import {
@@ -15,6 +15,7 @@ const ImagePreviewProvider = dynamic(
     ),
   { ssr: false, loading: () => null },
 );
+
 import { Container } from "@/components/shared/container";
 import { CurveThingy } from "@/components/shared/curve-thingy";
 import { QuickHero } from "@/components/shared/quick-hero";

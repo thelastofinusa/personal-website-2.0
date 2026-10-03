@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/a11y/useButtonType: <explanation> */
+/** biome-ignore-all lint/a11y/useButtonType: just ignore */
 "use client";
 
 import { cn } from "cn";
@@ -35,12 +35,15 @@ export function PronounceMyName({
       onClick={handlePlayClick}
       disabled={isPlaying}
       aria-label="Pronounce my name"
-      className={cn("disabled:pointer-events-none disabled:opacity-50",className)}
+      className={cn(
+        "disabled:pointer-events-none disabled:opacity-50",
+        className,
+      )}
     >
-      <span className="absolute size-12 pointer-fine:hidden" aria-hidden />
+      <span className="absolute pointer-fine:hidden size-12" aria-hidden />
       <VolumeIcon
         ref={volumeIconRef}
-        className="size-5 -mb-1.25!"
+        className="-mb-1.25! size-5"
         aria-hidden
       />
     </button>

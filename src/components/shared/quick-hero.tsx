@@ -13,7 +13,7 @@ export const QuickHero: React.FC<IQuickHeroProps> = (props) => {
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
 
   return (
-    <section className="pt-26 pb-16 sticky top-0 md:py-30 lg:pt-36 bg-background">
+    <section className="sticky top-0 bg-background pt-26 pb-16 md:py-30 lg:pt-36">
       <motion.div variants={parentVariants} initial="hidden" animate="visible">
         <motion.div
           style={{ opacity, scale }}
@@ -32,14 +32,14 @@ export const QuickHero: React.FC<IQuickHeroProps> = (props) => {
 
               <motion.h4
                 variants={itemVariants}
-                className="font-light capitalize text-primary font-serif text-3xl md:text-4xl"
+                className="font-light font-serif text-3xl text-primary capitalize md:text-4xl"
               >
                 {props.title}
               </motion.h4>
 
               <motion.p
                 variants={itemVariants}
-                className="max-w-xl text-sm md:text-base font-extralight flex-1"
+                className="max-w-xl flex-1 font-extralight text-sm md:text-base"
               >
                 {props.description}
               </motion.p>

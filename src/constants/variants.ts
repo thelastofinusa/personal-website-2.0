@@ -171,10 +171,10 @@ const menuItemVariants: Variants = {
 };
 
 export {
-  parentVariants,
-  itemVariants,
-  workItemVariants,
-  menuVariants,
-  menuItemVariants,
   getTimelineVariants,
+  itemVariants,
+  menuItemVariants,
+  menuVariants,
+  parentVariants,
+  workItemVariants,
 };

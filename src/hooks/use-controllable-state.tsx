@@ -1,6 +1,6 @@
 // Thanks @radix-ui
-/** biome-ignore-all lint/correctness/useHookAtTopLevel: <explanation> */
-/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
+/** biome-ignore-all lint/correctness/useHookAtTopLevel: just ignore */
+/** biome-ignore-all lint/correctness/useExhaustiveDependencies: just ignore */
 
 "use client";
 import * as React from "react";

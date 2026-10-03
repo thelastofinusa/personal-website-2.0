@@ -117,7 +117,7 @@ export const MenuToggle: React.FC<
             animate="open"
             exit="closed"
             className={cn(
-              "absolute right-0 top-full z-40 mt-3 w-80 origin-top-right rounded-[20px]!",
+              "absolute top-full right-0 z-40 mt-3 w-80 origin-top-right rounded-[20px]!",
               "shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)]",
             )}
           >
@@ -125,7 +125,7 @@ export const MenuToggle: React.FC<
               variant="inverse"
               className="rounded-[20px] bg-background dark:bg-card"
             >
-              <FramePanel className="flex rounded-2xl flex-col gap-1 p-2 bg-background">
+              <FramePanel className="flex flex-col gap-1 rounded-2xl bg-background p-2">
                 {navLinks
                   .filter((route) => route.show)
                   .map((route) => {
@@ -170,14 +170,14 @@ export const MenuToggle: React.FC<
                                   <Icon className="size-4" />
                                 )}
 
-                                <span className="text-sm font-medium leading-none transition-transform duration-200 group-hover:translate-x-0.5">
+                                <span className="font-medium text-sm leading-none transition-transform duration-200 group-hover:translate-x-0.5">
                                   {route.eyebrow}
                                 </span>
                               </div>
 
                               <span
                                 id={`${route.href}-description`}
-                                className="text-xs font-light text-muted-foreground"
+                                className="font-light text-muted-foreground text-xs"
                               >
                                 {route.title}
                               </span>
@@ -231,7 +231,7 @@ export const MenuToggle: React.FC<
                     variants={menuItemVariants}
                     href={`mailto:${email}`}
                     onClick={() => play("forward")}
-                    className="flex w-max items-center gap-1.5 text-sm font-extralight tracking-[0.03em] hover:text-primary"
+                    className="flex w-max items-center gap-1.5 font-extralight text-sm tracking-[0.03em] hover:text-primary"
                   >
                     {email}
                   </motion.a>
@@ -240,7 +240,7 @@ export const MenuToggle: React.FC<
                     variants={menuItemVariants}
                     href={`tel:${phone}`}
                     onClick={() => play("forward")}
-                    className="flex w-max items-center gap-1.5 text-sm font-extralight tracking-[0.03em] hover:text-primary"
+                    className="flex w-max items-center gap-1.5 font-extralight text-sm tracking-[0.03em] hover:text-primary"
                   >
                     {phone}
                   </motion.a>

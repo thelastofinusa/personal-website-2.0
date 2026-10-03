@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: just ignore */
 "use client";
 
 import type { PortableTextComponents } from "@portabletext/react";
@@ -249,7 +250,7 @@ function CodeBlock({
     <Frame className="my-8 rounded-[20px]!">
       <div className="relative w-full overflow-hidden rounded-2xl border border-border bg-card">
         {/* Header */}
-        <div className="flex min-h-10 items-center justify-between gap-4 border-b border-border px-4 py-2">
+        <div className="flex min-h-10 items-center justify-between gap-4 border-border border-b px-4 py-2">
           {filename ? (
             <div className="flex min-w-0 items-center gap-2">
               <span className="flex size-5 shrink-0 items-center justify-center">
@@ -260,12 +261,12 @@ function CodeBlock({
                 />
               </span>
 
-              <span className="truncate font-mono text-xs text-muted-foreground">
+              <span className="truncate font-mono text-muted-foreground text-xs">
                 {filename}
               </span>
             </div>
           ) : (
-            <span className="text-xs font-mono text-muted-foreground">
+            <span className="font-mono text-muted-foreground text-xs">
               {language}
             </span>
           )}
@@ -316,7 +317,7 @@ function CodeBlock({
             type="button"
             variant="ghost"
             size="sm"
-            className="w-full rounded-t-none h-12 rounded-b-2xl z-10 hover:bg-background!"
+            className="z-10 h-12 w-full rounded-t-none rounded-b-2xl hover:bg-background!"
             onClick={() => setExpanded((previous) => !previous)}
             aria-expanded={expanded}
           >
@@ -346,37 +347,37 @@ export const PortableText = ({ value, className }: Props) => {
   const components: PortableTextComponents = {
     block: {
       normal: ({ children }) => (
-        <p className="my-4 text-sm md:text-[15px] leading-relaxed first:mt-0 last:mb-0">
+        <p className="my-4 text-sm leading-relaxed first:mt-0 last:mb-0 md:text-[15px]">
           {children}
         </p>
       ),
 
       h1: ({ children }) => (
-        <h1 className="my-4 text-2xl md:text-3xl font-bold first:mt-0 last:mb-0">
+        <h1 className="my-4 font-bold text-2xl first:mt-0 last:mb-0 md:text-3xl">
           {children}
         </h1>
       ),
 
       h2: ({ children }) => (
-        <h2 className="my-4 text-xl md:text-2xl font-bold first:mt-0 last:mb-0">
+        <h2 className="my-4 font-bold text-xl first:mt-0 last:mb-0 md:text-2xl">
           {children}
         </h2>
       ),
 
       h3: ({ children }) => (
-        <h3 className="my-4 text-lg md:text-xl font-semibold first:mt-0 last:mb-0">
+        <h3 className="my-4 font-semibold text-lg first:mt-0 last:mb-0 md:text-xl">
           {children}
         </h3>
       ),
 
       h4: ({ children }) => (
-        <h4 className="my-3 text-[17px] md:text-lg font-semibold first:mt-0 last:mb-0">
+        <h4 className="my-3 font-semibold text-[17px] first:mt-0 last:mb-0 md:text-lg">
           {children}
         </h4>
       ),
 
       blockquote: ({ children }) => (
-        <blockquote className="my-4 border-l-3 border-primary pl-3 py-1 bg-muted/60 italic first:mt-0 last:mb-0">
+        <blockquote className="my-4 border-primary border-l-3 bg-muted/60 py-1 pl-3 italic first:mt-0 last:mb-0">
           {children}
         </blockquote>
       ),
@@ -398,13 +399,13 @@ export const PortableText = ({ value, className }: Props) => {
 
     listItem: {
       bullet: ({ children }) => (
-        <li className="pl-1 leading-6 text-sm md:text-[15px] text-foreground/90">
+        <li className="pl-1 text-foreground/90 text-sm leading-6 md:text-[15px]">
           {children}
         </li>
       ),
 
       number: ({ children }) => (
-        <li className="pl-1 leading-6 text-sm md:text-[15px] text-foreground/90">
+        <li className="pl-1 text-foreground/90 text-sm leading-6 md:text-[15px]">
           {children}
         </li>
       ),
@@ -438,7 +439,7 @@ export const PortableText = ({ value, className }: Props) => {
       ),
 
       code: ({ children }) => (
-        <code className="rounded-md border border-border bg-muted/60 px-1.5 py-0.5 font-mono text-sm md:text-[15px] text-foreground">
+        <code className="rounded-md border border-border bg-muted/60 px-1.5 py-0.5 font-mono text-foreground text-sm md:text-[15px]">
           {children}
         </code>
       ),
@@ -485,7 +486,7 @@ export const PortableText = ({ value, className }: Props) => {
         return (
           <Frame className="my-10 rounded-[20px]!">
             <figure className="w-full">
-              <div className="overflow-hidden bg-card rounded-2xl border border-border">
+              <div className="overflow-hidden rounded-2xl border border-border bg-card">
                 <Image
                   src={value.asset.url}
                   alt={value.alt || ""}
@@ -496,7 +497,7 @@ export const PortableText = ({ value, className }: Props) => {
               </div>
 
               {value.caption && (
-                <figcaption className="px-4 py-2.5 text-center text-sm text-muted-foreground">
+                <figcaption className="px-4 py-2.5 text-center text-muted-foreground text-sm">
                   {value.caption}
                 </figcaption>
               )}
@@ -549,7 +550,7 @@ export const PortableText = ({ value, className }: Props) => {
               </div>
 
               {value.caption && (
-                <figcaption className="px-4 py-2.5 text-center text-sm text-muted-foreground">
+                <figcaption className="px-4 py-2.5 text-center text-muted-foreground text-sm">
                   {value.caption}
                 </figcaption>
               )}
@@ -560,7 +561,7 @@ export const PortableText = ({ value, className }: Props) => {
 
       divider: () => (
         <div className="relative my-8! h-4">
-          <FadeLine className="w-[80%] top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2" />
+          <FadeLine className="top-1/2 left-1/2 w-[80%] -translate-x-1/2 -translate-y-1/2" />
         </div>
       ),
 

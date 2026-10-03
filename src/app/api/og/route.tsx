@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
-/** biome-ignore-all lint/performance/noImgElement: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: just ignore */
+/** biome-ignore-all lint/performance/noImgElement: just ignore */
 
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
@@ -268,7 +268,7 @@ export async function GET(req: NextRequest) {
           <span
             tw="font-bold flex"
             style={{
-              fontSize: "220px",
+              fontSize: "200px",
               color: c.accentText,
               letterSpacing: "-0.05em",
               opacity: 0.92,

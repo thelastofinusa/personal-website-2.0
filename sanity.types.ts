@@ -945,6 +945,7 @@ export type LatestTimelinesQueryResult = Array<{
 
 // Query TypeMap
 import "@sanity/client";
+
 declare module "@sanity/client" {
   interface SanityQueries {
     '\n  *[_type == "article"]\n    | order(pinned desc, publishedAt desc, _createdAt desc) {\n      \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n  isAiGenerated,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n    }\n': ArticlesListQueryResult;

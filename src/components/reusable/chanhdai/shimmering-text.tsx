@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: just ignore */
 import { type HTMLMotionProps, motion, type Variants } from "motion/react";
 import { useTheme } from "@/components/provider/theme";
 import { cn } from "@/lib/utils";

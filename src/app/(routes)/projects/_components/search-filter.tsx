@@ -98,9 +98,9 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
   }, [projects.length, query, tab, view]);
 
   return (
-    <div className="flex flex-col gap-2 w-full max-w-md">
-      <p className="text-xs hidden md:block font-medium text-muted-foreground px-4 leading-relaxed">
-        <span className="text-foreground font-semibold">Pro tip:</span> Hold{" "}
+    <div className="flex w-full max-w-md flex-col gap-2">
+      <p className="hidden px-4 font-medium text-muted-foreground text-xs leading-relaxed md:block">
+        <span className="font-semibold text-foreground">Pro tip:</span> Hold{" "}
         <Kbd>{modifierKey}</Kbd> and click on any project to teleport instantly
       </p>
 

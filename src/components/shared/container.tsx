@@ -5,7 +5,7 @@ import { cn } from "cn";
 const containerVariants = cva(
   cn(
     "mx-auto w-full px-5 sm:px-8 md:px-10 lg:px-12 xl:px-14",
-    "transition-[max-width] ease-linear duration-100",
+    "transition-[max-width] duration-100 ease-linear",
   ),
   {
     variants: {

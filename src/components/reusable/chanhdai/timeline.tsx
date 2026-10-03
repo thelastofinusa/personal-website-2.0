@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: just ignore */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: just ignore */
 "use client";
 
 import {
@@ -75,7 +75,7 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
   return (
     <div className="grid grid-cols-1 gap-4 py-8 md:grid-cols-[220px_1fr] md:gap-12">
       {/* LEFT COLUMN: Organization Info (Sticky on scroll) */}
-      <div className="flex-1 h-max">
+      <div className="h-max flex-1">
         <div className="flex items-center gap-2">
           {group.logo?.type === "icon" ? (
             <Reicon
@@ -95,7 +95,7 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
           ) : (
             <Blend className="size-4.5 text-muted-foreground" />
           )}
-          <h3 className="text-sm font-normal leading-snug text-foreground">
+          <h3 className="font-normal text-foreground text-sm leading-snug">
             {group.website ? (
               <LinkPreview
                 target="_blank"
@@ -109,7 +109,7 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
             )}
           </h3>
           {group.isCurrent && (
-            <span className="relative flex size-2.5 ml-2 items-center justify-center">
+            <span className="relative ml-2 flex size-2.5 items-center justify-center">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
               <span className="relative flex size-2 rounded-full bg-primary" />
             </span>
@@ -177,7 +177,7 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
       disabled={!item.description}
       render={
         <div
-          className="group/timeline-item pl-8 md:pl-6 -mx-3"
+          className="group/timeline-item -mx-3 pl-8 md:pl-6"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -187,8 +187,8 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
               variants={node1Variants}
               animate={state}
               className={cn(
-                "absolute size-2.5 -left-4.25 md:-left-5.75 z-10 top-4.25 border bg-background",
-                isEdu ? "rounded-xs rotate-45 scale-90" : "rounded-full",
+                "absolute top-4.25 -left-4.25 z-10 size-2.5 border bg-background md:-left-5.75",
+                isEdu ? "rotate-45 scale-90 rounded-xs" : "rounded-full",
               )}
             />
 
@@ -197,24 +197,24 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
               variants={node2Variants}
               animate={state}
               className={cn(
-                "absolute size-2.5 -left-4.25 md:-left-5.75 z-10 -bottom-4.75 border bg-background",
-                isEdu ? "rounded-xs rotate-45 scale-90" : "rounded-full",
+                "absolute -bottom-4.75 -left-4.25 z-10 size-2.5 border bg-background md:-left-5.75",
+                isEdu ? "rotate-45 scale-90 rounded-xs" : "rounded-full",
               )}
             />
 
             {/* Default Thread Line */}
-            <span className="absolute w-px bg-border top-5 -bottom-4.75 left-[-12.5px] md:left-[-18.5px]" />
+            <span className="absolute top-5 -bottom-4.75 left-[-12.5px] w-px bg-border md:left-[-18.5px]" />
 
             {/* Animated Connection Line */}
             <motion.span
               variants={lineVariants}
               animate={state}
-              className="absolute w-px top-5 -bottom-4.75 left-[-12.5px] md:left-[-18.5px] origin-top rounded-full"
+              className="absolute top-5 -bottom-4.75 left-[-12.5px] w-px origin-top rounded-full md:left-[-18.5px]"
             />
 
             <CollapsibleTrigger
               className={cn(
-                "flex w-full select-none items-start -mt-3 p-3 gap-0! rounded-lg transition-all justify-between text-left outline-none",
+                "-mt-3 flex w-full select-none items-start justify-between gap-0! rounded-lg p-3 text-left outline-none transition-all",
                 "data-disabled:cursor-default",
                 item.description && "group-hover/timeline-item:bg-background",
                 isOpen && "bg-background",
@@ -233,7 +233,7 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
                   )}
                   <h3
                     className={cn(
-                      "text-sm font-normal leading-snug text-foreground",
+                      "font-normal text-foreground text-sm leading-snug",
                       item.description &&
                         "group-hover/timeline-item:text-primary",
                       isOpen && "text-primary",
@@ -243,7 +243,7 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
                   </h3>
                 </div>
 
-                <dl className="flex flex-wrap items-center gap-2 text-xs font-normal text-muted-foreground sm:text-sm">
+                <dl className="flex flex-wrap items-center gap-2 font-normal text-muted-foreground text-xs sm:text-sm">
                   {start && (
                     <div>
                       <dt className="sr-only">Period</dt>
@@ -254,7 +254,7 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
                           orientation="horizontal"
                         />
                         {isOngoing ? (
-                          <span className="flex items-center gap-1 5">
+                          <span className="5 flex items-center gap-1">
                             <Infinite className="size-4" aria-label="Present" />
                             <span>Till date</span>
                           </span>
@@ -319,7 +319,7 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   className="overflow-hidden px-3"
                 >
-                  <Prose className="pb-4 pt-3">
+                  <Prose className="pt-3 pb-4">
                     <PortableText value={item.description} />
                   </Prose>
                 </motion.div>
@@ -386,21 +386,21 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
       <button
         type="button"
         onClick={handleToggle}
-        className="group/deck w-max outline-0 border-0 p-0 flex items-center gap-3 cursor-pointer select-none"
+        className="group/deck flex w-max cursor-pointer select-none items-center gap-3 border-0 p-0 outline-0"
       >
         {/* Deck Container stays permanently mounted */}
-        <div className="relative h-5 w-7 ml-2 shrink-0">
+        <div className="relative ml-2 h-5 w-7 shrink-0">
           {stackPreviews.map((img, idx) => (
             <div
               key={img.url ?? idx}
               className={cn(
                 "absolute inset-0 rounded-[4px] border border-border/60 bg-background shadow-2xs transition-transform duration-300 ease-out",
                 idx === 0 &&
-                  "z-30 group-hover/deck:-rotate-6 group-hover/deck:-translate-x-1.5",
+                  "z-30 group-hover/deck:-translate-x-1.5 group-hover/deck:-rotate-6",
                 idx === 1 &&
-                  "z-20 rotate-6 scale-95 opacity-80 group-hover/deck:rotate-12 group-hover/deck:translate-x-1.5",
+                  "z-20 rotate-6 scale-95 opacity-80 group-hover/deck:translate-x-1.5 group-hover/deck:rotate-12",
                 idx === 2 &&
-                  "z-10 -rotate-3 scale-90 opacity-60 group-hover/deck:-rotate-12 group-hover/deck:-translate-x-3",
+                  "z-10 -rotate-3 scale-90 opacity-60 group-hover/deck:-translate-x-3 group-hover/deck:-rotate-12",
               )}
             >
               {/* Image card sits in stack slot when collapsed */}
@@ -421,7 +421,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
           ))}
         </div>
 
-        <span className="text-xs font-mono text-muted-foreground transition-colors group-hover/deck:text-foreground">
+        <span className="font-mono text-muted-foreground text-xs transition-colors group-hover/deck:text-foreground">
           {isExpanded ? "$ cd .." : `$ cd gallery (${images.length})`}
         </span>
       </button>
@@ -484,7 +484,7 @@ export function Prose({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "prose prose-ncdai max-w-none text-[15px] font-light text-foreground",
+        "prose prose-ncdai max-w-none font-light text-[15px] text-foreground",
         className,
       )}
       {...props}

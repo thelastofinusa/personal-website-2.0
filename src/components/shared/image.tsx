@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
+/** biome-ignore-all lint/correctness/useExhaustiveDependencies: just ignore */
 "use client";
 
 import Image, { type ImageProps as NextImageProps } from "next/image";

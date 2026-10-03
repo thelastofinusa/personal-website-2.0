@@ -71,7 +71,7 @@ function ArticleList({ articles }: { articles: ArticlesListQueryResult }) {
     <React.Fragment>
       {/* Desktop */}
       <Frame className="hidden rounded-3xl! md:block">
-        <div className="flex flex-col overflow-hidden rounded-[20px]! gap-1">
+        <div className="flex flex-col gap-1 overflow-hidden rounded-[20px]!">
           <ArticleItems articles={articles} className="p-6 md:p-8 lg:p-12" />
         </div>
       </Frame>
@@ -131,7 +131,7 @@ function ArticleItem({
       href={`/articles/${article.slug}`}
       onClick={() => play("forward")}
       className={cn(
-        "group relative flex bg-card flex-col gap-4 md:rounded-[20px] md:border transition-all duration-300 md:p-6 md:hover:bg-background",
+        "group relative flex flex-col gap-4 bg-card transition-all duration-300 md:rounded-[20px] md:border md:p-6 md:hover:bg-background",
         "md:grid md:grid-cols-12 md:items-start",
         className,
       )}
@@ -161,7 +161,7 @@ function ArticleItem({
 
         <Badge
           variant="ghost"
-          className="text-muted-foreground hover:bg-transparent px-0"
+          className="px-0 text-muted-foreground hover:bg-transparent"
         >
           <Clock className="size-3.5!" />
           <span className="font-light tracking-wider">
@@ -173,14 +173,14 @@ function ArticleItem({
       {/* Right Column (Desktop): Main Content */}
       <div className="flex flex-col gap-1 md:col-span-8">
         <div className="flex items-center gap-4">
-          <h2 className="font-sans flex-1 line-clamp-1 text-base md:text-lg font-medium tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary">
+          <h2 className="line-clamp-1 flex-1 font-medium font-sans text-base text-foreground tracking-tight transition-colors duration-300 group-hover:text-primary md:text-lg">
             {article.title}
           </h2>
 
-          <SquareTopDown className="size-4 group-hover:text-primary shrink-0 transition-colors duration-300" />
+          <SquareTopDown className="size-4 shrink-0 transition-colors duration-300 group-hover:text-primary" />
         </div>
 
-        <p className="line-clamp-2 font-light pr-8 leading-relaxed text-muted-foreground/80 text-sm">
+        <p className="line-clamp-2 pr-8 font-light text-muted-foreground/80 text-sm leading-relaxed">
           {article.description}
         </p>
       </div>
