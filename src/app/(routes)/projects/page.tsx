@@ -90,7 +90,7 @@ const PageLoading = () => {
       <CurveThingy tCurve hash="showcase">
         <div className="flex flex-col gap-8 pt-20 sm:pt-30 md:gap-12 md:pt-36">
           <Container size="sm">
-            {/* // TODO: command click <Skeleton className="h-3 max-w-sm w-full rounded-full mb-2 ml-4" /> */}
+            <Skeleton className="h-3 max-w-sm w-full rounded-full mb-2 ml-4" />
             <Skeleton className="h-11 w-full max-w-md rounded-full" />
           </Container>
           <div className="flex flex-col">

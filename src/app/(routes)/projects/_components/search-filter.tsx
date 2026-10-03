@@ -18,7 +18,9 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/reusable/shadcn/input-group";
+import { Kbd } from "@/components/reusable/shadcn/kbd";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useOperatingSystem } from "@/hooks/use-operating-system";
 import type { ISearchFilterProps, TProjectView } from "@/types";
 
 const views = [
@@ -47,11 +49,14 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
   setView,
   onClear,
 }) => {
+  const os = useOperatingSystem();
   const { play } = useSoundFx();
   const isMobile = useMediaQuery("(max-width: 767px)");
 
   const [openMenu, setOpenMenu] = React.useState(false);
   const isSelectingView = React.useRef(false);
+
+  const modifierKey = os === "mac" ? "⌘" : "Ctrl";
 
   const ButtonIcon = views.find((item) => item.value === view)?.icon;
 
@@ -94,11 +99,10 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
 
   return (
     <div className="flex flex-col gap-2 w-full max-w-md">
-      {/* <p className="text-xs hidden md:block font-medium text-muted-foreground px-4 leading-relaxed">
+      <p className="text-xs hidden md:block font-medium text-muted-foreground px-4 leading-relaxed">
         <span className="text-foreground font-semibold">Pro tip:</span> Hold{" "}
-        <Kbd>⌘</Kbd> / <Kbd>Ctrl</Kbd> + click on any project to teleport
-        instantly
-      </p> */}
+        <Kbd>{modifierKey}</Kbd> and click on any project to teleport instantly
+      </p>
 
       <div className="wrapper flex w-full items-center">
         {/* View selector */}
@@ -170,8 +174,9 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
             onChange={(event) => {
               setSearchValue(event.target.value);
             }}
-            placeholder="Search the collection"
+            placeholder="Search the collection..."
             aria-label="Search projects"
+            className="shadow-none!"
           />
 
           <InputGroupAddon align="inline-end">
