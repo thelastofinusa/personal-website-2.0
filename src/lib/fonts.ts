@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 
 const fontSans = localFont({
   src: "../../public/fonts/BricolageGrotesque/VariableFont_opsz,wdth,wght.ttf",
-  variable: "--font-fontSans",
+  variable: "--font-sans",
   display: "swap",
   style: "normal",
 });
@@ -21,13 +21,13 @@ const fontSerif = localFont({
       style: "italic",
     },
   ],
-  variable: "--font-fontSerif",
+  variable: "--font-serif",
   display: "swap",
 });
 
 const fontMono = localFont({
   src: "../../public/fonts/GeistMono/VariableFont_wght.ttf",
-  variable: "--font-fontMono",
+  variable: "--font-mono",
   display: "swap",
   style: "normal",
 });

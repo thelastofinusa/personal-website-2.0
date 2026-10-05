@@ -189,15 +189,16 @@ export const dailyAppSchema = defineType({
     select: {
       title: "name",
       subtitle: "description",
+      category: "category",
       logoType: "logo.type",
       logoUrl: "logo.url",
       logoImage: "logo.image",
       logoIcon: "logo.icon",
     },
 
-    prepare({ title, subtitle, logoType, logoImage, logoIcon }) {
+    prepare({ title, subtitle, category, logoType, logoImage, logoIcon }) {
       return {
-        title: title || "Untitled Daily App",
+        title: `${title} (${category})`,
         subtitle: subtitle || "",
 
         media:
