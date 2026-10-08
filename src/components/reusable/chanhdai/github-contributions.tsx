@@ -1,6 +1,12 @@
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: ignore */
 "use client";
-import { useEffect, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Tooltip,
   TooltipContent,
@@ -92,6 +98,8 @@ function ContributionsState({
 
 // --- Exported Components ---
 
+const FADE_SIZE = 32;
+
 export function GitHubContributions({
   contributions,
   githubProfileUrl,
@@ -110,6 +118,41 @@ export function GitHubContributions({
     if (!calendar) return;
     calendar.scrollLeft = calendar.scrollWidth;
   }, [result]);
+
+  // inside GitHubContributions, above the early returns:
+  const [ready, setReady] = useState(false);
+
+  const updateFade = useCallback(() => {
+    const el = calendarRef.current;
+    if (!el) return;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    const left = Math.min(el.scrollLeft, FADE_SIZE);
+    const right = Math.min(Math.max(maxScroll - el.scrollLeft, 0), FADE_SIZE);
+    el.style.setProperty("--fade-l", `${left}px`);
+    el.style.setProperty("--fade-r", `${right}px`);
+  }, []);
+
+  // Jump to the latest week before paint. "instant" overrides the global
+  // `scroll-behavior: smooth`, so it doesn't animate in from the left.
+  useLayoutEffect(() => {
+    const el = calendarRef.current;
+    if (!el) return;
+    el.scrollTo({ left: el.scrollWidth, behavior: "instant" });
+    updateFade();
+    setReady(true);
+  }, [result, isMobile, updateFade]);
+
+  useEffect(() => {
+    const el = calendarRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateFade, { passive: true });
+    const observer = new ResizeObserver(updateFade);
+    observer.observe(el);
+    return () => {
+      el.removeEventListener("scroll", updateFade);
+      observer.disconnect();
+    };
+  }, [result, updateFade]);
 
   if (result.error) {
     return (
@@ -131,7 +174,10 @@ export function GitHubContributions({
     >
       <ContributionGraphCalendar
         calendarRef={calendarRef}
-        className="no-scrollbar px-2 font-light font-mono text-[11px] uppercase sm:text-xs"
+        className={cn(
+          "no-scrollbar fade-edges-x px-2 font-light font-mono text-[11px] uppercase transition-opacity duration-300 sm:text-xs",
+          ready ? "opacity-100" : "opacity-0",
+        )}
         title="GitHub Contributions"
       >
         {({ activity, dayIndex, weekIndex }) => (

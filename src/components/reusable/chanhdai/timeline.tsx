@@ -254,10 +254,7 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
                           orientation="horizontal"
                         />
                         {isOngoing ? (
-                          <span className="5 flex items-center gap-1">
-                            <Infinite className="size-4" aria-label="Present" />
-                            <span>Till date</span>
-                          </span>
+                          <Infinite className="size-4" aria-label="Present" />
                         ) : (
                           <span>{formatPeriod(end)}</span>
                         )}

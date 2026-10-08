@@ -101,7 +101,8 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
     <div className="flex w-full max-w-md flex-col gap-2">
       <p className="hidden px-4 font-medium text-muted-foreground text-xs leading-relaxed md:block">
         <span className="font-semibold text-foreground">Pro tip:</span> Hold{" "}
-        <Kbd>{modifierKey}</Kbd> and click on any project to teleport instantly
+        <Kbd>{modifierKey}</Kbd> and click on any project to peek at a live
+        preview
       </p>
 
       <div className="wrapper flex w-full items-center">

@@ -171,14 +171,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
       nextProject: ProjectsListQueryResult[number],
       _nextAnchor?: DOMRect,
       overrideProjects?: ProjectsListQueryResult,
-      e?: React.MouseEvent | MouseEvent,
     ) => {
-      // Check for Control (Windows/Linux) or Command (Mac) key to redirect/open in new tab
-      if (e && (e.ctrlKey || e.metaKey)) {
-        window.open(nextProject.url as string, "_blank", "noopener,noreferrer");
-        return;
-      }
-
       if (!isDesktop) return;
 
       const list =
@@ -274,6 +267,39 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
     closePreview,
   };
 
+  const windowButtons = [
+    {
+      label: "Close preview",
+      title: "Close",
+      className: "border-[#e0443e] bg-[#ff5f57]",
+      icon: (
+        <Xmark className="size-2 stroke-2 text-black opacity-0 transition-opacity group-hover/btn:opacity-100" />
+      ),
+      onClick: closePreview,
+    },
+    {
+      label: "Minimize preview",
+      title: "Minimize",
+      className: "border-[#d89e24] bg-[#febc2e]",
+      icon: (
+        <Minus className="size-2 stroke-2 text-black opacity-0 transition-opacity group-hover/btn:opacity-100" />
+      ),
+      onClick: minimizePreview,
+    },
+    {
+      label: expanded ? "Restore size" : "Expand preview",
+      title: expanded ? "Restore size" : "Expand",
+      className: "border-[#1aab29] bg-[#28c840]",
+      icon: (
+        <ChevronExpandY className="size-2 -rotate-45 stroke-2 text-black opacity-0 transition-opacity group-hover/btn:opacity-100" />
+      ),
+      onClick: () => {
+        play(expanded ? "collapse" : "expand");
+        setExpanded((prev) => !prev);
+      },
+    },
+  ];
+
   return (
     <LivePreviewContext.Provider value={value}>
       {children}
@@ -334,43 +360,22 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                     {/* Tab Bar */}
                     <div className="flex h-9 items-center gap-2 px-3 pt-1.5">
                       <div className="group/btn flex cursor-default items-center gap-1.5 pr-2">
-                        {/* Red Button: Close */}
-                        <button
-                          type="button"
-                          onClick={closePreview}
-                          aria-label="Close preview"
-                          title="Close"
-                          className="flex size-3 items-center justify-center rounded-full border border-[#e0443e] bg-[#ff5f57] transition-transform active:scale-90"
-                        >
-                          <Xmark className="size-2 stroke-2 text-black opacity-0 transition-opacity group-hover/btn:opacity-100" />
-                        </button>
-
-                        {/* Yellow Button: Minimize */}
-                        <button
-                          type="button"
-                          onClick={minimizePreview}
-                          aria-label="Minimize preview"
-                          title="Minimize"
-                          className="flex size-3 items-center justify-center rounded-full border border-[#d89e24] bg-[#febc2e] transition-transform active:scale-90"
-                        >
-                          <Minus className="size-2 stroke-2 text-black opacity-0 transition-opacity group-hover/btn:opacity-100" />
-                        </button>
-
-                        {/* Green Button: Expand / Restore Size */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            play(expanded ? "collapse" : "expand");
-                            setExpanded((prev) => !prev);
-                          }}
-                          aria-label={
-                            expanded ? "Restore size" : "Expand preview"
-                          }
-                          title={expanded ? "Restore size" : "Expand"}
-                          className="flex size-3 items-center justify-center rounded-full border border-[#1aab29] bg-[#28c840] transition-transform active:scale-90"
-                        >
-                          <ChevronExpandY className="size-2 -rotate-45 stroke-2 text-black opacity-0 transition-opacity group-hover/btn:opacity-100" />
-                        </button>
+                        {windowButtons.map((button) => (
+                          <button
+                            key={button.title}
+                            type="button"
+                            onClick={button.onClick}
+                            aria-label={button.label}
+                            title={button.title}
+                            className={cn(
+                              "flex size-3 items-center justify-center rounded-full border",
+                              "transition-transform active:scale-90",
+                              button.className,
+                            )}
+                          >
+                            {button.icon}
+                          </button>
+                        ))}
                       </div>
 
                       {/* Active Tab */}

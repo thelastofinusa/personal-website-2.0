@@ -65,7 +65,9 @@ const ProjectListItem: React.FC<{
           event.preventDefault();
           return;
         }
-        if (isDesktop) {
+        // ⌘/Ctrl + click -> live preview (desktop only).
+        // Plain click falls through to the link and opens the project in a new tab.
+        if (isDesktop && (event.metaKey || event.ctrlKey)) {
           event.preventDefault();
           openPreview(
             item,
@@ -230,7 +232,9 @@ const ProjectGridItem: React.FC<{
           event.preventDefault();
           return;
         }
-        if (isDesktop) {
+        // ⌘/Ctrl + click -> live preview (desktop only).
+        // Plain click falls through to the link and opens the project in a new tab.
+        if (isDesktop && (event.metaKey || event.ctrlKey)) {
           event.preventDefault();
           openPreview(
             item,

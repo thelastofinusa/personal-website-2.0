@@ -237,6 +237,25 @@
   @apply bg-secondary/80 p-1.25 gap-1.25 rounded-full;
 }
 
+@utility fade-edges-x {
+  --fade-l: 0px;
+  --fade-r: 0px;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade-l),
+    #000 calc(100% - var(--fade-r)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade-l),
+    #000 calc(100% - var(--fade-r)),
+    transparent 100%
+  );
+}
+
 :root {
   --syntax-comment: oklch(0.55 0 0);
   --syntax-keyword: oklch(0.62 0.16 300);

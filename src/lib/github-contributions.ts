@@ -3,6 +3,7 @@ import type {
   GitHubContributionsResult,
 } from "@/components/reusable/chanhdai/github-contributions";
 import { revalidateOption } from "@/lib/utils";
+import { withScaledLevels } from "./contribution-levels";
 import { handleError, handleErrorCode } from "./error";
 
 export async function fetchGitHubContributions(
@@ -28,8 +29,8 @@ export async function fetchGitHubContributions(
     const result = (await response.json()) as GitHubContributionsResponse;
 
     return {
-      data: (result.contributions ?? []).filter(
-        ({ date }) => date >= "2020-01-01",
+      data: withScaledLevels(
+        (result.contributions ?? []).filter(({ date }) => date >= "2020-01-01"),
       ),
       error: null,
     };

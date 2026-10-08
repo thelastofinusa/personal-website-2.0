@@ -146,7 +146,7 @@ export const MenuToggle: React.FC<
                         >
                           <div
                             className={cn(
-                              "relative flex items-center justify-between rounded-lg p-3 transition-all duration-200",
+                              "relative flex items-center justify-between rounded-lg px-3 py-2 transition-all duration-200",
                               "hover:bg-muted/60",
                               isActive
                                 ? "bg-muted font-medium text-foreground"
@@ -219,7 +219,7 @@ export const MenuToggle: React.FC<
                           aria-label={social.platform}
                           onClick={() => play("forward")}
                         >
-                          <Icon className="size-4.5 group-hover:text-primary" />
+                          <Icon className="size-4 group-hover:text-primary" />
                         </Link>
                       </motion.div>
                     );
