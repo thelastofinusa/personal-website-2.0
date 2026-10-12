@@ -68,7 +68,7 @@ export const ProjectsPageClient: React.FC<{
       {
         _id: "first-all",
         slug: "all",
-        name: "Everything",
+        name: "Omni",
         description: "Everything I've been up to",
         icon: "StackPerspective",
       },
