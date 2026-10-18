@@ -170,7 +170,7 @@ export function GitHubContributions({
       data={result.data}
       blockSize={isMobile ? 10 : 12}
       blockMargin={3}
-      blockRadius={4}
+      blockRadius={3}
     >
       <ContributionGraphCalendar
         calendarRef={calendarRef}

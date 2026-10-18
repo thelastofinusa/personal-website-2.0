@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { Cormorant_Garamond as FontSerif } from "next/font/google";
+import { Cinzel as FontSerif } from "next/font/google";
 import localFont from "next/font/local";
 
 const fontSans = localFont({
@@ -11,7 +11,7 @@ const fontSans = localFont({
 
 const fontSerif = FontSerif({
   variable: "--font-serif",
-  display: "swap",
+  subsets: ["latin"],
 });
 
 const fontMono = localFont({

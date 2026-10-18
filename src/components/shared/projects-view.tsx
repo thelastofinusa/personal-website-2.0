@@ -131,7 +131,7 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
 
                 {/* Title & Micro Metadata */}
                 <div className="flex flex-1 flex-col gap-2 transition-transform duration-300 ease-out lg:group-hover:translate-x-2">
-                  <h1 className="font-light font-serif text-3xl tracking-tight transition-colors duration-300 group-hover:text-primary md:text-4xl lg:text-5xl">
+                  <h1 className="font-light font-serif text-3xl tracking-tight transition-colors duration-300 group-hover:text-primary md:text-[32px] lg:text-[42px]">
                     {item.name}
                   </h1>
 
@@ -235,7 +235,7 @@ const ProjectGridItem: React.FC<ProjectItemProps> = ({
       <div className="flex flex-col gap-0.5 px-4 py-5 md:px-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Reicon name={icon} className="mb-1 size-4" />
+            <Reicon name={icon} className="mb-0.5 size-4" />
             <p className="font-normal font-serif text-lg">{item.name}</p>
           </div>
 
