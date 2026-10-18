@@ -393,7 +393,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
   // Same 1 / 2 / 3 column breakpoints as the projects grid
   const isTablet = useMediaQuery("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const columns = splitIntoColumns(images, isDesktop ? 3 : isTablet ? 2 : 1);
+  const _columns = splitIntoColumns(images, isDesktop ? 3 : isTablet ? 2 : 1);
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -471,45 +471,50 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="flex items-start gap-4 pb-1">
-              {columns.map((column, colIndex) => (
-                <div key={colIndex} className="flex flex-1 flex-col gap-4">
-                  {column.map(({ item: image, originalIndex }) => (
-                    <motion.div
-                      key={image.url ?? originalIndex}
-                      layoutId={`gallery-img-${image.url ?? originalIndex}`}
-                      transition={{
-                        type: "spring",
-                        stiffness: 350,
-                        damping: 28,
-                        delay: originalIndex * 0.03,
-                      }}
-                      className="group/card relative"
-                    >
-                      <Frame
-                        variant="inverse"
-                        className="rounded-3xl transition-transform duration-500 ease-out group-hover/card:-translate-y-1"
-                      >
-                        <div className="relative h-auto overflow-hidden rounded-[20px]! border border-border/60 bg-muted/20">
-                          <CustomImage
-                            src={image.url as string}
-                            alt={image.alt ?? ""}
-                            className="size-auto object-contain transition-transform duration-700 ease-out group-hover/card:scale-105"
-                          />
-                          {/* Click target that opens the lightbox */}
-                          <button
-                            type="button"
-                            aria-label={`View image ${originalIndex + 1} of ${images.length}${
-                              image.alt ? `: ${image.alt}` : ""
-                            }`}
-                            onClick={(e) => openLightbox(e, originalIndex)}
-                            className="absolute inset-0 z-10 cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-                          />
-                        </div>
-                      </Frame>
-                    </motion.div>
-                  ))}
-                </div>
+            <div
+              className={cn(
+                "grid gap-2.5",
+                images.length > 2
+                  ? "grid-cols-2 sm:grid-cols-4"
+                  : images.length === 2
+                    ? "grid-cols-2 sm:grid-cols-3"
+                    : "grid-cols-2",
+              )}
+            >
+              {images.map((image, idx) => (
+                <motion.div
+                  key={image.url ?? idx}
+                  layoutId={`gallery-img-${image.url ?? idx}`}
+                  transition={{
+                    type: "spring",
+                    stiffness: 350,
+                    damping: 28,
+                    delay: isExpanded ? idx * 0.03 : 0,
+                  }}
+                  className="relative"
+                >
+                  <Frame
+                    className="rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/5"
+                    variant="inverse"
+                  >
+                    <div className="relative aspect-[1.5] overflow-hidden rounded-sm border bg-card">
+                      <CustomImage
+                        src={image.url as string}
+                        alt={image.alt ?? ""}
+                        className="size-full object-cover"
+                      />
+                      {/* Click target that opens the lightbox */}
+                      <button
+                        type="button"
+                        aria-label={`View image ${idx + 1} of ${images.length}${
+                          image.alt ? `: ${image.alt}` : ""
+                        }`}
+                        onClick={(e) => openLightbox(e, idx)}
+                        className="absolute inset-0 z-10 cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                      />
+                    </div>
+                  </Frame>
+                </motion.div>
               ))}
             </div>
           </motion.div>
