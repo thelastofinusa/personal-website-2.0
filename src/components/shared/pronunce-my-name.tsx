@@ -43,6 +43,7 @@ export function PronounceMyName({
       <span className="absolute pointer-fine:hidden size-12" aria-hidden />
       <VolumeIcon
         ref={volumeIconRef}
+        isPlaying={isPlaying}
         className="-mb-1.25! size-5"
         aria-hidden
       />

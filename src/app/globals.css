@@ -27,6 +27,17 @@
   --border: #eeeeee;
   --input: #f5f5f5;
   --ring: #a1a1a1;
+
+  --syntax-comment: oklch(0.55 0 0);
+  --syntax-keyword: oklch(0.62 0.16 300);
+  --syntax-string: oklch(0.65 0.15 145);
+  --syntax-number: oklch(0.72 0.14 75);
+  --syntax-function: oklch(0.72 0.12 220);
+  --syntax-variable: oklch(0.72 0.1 30);
+  --syntax-operator: oklch(0.65 0 0);
+  --syntax-punctuation: oklch(0.55 0 0);
+  --syntax-property: oklch(0.68 0.12 190);
+  --syntax-class: oklch(0.72 0.14 80);
 }
 
 .dark {
@@ -49,6 +60,17 @@
   --border: #262626;
   --input: #262626;
   --ring: #737373;
+
+  --syntax-comment: oklch(0.55 0 0);
+  --syntax-keyword: oklch(0.75 0.14 300);
+  --syntax-string: oklch(0.76 0.13 145);
+  --syntax-number: oklch(0.8 0.12 80);
+  --syntax-function: oklch(0.78 0.1 220);
+  --syntax-variable: oklch(0.78 0.08 30);
+  --syntax-operator: oklch(0.7 0 0);
+  --syntax-punctuation: oklch(0.6 0 0);
+  --syntax-property: oklch(0.75 0.1 190);
+  --syntax-class: oklch(0.8 0.12 80);
 }
 
 @theme inline {
@@ -146,36 +168,6 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
-
-  /* ::view-transition-group(root) {
-    animation-timing-function: var(--expo-out);
-  }
-
-  ::view-transition-old(root),
-  .dark::view-transition-old(root) {
-    animation: none;
-    animation-fill-mode: both;
-    z-index: -1;
-  }
-
-  ::view-transition-new(root) {
-    mask:
-      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><filter id="blur"><feGaussianBlur stdDeviation="2"/></filter></defs><circle cx="20" cy="20" r="18" fill="white" filter="url(%23blur)"/></svg>')
-      center / 0 no-repeat;
-    animation: scale 0.7s;
-    animation-fill-mode: both;
-  }
-
-  .dark::view-transition-new(root) {
-    animation: scale 0.7s;
-    animation-fill-mode: both;
-  }
-
-  @keyframes scale {
-    to {
-      mask-size: 200vmax;
-    }
-  } */
 }
 
 @theme {
@@ -254,30 +246,4 @@
     #000 calc(100% - var(--fade-r)),
     transparent 100%
   );
-}
-
-:root {
-  --syntax-comment: oklch(0.55 0 0);
-  --syntax-keyword: oklch(0.62 0.16 300);
-  --syntax-string: oklch(0.65 0.15 145);
-  --syntax-number: oklch(0.72 0.14 75);
-  --syntax-function: oklch(0.72 0.12 220);
-  --syntax-variable: oklch(0.72 0.1 30);
-  --syntax-operator: oklch(0.65 0 0);
-  --syntax-punctuation: oklch(0.55 0 0);
-  --syntax-property: oklch(0.68 0.12 190);
-  --syntax-class: oklch(0.72 0.14 80);
-}
-
-.dark {
-  --syntax-comment: oklch(0.55 0 0);
-  --syntax-keyword: oklch(0.75 0.14 300);
-  --syntax-string: oklch(0.76 0.13 145);
-  --syntax-number: oklch(0.8 0.12 80);
-  --syntax-function: oklch(0.78 0.1 220);
-  --syntax-variable: oklch(0.78 0.08 30);
-  --syntax-operator: oklch(0.7 0 0);
-  --syntax-punctuation: oklch(0.6 0 0);
-  --syntax-property: oklch(0.75 0.1 190);
-  --syntax-class: oklch(0.8 0.12 80);
 }

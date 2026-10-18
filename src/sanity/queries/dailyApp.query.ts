@@ -1,7 +1,6 @@
 import { defineQuery } from "next-sanity";
-import { revalidateOption } from "@/lib/utils";
 import type { DailyAppListQueryResult } from "~/sanity.types";
-import { readClient } from "../lib/client";
+import { NO_STEGA, sanityFetch } from "../lib/live";
 
 const dailyAppListQuery = defineQuery(`
   *[_type == "dailyApp"] | order(_createdAt desc) {
@@ -35,12 +34,11 @@ const dailyAppListQuery = defineQuery(`
   }
 `);
 
-export async function fetchDailyApp(): Promise<DailyAppListQueryResult> {
-  const result = await readClient.fetch(
-    dailyAppListQuery,
-    {},
-    revalidateOption,
-  );
+const query = {
+  all: dailyAppListQuery,
+};
 
-  return result;
+export async function fetchDailyApp(): Promise<DailyAppListQueryResult> {
+  const { data } = await sanityFetch({ query: query.all, ...NO_STEGA });
+  return data;
 }

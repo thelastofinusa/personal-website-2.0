@@ -2,7 +2,6 @@ import type {
   GitHubContributionsResponse,
   GitHubContributionsResult,
 } from "@/components/reusable/chanhdai/github-contributions";
-import { revalidateOption } from "@/lib/utils";
 import { withScaledLevels } from "./contribution-levels";
 import { handleError, handleErrorCode } from "./error";
 
@@ -17,7 +16,9 @@ export async function fetchGitHubContributions(
   url.searchParams.set("y", "last");
 
   try {
-    const response = await fetch(url, revalidateOption);
+    const response = await fetch(url, {
+      cache: "no-store",
+    });
 
     if (!response.ok) {
       return {

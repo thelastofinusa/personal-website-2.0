@@ -1,15 +1,13 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: skipped */
-/** biome-ignore-all lint/suspicious/useIterableCallbackReturn: skipped */
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
 import React from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { workItemVariants } from "@/constants/variants";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { splitIntoColumns } from "@/lib/masonry";
 import { cn, formatDate } from "@/lib/utils";
 import type { ISearchFilterProps } from "@/types";
 import type {
@@ -23,9 +21,20 @@ import { Badge } from "../reusable/shadcn/badge";
 import { Container } from "./container";
 import { FadeLine } from "./fade-line";
 import { CustomImage } from "./image";
+import { InlineMarkdown } from "./inline-markdown";
 import { Reicon } from "./reicon";
 
-// 1. Shared Framer Motion animation configuration
+type Project = ProjectsListQueryResult[number];
+
+type ProjectItemProps = {
+  item: Project;
+  index: number;
+  activeTab?: string;
+  projects: ProjectsListQueryResult;
+  tabFilters: ProjectFiltersListQueryResult;
+};
+
+// Shared animation configuration
 const MOTION_ITEM_PROPS = {
   variants: workItemVariants,
   initial: "hidden" as const,
@@ -37,45 +46,58 @@ const MOTION_ITEM_PROPS = {
 
 const MotionLink = motion.create(Link);
 
-// 2. Extracted List Item Component
-const ProjectListItem: React.FC<{
-  item: ProjectsListQueryResult[0];
-  index: number;
-  isLast: boolean;
-  activeTab?: string;
-  projects: ProjectsListQueryResult;
-  tabFilters: ProjectFiltersListQueryResult;
-}> = ({ item, index, isLast, activeTab, projects, tabFilters }) => {
+/**
+ * Shared click behaviour for list rows and grid cards:
+ * - the project already open in the live preview is inert
+ * - ⌘/Ctrl + click opens the live preview (desktop only)
+ * - a plain click falls through to the link and opens a new tab
+ */
+function useProjectCardClick(item: Project, projects: ProjectsListQueryResult) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { openPreview, currentProject } = useLivePreview();
-  const { handleMouseEnter, handleMouseLeave } = useImagePreview();
-  const icon = tabFilters.find((filter) => filter.slug === activeTab)?.icon;
   const isActive = currentProject?.url === item.url;
+
+  const onClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (isActive) {
+      event.preventDefault();
+      return;
+    }
+
+    if (isDesktop && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      openPreview(item, event.currentTarget.getBoundingClientRect(), projects);
+    }
+  };
+
+  return { isActive, onClick };
+}
+
+const getFilterIcon = (
+  tabFilters: ProjectFiltersListQueryResult,
+  activeTab?: string,
+) => tabFilters.find((filter) => filter.slug === activeTab)?.icon;
+
+// List row
+const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
+  item,
+  index,
+  isLast,
+  activeTab,
+  projects,
+  tabFilters,
+}) => {
+  const { handleMouseEnter, handleMouseLeave } = useImagePreview();
+  const { isActive, onClick } = useProjectCardClick(item, projects);
+  const icon = getFilterIcon(tabFilters, activeTab);
 
   // Format index as 01, 02, 03...
   const formattedIndex = String(index + 1).padStart(2, "0");
 
   return (
     <motion.div
-      key={item.url}
       custom={index}
       {...MOTION_ITEM_PROPS}
-      onClick={(event) => {
-        if (isActive) {
-          event.preventDefault();
-          return;
-        }
-        // ⌘/Ctrl + click -> live preview (desktop only).
-        // Plain click falls through to the link and opens the project in a new tab.
-        if (isDesktop && (event.metaKey || event.ctrlKey)) {
-          event.preventDefault();
-          openPreview(
-            item,
-            event.currentTarget.getBoundingClientRect(),
-            projects,
-          );
-        }
-      }}
+      onClick={onClick}
       className={cn(
         "group relative transition-colors duration-500 hover:bg-muted/40 dark:hover:bg-accent/10",
         isActive && "pointer-events-none opacity-50!",
@@ -88,7 +110,6 @@ const ProjectListItem: React.FC<{
           rel="noreferrer"
           onMouseEnter={() => handleMouseEnter(index)}
           onMouseLeave={handleMouseLeave}
-          onClick={(e) => isActive && e.preventDefault()}
         >
           <FadeLine orientation="horizontal" className="top-0" />
           {isLast && <FadeLine orientation="horizontal" className="bottom-0" />}
@@ -139,63 +160,15 @@ const ProjectListItem: React.FC<{
 
                   {/* Mobile Description */}
                   <div className="mt-2 font-light text-muted-foreground/80 text-sm leading-relaxed lg:hidden">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        p: ({ children }) => <>{children}</>,
-                        strong: ({ children }) => (
-                          <strong className="font-medium text-foreground">
-                            {children}
-                          </strong>
-                        ),
-                        em: ({ children }) => <em>{children}</em>,
-                        a: ({ children, href }) => (
-                          <a
-                            href={href}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="underline underline-offset-4 transition-colors hover:text-primary"
-                            onClick={(event) => event.stopPropagation()}
-                          >
-                            {children}
-                          </a>
-                        ),
-                      }}
-                    >
-                      {item.description}
-                    </ReactMarkdown>
+                    <InlineMarkdown>{item.description}</InlineMarkdown>
                   </div>
                 </div>
               </div>
 
-              {/* Right Column: Desktop Description & Trailing Indicator */}
+              {/* Right Column: Desktop Description */}
               <div className="hidden lg:col-span-5 lg:flex lg:items-center lg:justify-between lg:gap-6">
                 <div className="text-right font-light text-muted-foreground/80 text-sm leading-relaxed transition-colors duration-300 group-hover:text-foreground">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      p: ({ children }) => <>{children}</>,
-                      strong: ({ children }) => (
-                        <strong className="font-medium text-foreground">
-                          {children}
-                        </strong>
-                      ),
-                      em: ({ children }) => <em>{children}</em>,
-                      a: ({ children, href }) => (
-                        <a
-                          href={href}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="underline underline-offset-4 transition-colors hover:text-primary"
-                          onClick={(event) => event.stopPropagation()}
-                        >
-                          {children}
-                        </a>
-                      ),
-                    }}
-                  >
-                    {item.description}
-                  </ReactMarkdown>
+                  <InlineMarkdown>{item.description}</InlineMarkdown>
                 </div>
               </div>
             </div>
@@ -206,43 +179,25 @@ const ProjectListItem: React.FC<{
   );
 };
 
-// 3. Extracted Grid/Card Item Component
-const ProjectGridItem: React.FC<{
-  item: ProjectsListQueryResult[0];
-  index: number;
-  activeTab?: string;
-  projects: ProjectsListQueryResult;
-  tabFilters: ProjectFiltersListQueryResult;
-}> = ({ item, index, activeTab, projects, tabFilters }) => {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-  const { openPreview, currentProject } = useLivePreview();
-  const icon = tabFilters.find((filter) => filter.slug === activeTab)?.icon;
-  const isActive = currentProject?.url === item.url;
+// Grid card
+const ProjectGridItem: React.FC<ProjectItemProps> = ({
+  item,
+  index,
+  activeTab,
+  projects,
+  tabFilters,
+}) => {
+  const { isActive, onClick } = useProjectCardClick(item, projects);
+  const icon = getFilterIcon(tabFilters, activeTab);
 
   return (
     <MotionLink
-      key={item.url}
       href={(item.url ?? "#") as Route}
       target="_blank"
       rel="noreferrer"
       custom={index}
       {...MOTION_ITEM_PROPS}
-      onClick={(event) => {
-        if (isActive) {
-          event.preventDefault();
-          return;
-        }
-        // ⌘/Ctrl + click -> live preview (desktop only).
-        // Plain click falls through to the link and opens the project in a new tab.
-        if (isDesktop && (event.metaKey || event.ctrlKey)) {
-          event.preventDefault();
-          openPreview(
-            item,
-            event.currentTarget.getBoundingClientRect(),
-            projects,
-          );
-        }
-      }}
+      onClick={onClick}
       className={cn(
         "group relative flex flex-col transition-all duration-500 ease-out",
         isActive && "pointer-events-none opacity-50!",
@@ -264,16 +219,14 @@ const ProjectGridItem: React.FC<{
           {/* Gradient Overlay with Glassmorphic Badges */}
           <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 via-black/30 to-transparent px-5 pt-12 pb-4">
             <div className="flex flex-wrap items-center gap-1.5">
-              {item.tags &&
-                item.tags?.length > 0 &&
-                item.tags.map((badge) => (
-                  <Badge
-                    key={badge}
-                    className="border border-white/20 bg-black/40 text-white/90 backdrop-blur-md transition-colors duration-300 group-hover:border-white/40"
-                  >
-                    {badge}
-                  </Badge>
-                ))}
+              {item.tags?.map((badge) => (
+                <Badge
+                  key={badge}
+                  className="border border-white/20 bg-black/40 text-white/90 backdrop-blur-md transition-colors duration-300 group-hover:border-white/40"
+                >
+                  {badge}
+                </Badge>
+              ))}
             </div>
           </div>
         </div>
@@ -292,31 +245,7 @@ const ProjectGridItem: React.FC<{
         </div>
 
         <div className="font-extralight text-[13px] leading-relaxed">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              p: ({ children }) => <>{children}</>,
-              strong: ({ children }) => (
-                <strong className="font-medium text-foreground">
-                  {children}
-                </strong>
-              ),
-              em: ({ children }) => <em>{children}</em>,
-              a: ({ children, href }) => (
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline underline-offset-4 transition-colors hover:text-primary"
-                  onClick={(event) => event.stopPropagation()}
-                >
-                  {children}
-                </a>
-              ),
-            }}
-          >
-            {item.description}
-          </ReactMarkdown>
+          <InlineMarkdown>{item.description}</InlineMarkdown>
         </div>
       </div>
 
@@ -325,7 +254,19 @@ const ProjectGridItem: React.FC<{
   );
 };
 
-// 4. Main View Component
+// One masonry layout per breakpoint; CSS decides which one is visible.
+const GRID_LAYOUTS = [
+  // Mobile (1 column)
+  { columns: 1, className: "group/list flex flex-col gap-6 md:hidden" },
+  // Tablet (2 columns)
+  {
+    columns: 2,
+    className: "group/list hidden items-start gap-4 md:flex lg:hidden",
+  },
+  // Desktop (3 columns)
+  { columns: 3, className: "group/list hidden items-start gap-4 lg:flex" },
+] as const;
+
 export const ProjectsView: React.FC<{
   view?: ISearchFilterProps["view"];
   projects: ProjectsListQueryResult;
@@ -339,30 +280,7 @@ export const ProjectsView: React.FC<{
     handleMouseLeave();
   }, [view, handleMouseLeave]);
 
-  const cols2 = React.useMemo(() => {
-    const cols: {
-      item: ProjectsListQueryResult[0];
-      originalIndex: number;
-    }[][] = [[], []];
-
-    projects.forEach((item, i) =>
-      cols[i % 2].push({
-        item,
-        originalIndex: i,
-      }),
-    );
-
-    return cols;
-  }, [projects]);
-
-  const cols3 = React.useMemo(() => {
-    const cols: {
-      item: ProjectsListQueryResult[0];
-      originalIndex: number;
-    }[][] = [[], [], []];
-    projects.forEach((item, i) => cols[i % 3].push({ item, originalIndex: i }));
-    return cols;
-  }, [projects]);
+  const itemProps = { projects, tabFilters, activeTab };
 
   return (
     <AnimatePresence mode="popLayout">
@@ -374,63 +292,31 @@ export const ProjectsView: React.FC<{
               item={item}
               index={index}
               isLast={index === projects.length - 1}
-              activeTab={activeTab}
-              projects={projects}
-              tabFilters={tabFilters}
+              {...itemProps}
             />
           ))}
         </div>
       ) : (
         <Container>
-          {/* MOBILE VIEW (1 Column) */}
-          <div className="group/list flex flex-col gap-6 md:hidden">
-            {projects.map((item, index) => (
-              <ProjectGridItem
-                key={item.url}
-                item={item}
-                index={index}
-                activeTab={activeTab}
-                projects={projects}
-                tabFilters={tabFilters}
-              />
-            ))}
-          </div>
-
-          {/* TABLET VIEW (2 Columns) */}
-          <div className="group/list hidden items-start gap-4 md:flex lg:hidden">
-            {cols2.map((col, colIndex) => (
-              <div key={colIndex} className="flex flex-1 flex-col gap-6">
-                {col.map(({ item, originalIndex }) => (
-                  <ProjectGridItem
-                    key={item.url}
-                    item={item}
-                    index={originalIndex}
-                    activeTab={activeTab}
-                    projects={projects}
-                    tabFilters={tabFilters}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-
-          {/* DESKTOP VIEW (3 Columns) */}
-          <div className="group/list hidden items-start gap-4 lg:flex">
-            {cols3.map((col, colIndex) => (
-              <div key={colIndex} className="flex flex-1 flex-col gap-6">
-                {col.map(({ item, originalIndex }) => (
-                  <ProjectGridItem
-                    key={item.url}
-                    item={item}
-                    index={originalIndex}
-                    activeTab={activeTab}
-                    projects={projects}
-                    tabFilters={tabFilters}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
+          {GRID_LAYOUTS.map(({ columns, className }) => (
+            <div key={columns} className={className}>
+              {splitIntoColumns(projects, columns).map((column, colIndex) => (
+                <div
+                  key={colIndex}
+                  className={cn("flex flex-col gap-6", columns > 1 && "flex-1")}
+                >
+                  {column.map(({ item, originalIndex }) => (
+                    <ProjectGridItem
+                      key={item.url}
+                      item={item}
+                      index={originalIndex}
+                      {...itemProps}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
         </Container>
       )}
     </AnimatePresence>

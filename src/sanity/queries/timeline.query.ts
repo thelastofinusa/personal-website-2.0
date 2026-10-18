@@ -1,7 +1,6 @@
 import { defineQuery } from "next-sanity";
-import { revalidateOption } from "@/lib/utils";
 import type { TimelineListQueryResult } from "~/sanity.types";
-import { readClient } from "../lib/client";
+import { NO_STEGA, sanityFetch } from "../lib/live";
 
 const timelineList = `
 _id,
@@ -60,11 +59,11 @@ const query = {
 };
 
 export async function fetchTimeline(): Promise<TimelineListQueryResult> {
-  const result = await readClient.fetch(query.all, {}, revalidateOption);
-  return result;
+  const { data } = await sanityFetch({ query: query.all, ...NO_STEGA });
+  return data;
 }
 
 export async function fetchLatestTimelines(): Promise<TimelineListQueryResult> {
-  const result = await readClient.fetch(query.latest, {}, revalidateOption);
-  return result;
+  const { data } = await sanityFetch({ query: query.latest, ...NO_STEGA });
+  return data;
 }

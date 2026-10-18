@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "cn";
 import { AnimatePresence, motion } from "motion/react";
 import React from "react";
 import { Blend } from "reicon-react";
@@ -10,12 +9,17 @@ import { Badge } from "@/components/reusable/shadcn/badge";
 import { buttonVariants } from "@/components/reusable/shadcn/button";
 import { CustomImage } from "@/components/shared/image";
 import { Reicon } from "@/components/shared/reicon";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 import type { DailyAppListQueryResult } from "~/sanity.types";
 
 export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
   apps,
 }) => {
   const { play } = useSoundFx();
+  // Matches the Tailwind `lg` breakpoint: hover drives the spotlight on desktop,
+  // tapping does on mobile.
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [activeIndex, setActiveIndex] = React.useState(0);
 
   if (!apps?.length) return null;
@@ -131,9 +135,6 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                     type: "button",
                   })}
               onClick={(e: React.MouseEvent) => {
-                // Match the Tailwind `lg` breakpoint (1024px) for desktop vs mobile behavior
-                const isDesktop = window.innerWidth >= 1024;
-
                 if (!isDesktop) {
                   // Mobile: Prevent navigation, just show it in the spotlight
                   if (isLink) e.preventDefault();

@@ -1,4 +1,5 @@
 import { cn } from "cn";
+import { Cormorant_Garamond as FontSerif } from "next/font/google";
 import localFont from "next/font/local";
 
 const fontSans = localFont({
@@ -8,19 +9,7 @@ const fontSans = localFont({
   style: "normal",
 });
 
-const fontSerif = localFont({
-  src: [
-    {
-      path: "../../public/fonts/PPEditorialNew/Ultralight.otf",
-      weight: "200",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/PPEditorialNew/UltralightItalic.otf",
-      weight: "200",
-      style: "italic",
-    },
-  ],
+const fontSerif = FontSerif({
   variable: "--font-serif",
   display: "swap",
 });

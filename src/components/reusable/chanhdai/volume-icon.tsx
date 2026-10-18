@@ -1,7 +1,13 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { Fragment, useImperativeHandle, useState } from "react";
+import {
+  Fragment,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 export type VolumeIconHandle = {
   startAnimation: () => void;
@@ -10,15 +16,35 @@ export type VolumeIconHandle = {
 
 export type VolumeIconProps = React.ComponentPropsWithoutRef<"svg"> & {
   ref?: React.Ref<VolumeIconHandle>;
+  isPlaying?: boolean;
 };
 
-export function VolumeIcon({ ref, ...props }: VolumeIconProps) {
+export function VolumeIcon({
+  ref,
+  isPlaying = false,
+  ...props
+}: VolumeIconProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const restartTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useImperativeHandle(ref, () => ({
     startAnimation: () => setIsHovered(true),
     stopAnimation: () => setIsHovered(false),
   }));
+
+  useEffect(() => {
+    if (restartTimeout.current) {
+      clearTimeout(restartTimeout.current);
+    }
+
+    setIsHovered(isPlaying);
+
+    return () => {
+      if (restartTimeout.current) {
+        clearTimeout(restartTimeout.current);
+      }
+    };
+  }, [isPlaying]);
 
   return (
     <svg
@@ -49,7 +75,7 @@ export function VolumeIcon({ ref, ...props }: VolumeIconProps) {
               initial={{ opacity: 0 }}
               animate={{
                 opacity: 1,
-                transition: { delay: 0.1 },
+                transition: { delay: 0.1, duration: 0.5 },
               }}
             />
 
@@ -62,9 +88,17 @@ export function VolumeIcon({ ref, ...props }: VolumeIconProps) {
               initial={{ opacity: 0 }}
               animate={{
                 opacity: 1,
-                transition: { delay: 0.2 },
+                transition: { delay: 0.2, duration: 0.5 },
               }}
-              onAnimationComplete={() => setIsHovered(false)}
+              onAnimationComplete={() => {
+                setIsHovered(false);
+
+                if (isPlaying) {
+                  restartTimeout.current = setTimeout(() => {
+                    setIsHovered(true);
+                  }, 300);
+                }
+              }}
             />
           </Fragment>
         ) : (

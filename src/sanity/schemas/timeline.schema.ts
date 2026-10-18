@@ -213,24 +213,38 @@ export const timelineSchema = defineType({
               type: "string",
               options: {
                 list: [
-                  // Experience
+                  // --- Experience / Work ---
                   "Full-time",
                   "Part-time",
                   "Contract",
                   "Freelance",
                   "Internship",
                   "Temporary",
+                  "Self-employed",
                   "Volunteer",
 
-                  // Education
+                  // --- Teaching / Community / Leadership (NEW - for this invitation) ---
+                  "Teaching",
+                  "Facilitation",
+                  "Workshop",
+                  "Guest Lecture",
+                  "Speaking Engagement",
+                  "Mentorship",
+                  "Community",
+                  "Leadership",
+                  "Consulting",
+                  "Open Source",
+                  "Project",
+
+                  // --- Education ---
                   "Degree",
                   "Diploma",
                   "Certificate",
                   "Course",
                   "Bootcamp",
                   "Training",
+                  "Workshop",
                 ],
-                layout: "dropdown",
               },
               validation: (Rule) => Rule.required(),
             }),
@@ -323,19 +337,29 @@ export const timelineSchema = defineType({
       title: "organization",
       category: "category",
       isCurrent: "isCurrent",
+      featured: "featured",
       logoType: "logo.type",
       logoImage: "logo.image",
       logoIcon: "logo.icon",
     },
-    prepare({ title, category, isCurrent, logoType, logoImage, logoIcon }) {
+    prepare({
+      title,
+      category,
+      isCurrent,
+      featured,
+      logoType,
+      logoImage,
+      logoIcon,
+    }) {
       return {
         title,
         subtitle: [
           category === "education" ? "Education" : "Experience",
           isCurrent ? "Current" : undefined,
+          featured ? "Featured" : undefined,
         ]
           .filter(Boolean)
-          .join(" · "),
+          .join(" • "),
 
         media:
           logoType === "icon"

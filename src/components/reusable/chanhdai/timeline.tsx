@@ -19,9 +19,15 @@ import {
 import { Separator } from "@/components/reusable/shadcn/separator";
 import { FadeLine } from "@/components/shared/fade-line";
 import { CustomImage } from "@/components/shared/image";
+import {
+  ImageLightbox,
+  type LightboxImage,
+} from "@/components/shared/lightbox";
 import { PortableText } from "@/components/shared/portable-text";
 import { Reicon } from "@/components/shared/reicon";
 import { getTimelineVariants, workItemVariants } from "@/constants/variants";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { splitIntoColumns } from "@/lib/masonry";
 import { cn } from "@/lib/utils";
 import type { TimelineListQueryResult } from "~/sanity.types";
 import { LinkPreview } from "../aceternity/link-preview";
@@ -165,7 +171,13 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
   const start = item.period?.start;
   const end = item.period?.end;
   const isOngoing = !end;
-  const duration = formatDuration(start, end);
+
+  const startDate = parsePeriodDate(start);
+  const today = parsePeriodDate(new Date().toISOString().slice(0, 10));
+
+  const isUpcoming = !!startDate && !!today && startDate > today;
+
+  const duration = isUpcoming ? "Coming soon" : formatDuration(start, end);
 
   // Current animation state
   const state = isOpen ? "expanded" : isHovered ? "hover" : "idle";
@@ -249,14 +261,23 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
                       <dt className="sr-only">Period</dt>
                       <dd className="flex items-center gap-1 text-xs tabular-nums">
                         <span>{formatPeriod(start)}</span>
-                        <Separator
-                          className="data-horizontal:w-2 data-horizontal:self-center"
-                          orientation="horizontal"
-                        />
-                        {isOngoing ? (
-                          <Infinite className="size-4" aria-label="Present" />
-                        ) : (
-                          <span>{formatPeriod(end)}</span>
+
+                        {!isUpcoming && (
+                          <>
+                            <Separator
+                              className="data-horizontal:w-2 data-horizontal:self-center"
+                              orientation="horizontal"
+                            />
+
+                            {isOngoing ? (
+                              <Infinite
+                                className="size-4 text-primary"
+                                aria-label="Present"
+                              />
+                            ) : (
+                              <span>{formatPeriod(end)}</span>
+                            )}
+                          </>
                         )}
                       </dd>
                     </div>
@@ -361,12 +382,18 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
 }
 
 export type TimelineItemImagesProps = {
-  images: NonNullable<TimelineItem["images"]>;
+  images: LightboxImage[];
 };
 
 export function TimelineItemImages({ images }: TimelineItemImagesProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const { play } = useSoundFx();
+
+  // Same 1 / 2 / 3 column breakpoints as the projects grid
+  const isTablet = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const columns = splitIntoColumns(images, isDesktop ? 3 : isTablet ? 2 : 1);
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -374,6 +401,17 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
     setIsExpanded(nextState);
     play(nextState ? "expand" : "collapse");
   };
+
+  const openLightbox = (e: React.MouseEvent, idx: number) => {
+    e.stopPropagation();
+    play("expand");
+    setActiveIndex(idx);
+  };
+
+  const closeLightbox = useCallback(() => {
+    play("collapse");
+    setActiveIndex(null);
+  }, [play]);
 
   const stackPreviews = images.slice(0, 3);
 
@@ -433,44 +471,59 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div
-              className={cn(
-                "grid gap-2.5",
-                images.length > 2
-                  ? "grid-cols-2 sm:grid-cols-4"
-                  : images.length === 2
-                    ? "grid-cols-2 sm:grid-cols-3"
-                    : "grid-cols-2",
-              )}
-            >
-              {images.map((image, idx) => (
-                <motion.div
-                  key={image.url ?? idx}
-                  layoutId={`gallery-img-${image.url ?? idx}`}
-                  transition={{
-                    type: "spring",
-                    stiffness: 350,
-                    damping: 28,
-                    delay: isExpanded ? idx * 0.03 : 0,
-                  }}
-                  className="relative"
-                >
-                  <Frame
-                    className="rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/5"
-                    variant="inverse"
-                  >
-                    <div className="aspect-[1.5] overflow-hidden rounded-sm border bg-card">
-                      <CustomImage
-                        src={image.url as string}
-                        alt={image.alt}
-                        className="size-full object-cover"
-                      />
-                    </div>
-                  </Frame>
-                </motion.div>
+            <div className="flex items-start gap-4 pb-1">
+              {columns.map((column, colIndex) => (
+                <div key={colIndex} className="flex flex-1 flex-col gap-4">
+                  {column.map(({ item: image, originalIndex }) => (
+                    <motion.div
+                      key={image.url ?? originalIndex}
+                      layoutId={`gallery-img-${image.url ?? originalIndex}`}
+                      transition={{
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 28,
+                        delay: originalIndex * 0.03,
+                      }}
+                      className="group/card relative"
+                    >
+                      <Frame
+                        variant="inverse"
+                        className="rounded-3xl transition-transform duration-500 ease-out group-hover/card:-translate-y-1"
+                      >
+                        <div className="relative h-auto overflow-hidden rounded-[20px]! border border-border/60 bg-muted/20">
+                          <CustomImage
+                            src={image.url as string}
+                            alt={image.alt ?? ""}
+                            className="size-auto object-contain transition-transform duration-700 ease-out group-hover/card:scale-105"
+                          />
+                          {/* Click target that opens the lightbox */}
+                          <button
+                            type="button"
+                            aria-label={`View image ${originalIndex + 1} of ${images.length}${
+                              image.alt ? `: ${image.alt}` : ""
+                            }`}
+                            onClick={(e) => openLightbox(e, originalIndex)}
+                            className="absolute inset-0 z-10 cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                          />
+                        </div>
+                      </Frame>
+                    </motion.div>
+                  ))}
+                </div>
               ))}
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Lightbox (portals to document.body so transforms above can't break `fixed`) */}
+      <AnimatePresence>
+        {activeIndex !== null && (
+          <ImageLightbox
+            images={images}
+            initialIndex={activeIndex}
+            onClose={closeLightbox}
+          />
         )}
       </AnimatePresence>
     </div>

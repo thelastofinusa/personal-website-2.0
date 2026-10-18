@@ -1,10 +1,9 @@
 import { defineQuery } from "next-sanity";
-import { revalidateOption } from "@/lib/utils";
 import type {
   ArticleBySlugQueryResult,
   ArticlesListQueryResult,
 } from "~/sanity.types";
-import { readClient } from "../lib/client";
+import { NO_STEGA, sanityFetch } from "../lib/live";
 
 const articleList = `
   _id,
@@ -63,11 +62,13 @@ const query = {
 };
 
 export async function fetchAllArticles(): Promise<ArticlesListQueryResult> {
-  return readClient.fetch(query.all, {}, revalidateOption);
+  const { data } = await sanityFetch({ query: query.all, ...NO_STEGA });
+  return data;
 }
 
 export async function fetchPinnedArticles(): Promise<ArticlesListQueryResult> {
-  return readClient.fetch(query.pinned, {}, revalidateOption);
+  const { data } = await sanityFetch({ query: query.pinned, ...NO_STEGA });
+  return data;
 }
 
 export async function fetchArticleBySlug(slug: string): Promise<{
@@ -78,11 +79,11 @@ export async function fetchArticleBySlug(slug: string): Promise<{
   const articles = await fetchAllArticles();
   const index = articles.findIndex((article) => article.slug === slug);
 
-  const singleArticle = await readClient.fetch(
-    query.slug,
-    { slug },
-    revalidateOption,
-  );
+  const { data: singleArticle } = await sanityFetch({
+    query: query.slug,
+    params: { slug },
+    ...NO_STEGA,
+  });
 
   return {
     article: singleArticle,
