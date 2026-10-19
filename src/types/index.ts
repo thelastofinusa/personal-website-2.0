@@ -4,6 +4,7 @@ import type { IconComponent } from "reicon-react";
 import type { PortableTextBlock } from "sanity";
 import type { ProjectsListQueryResult } from "~/sanity.types";
 import type { ContainerVariantsType } from "../components/shared/container";
+import type { ProjectSort } from "../lib/project-sort";
 
 export type TProjectView = "grid" | "list";
 
@@ -47,6 +48,8 @@ export interface ISearchFilterProps {
   projects: ProjectsListQueryResult;
   view: TProjectView;
   setView: (view: TProjectView) => void;
+  sort: ProjectSort;
+  setSort: (sort: ProjectSort) => void;
   onClear: () => void;
 }
 

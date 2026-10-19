@@ -119,7 +119,7 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
               {/* Left Column: Index, Icon, Title & Tags */}
               <div className="flex items-start gap-4 lg:col-span-7 lg:gap-6">
                 {/* Index + Icon Stack */}
-                <div className="flex flex-col items-center gap-1 pt-1 lg:pt-0">
+                <div className="mt-1.5 hidden flex-col items-center gap-1 md:block">
                   <span className="font-mono font-normal text-muted-foreground text-xs transition-colors group-hover:text-primary">
                     {formattedIndex}
                   </span>
@@ -131,9 +131,15 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
 
                 {/* Title & Micro Metadata */}
                 <div className="flex flex-1 flex-col gap-2 transition-transform duration-300 ease-out lg:group-hover:translate-x-2">
-                  <h1 className="font-light font-serif text-3xl tracking-tight transition-colors duration-300 group-hover:text-primary md:text-[32px] lg:text-[42px]">
-                    {item.name}
-                  </h1>
+                  <div className="flex items-center gap-2">
+                    <Reicon
+                      name={icon}
+                      className="mb-0.5 block size-5 text-muted-foreground transition-transform duration-300 group-hover:scale-110 group-hover:text-primary md:hidden"
+                    />
+                    <h1 className="font-light font-serif text-[28px] tracking-tight transition-colors duration-300 group-hover:text-primary md:text-[32px] lg:text-[42px]">
+                      {item.name}
+                    </h1>
+                  </div>
 
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-mono text-muted-foreground/70 text-xs">

@@ -75,8 +75,8 @@ export const ProjectsComp: React.FC<{
     {
       _id: "first-all",
       slug: "all",
-      name: "Omni",
-      description: "Everything I've been up to",
+      name: "All",
+      description: "Everything I’ve built",
       icon: "StackPerspective",
     },
     ...filters,

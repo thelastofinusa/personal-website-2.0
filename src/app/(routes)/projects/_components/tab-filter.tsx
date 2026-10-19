@@ -36,6 +36,7 @@ export const TabFilter: React.FC<{
             props.onTabChange(e as string);
             play("select");
           }}
+          i18nIsDynamicList={true}
         >
           <SelectTrigger className="rounded-full bg-background! hover:bg-background/90!">
             <SelectValue>
@@ -48,7 +49,9 @@ export const TabFilter: React.FC<{
                 return (
                   <span className="flex items-center gap-2">
                     <Reicon name={activeFilter.icon} />
-                    <span className="text-sm">{activeFilter.name}</span>
+                    <span className="text-sm">
+                      {isMobile ? activeFilter.description : activeFilter.name}
+                    </span>
                   </span>
                 );
               })()}
@@ -61,7 +64,7 @@ export const TabFilter: React.FC<{
                 return (
                   <SelectItem key={filter._id} value={filter.slug}>
                     <div className="flex items-start gap-2">
-                      <Reicon name={filter.icon} className="mt-0.5" />
+                      <Reicon name={filter.icon} className="mt-0.75 size-4" />
 
                       <div className="flex flex-col items-start gap-px">
                         <span className="font-medium">{filter.name}</span>

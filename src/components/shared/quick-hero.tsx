@@ -32,7 +32,7 @@ export const QuickHero: React.FC<IQuickHeroProps> = (props) => {
 
               <motion.h4
                 variants={itemVariants}
-                className="font-light font-serif text-2xl text-primary md:text-3xl"
+                className="font-light font-serif text-2xl text-primary md:text-3xl lg:text-4xl"
               >
                 {props.title}
               </motion.h4>

@@ -3,8 +3,7 @@
 import type { Button as ButtonPrimitive } from "@base-ui/react/button";
 import type { VariantProps } from "class-variance-authority";
 import type React from "react";
-import { GoSun } from "react-icons/go";
-import { LuMoon } from "react-icons/lu";
+import { AiOutlineMoon, AiOutlineSun } from "react-icons/ai";
 import { useTheme } from "../provider/theme";
 import { IconSwap, IconSwapItem } from "../reusable/chanhdai/icon-swap";
 import { Button, type buttonVariants } from "../reusable/shadcn/button";
@@ -37,9 +36,9 @@ export const ThemeToggle: React.FC<
       <IconSwap>
         <IconSwapItem key={resolvedTheme}>
           {resolvedTheme === "dark" ? (
-            <GoSun aria-hidden="true" />
+            <AiOutlineSun aria-hidden="true" />
           ) : (
-            <LuMoon aria-hidden="true" />
+            <AiOutlineMoon aria-hidden="true" />
           )}
         </IconSwapItem>
       </IconSwap>

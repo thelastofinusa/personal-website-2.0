@@ -80,11 +80,13 @@ const QuickHeroSkeleton = () => (
     </Container>
 
     <Container size="sm" className="mt-5">
-      <div className="flex flex-wrap items-center gap-2">
-        <Skeleton className="h-9 w-28 rounded-full" />
-        <Skeleton className="h-9 w-32 rounded-full" />
-        <Skeleton className="h-9 w-36 rounded-full" />
-        <Skeleton className="h-9 w-24 rounded-full" />
+      <div className="flex flex-wrap items-center gap-2 md:hidden">
+        <Skeleton className="h-11 w-52 rounded-full" />
+      </div>
+      <div className="hidden flex-wrap items-center gap-2 md:flex">
+        {Array.from({ length: 5 }).map((_, idx) => (
+          <Skeleton key={idx} className="h-11 w-18 rounded-full" />
+        ))}
       </div>
     </Container>
   </section>
@@ -102,8 +104,11 @@ export const ProjectsPageSkeleton = () => {
       <CurveThingy tCurve hash="showcase">
         <div className="flex flex-col gap-8 pt-20 sm:pt-30 md:gap-12 md:pt-36">
           <Container size={view === "list" ? "sm" : "md"}>
-            <Skeleton className="mb-2 ml-4 h-3 w-full max-w-sm rounded-full" />
-            <Skeleton className="h-11 w-full max-w-md rounded-full" />
+            <Skeleton className="mb-4 ml-4 hidden h-3 w-full max-w-sm rounded-full md:block" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-11 w-full max-w-md rounded-full" />
+              <Skeleton className="ml-auto h-11 w-full max-w-24 rounded-full" />
+            </div>
           </Container>
           <ProjectsCardsSkeleton view={view} />
         </div>

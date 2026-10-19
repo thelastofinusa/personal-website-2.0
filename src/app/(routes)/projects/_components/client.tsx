@@ -37,6 +37,12 @@ import { ProjectsView } from "@/components/shared/projects-view";
 import { QuickHero } from "@/components/shared/quick-hero";
 import { navLinksData } from "@/constants/navigation";
 import { projectMatchesSearch } from "@/lib/project-search";
+import {
+  DEFAULT_PROJECT_SORT,
+  isProjectSort,
+  type ProjectSort,
+  sortProjects,
+} from "@/lib/project-sort";
 import type { ISearchFilterProps } from "@/types";
 import type {
   ProjectFiltersListQueryResult,
@@ -61,15 +67,21 @@ export const ProjectsPageClient: React.FC<{
   const view =
     (searchParams.get("view") as ISearchFilterProps["view"]) ?? "list";
 
-  const hasActiveFilters = Boolean(query) || Boolean(tab && tab !== "all");
+  const sortParam = searchParams.get("sort");
+  const sort = isProjectSort(sortParam) ? sortParam : DEFAULT_PROJECT_SORT;
+
+  const hasActiveFilters =
+    Boolean(query) ||
+    Boolean(tab && tab !== "all") ||
+    sort !== DEFAULT_PROJECT_SORT;
 
   const tabFilters = React.useMemo(
     () => [
       {
         _id: "first-all",
         slug: "all",
-        name: "Omni",
-        description: "Everything I've been up to",
+        name: "All",
+        description: "Everything I’ve built",
         icon: "StackPerspective",
       },
       ...props.filters,
@@ -82,13 +94,15 @@ export const ProjectsPageClient: React.FC<{
   const lastParamsRef = React.useRef<string>(searchParams.toString());
 
   const filteredProjects = React.useMemo(() => {
-    return props.initialProjects.filter((project) => {
+    const matches = props.initialProjects.filter((project) => {
       const matchesTab =
         !tab || tab === "all" || project.filters?.includes(tab);
       if (!matchesTab) return false;
       return projectMatchesSearch(project, searchValue);
     });
-  }, [props.initialProjects, tab, searchValue]);
+
+    return sortProjects(matches, sort);
+  }, [props.initialProjects, tab, searchValue, sort]);
 
   const scrollToShowcase = React.useCallback(() => {
     document
@@ -96,78 +110,60 @@ export const ProjectsPageClient: React.FC<{
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
-  // Update URL when tab changes
-  const handleTabChange = React.useCallback(
-    (newTab: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+  // Builds the query string for the next URL. It starts from the current params
+  // (so their order is preserved) and drops anything that equals its default.
+  const buildParams = (
+    next: Partial<{
+      tab: string;
+      view: ISearchFilterProps["view"];
+      sort: ProjectSort;
+      query: string;
+    }> = {},
+  ) => {
+    const merged = { tab, view, sort, query: searchValue, ...next };
+    const params = new URLSearchParams(searchParams.toString());
 
-      if (newTab === "all") {
-        params.delete("tab");
-      } else {
-        params.set("tab", newTab);
-      }
+    const sync = (key: string, value?: string) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    };
 
-      if (view === "list") {
-        params.delete("view");
-      } else {
-        params.set("view", view);
-      }
+    sync("query", merged.query);
+    sync("tab", merged.tab && merged.tab !== "all" ? merged.tab : undefined);
+    sync("view", merged.view !== "list" ? merged.view : undefined);
+    sync(
+      "sort",
+      merged.sort !== DEFAULT_PROJECT_SORT ? merged.sort : undefined,
+    );
 
-      if (searchValue) {
-        params.set("query", searchValue);
-      } else {
-        params.delete("query");
-      }
+    return params.toString();
+  };
 
-      const newParamsStr = params.toString();
+  const pushParams = (paramsStr: string) => {
+    lastParamsRef.current = paramsStr;
+    router.push(`/projects?${paramsStr}`, { scroll: false });
+  };
 
-      lastParamsRef.current = newParamsStr;
+  const handleTabChange = (newTab: string) => {
+    pushParams(buildParams({ tab: newTab }));
+    if (newTab !== "all") scrollToShowcase();
+  };
 
-      router.push(`/projects?${newParamsStr}`, {
-        scroll: false,
-      });
+  const handleViewChange = (newView: ISearchFilterProps["view"]) => {
+    pushParams(buildParams({ view: newView }));
+    scrollToShowcase();
+  };
 
-      if (newTab !== "all") {
-        scrollToShowcase();
-      }
-    },
-    [router, searchParams, view, searchValue, scrollToShowcase],
-  );
-
-  // Update URL when view changes
-  const handleViewChange = React.useCallback(
-    (newView: ISearchFilterProps["view"]) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (newView === "list") {
-        params.delete("view");
-      } else {
-        params.set("view", newView);
-      }
-      if (tab && tab !== "all") params.set("tab", tab);
-      if (searchValue) params.set("query", searchValue);
-      const newParamsStr = params.toString();
-      lastParamsRef.current = newParamsStr;
-      router.push(`/projects?${newParamsStr}`, { scroll: false });
-      scrollToShowcase();
-    },
-    [router, searchParams, tab, searchValue, scrollToShowcase],
-  );
+  const handleSortChange = (newSort: ProjectSort) => {
+    pushParams(buildParams({ sort: newSort }));
+    scrollToShowcase();
+  };
 
   React.useEffect(() => {
     const timeout = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (searchValue) {
-        params.set("query", searchValue);
-      } else {
-        params.delete("query");
-      }
-      if (tab && tab !== "all") params.set("tab", tab);
-      if (view !== "list") params.set("view", view);
-
-      const newParamsStr = params.toString();
+      const newParamsStr = buildParams();
       if (newParamsStr !== lastParamsRef.current) {
-        lastParamsRef.current = newParamsStr;
-        router.push(`/projects?${newParamsStr}`, { scroll: false });
+        pushParams(newParamsStr);
         scrollToShowcase();
       }
     }, 250);
@@ -267,6 +263,8 @@ export const ProjectsPageClient: React.FC<{
                 setSearchValue={setSearchValue}
                 view={view}
                 setView={handleViewChange}
+                sort={sort}
+                setSort={handleSortChange}
                 onClear={handleClearFilters}
               />
             </Container>

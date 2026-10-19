@@ -9,7 +9,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { ArrowRight5, Discover2, Menu4, Xmark } from "reicon-react";
+import { Discover2, ForwardRight2, Menu4, Xmark } from "reicon-react";
 import { siteConfig } from "@/config/site.config";
 import { NAVIGATION_KEY } from "@/constants/keys";
 import { navLinks } from "@/constants/navigation";
@@ -153,7 +153,7 @@ export const MenuToggle: React.FC<
                                 : "text-muted-foreground hover:text-foreground",
                             )}
                           >
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-1 flex-col gap-1">
                               <div className="flex items-center gap-2">
                                 {route.href === "/" ? (
                                   <Avatar size="xs" className="size-4!">
@@ -177,18 +177,18 @@ export const MenuToggle: React.FC<
 
                               <span
                                 id={`${route.href}-description`}
-                                className="font-light text-muted-foreground text-xs"
+                                className="line-clamp-1 font-light text-muted-foreground text-xs"
                               >
-                                {route.title}
+                                {route.description}
                               </span>
                             </div>
 
                             {isActive ? (
-                              <Discover2 className="size-4 text-primary motion-safe:animate-bell-ring" />
+                              <Discover2 className="size-4 shrink-0 text-primary motion-safe:animate-bell-ring" />
                             ) : (
-                              <ArrowRight5
+                              <ForwardRight2
                                 className={cn(
-                                  "size-4 -translate-x-2 opacity-0 transition-all duration-200",
+                                  "size-4 shrink-0 -translate-x-2 opacity-0 transition-all duration-200",
                                   "group-hover:translate-x-0 group-hover:opacity-100",
                                 )}
                               />
