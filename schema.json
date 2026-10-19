@@ -676,7 +676,55 @@
                     },
                     {
                       "type": "string",
+                      "value": "Self-employed"
+                    },
+                    {
+                      "type": "string",
                       "value": "Volunteer"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Teaching"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Facilitation"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Workshop"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Guest Lecture"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Speaking Engagement"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Mentorship"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Community"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Leadership"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Consulting"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Open Source"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Project"
                     },
                     {
                       "type": "string",
@@ -701,6 +749,10 @@
                     {
                       "type": "string",
                       "value": "Training"
+                    },
+                    {
+                      "type": "string",
+                      "value": "Workshop"
                     }
                   ]
                 },
