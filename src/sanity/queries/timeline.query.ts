@@ -50,7 +50,7 @@ const timelineListQuery = defineQuery(`
 const latestTimelinesQuery = defineQuery(`
  *[_type == "timeline" && featured == true] {
   ${timelineList}
- } | order(timelineStart desc, timelineEnd desc)[0...3]
+ } | order(timelineStart desc, timelineEnd desc)[0...4]
 `);
 
 const query = {
