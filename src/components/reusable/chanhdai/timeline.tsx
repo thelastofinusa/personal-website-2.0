@@ -559,11 +559,7 @@ function formatPeriod(date?: string | null): string {
   }).format(parsed);
 }
 
-function formatDuration(
-  start?: string | null,
-
-  end?: string | null,
-): string {
+function formatDuration(start?: string | null, end?: string | null): string {
   const startDate = parsePeriodDate(start);
 
   if (!startDate) return "";
@@ -579,7 +575,8 @@ function formatDuration(
   // Less than a week
 
   if (totalDays < 7) {
-    return `${totalDays || 1} ${totalDays === 1 ? "day" : "days"}`;
+    const days = Math.max(totalDays, 1);
+    return `${days} ${days === 1 ? "day" : "days"}`;
   }
 
   // Less than a month

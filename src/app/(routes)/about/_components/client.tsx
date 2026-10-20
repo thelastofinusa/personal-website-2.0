@@ -158,8 +158,6 @@ export const AboutPageClient: React.FC<{
           </Container>
         )}
 
-        <TextContent content={moreContent} />
-
         {/* Apps Section */}
         {dailyApps.length > 0 && (
           <motion.div
@@ -169,7 +167,7 @@ export const AboutPageClient: React.FC<{
             className="flex flex-col gap-6"
           >
             <Container size="sm">
-              <Eyebrow label="The Ones I Keep Opening" icon={Router3} />
+              <Eyebrow label="My Little Rectangle Friends" icon={Router3} />
             </Container>
 
             <Container size="md">
@@ -177,6 +175,8 @@ export const AboutPageClient: React.FC<{
             </Container>
           </motion.div>
         )}
+
+        <TextContent content={moreContent} />
 
         {/* Articles Section */}
         {articles.length > 0 && (

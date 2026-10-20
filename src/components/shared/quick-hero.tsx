@@ -1,4 +1,5 @@
 "use client";
+import { cn } from "cn";
 import { motion, useScroll, useTransform } from "motion/react";
 import type React from "react";
 import { Container } from "@/components/shared/container";
@@ -32,7 +33,11 @@ export const QuickHero: React.FC<IQuickHeroProps> = (props) => {
 
               <motion.h4
                 variants={itemVariants}
-                className="font-light font-serif text-2xl text-primary md:text-3xl lg:text-4xl"
+                className={cn(
+                  "text-2xl text-primary md:text-3xl lg:text-4xl",
+                  "font-medium font-serif lowercase",
+                  "max-w-lg",
+                )}
               >
                 {props.title}
               </motion.h4>

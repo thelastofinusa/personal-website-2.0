@@ -341,6 +341,7 @@ export const timelineSchema = defineType({
       logoType: "logo.type",
       logoImage: "logo.image",
       logoIcon: "logo.icon",
+      items: "items",
     },
     prepare({
       title,
@@ -350,13 +351,18 @@ export const timelineSchema = defineType({
       logoType,
       logoImage,
       logoIcon,
+      items,
     }) {
+      const hasExpandedItem = items?.some(
+        (item: { isExpanded?: boolean }) => item.isExpanded === true,
+      );
+
       return {
-        title,
+        title: `${title}${featured ? " ✅" : ""}`,
         subtitle: [
           category === "education" ? "Education" : "Experience",
           isCurrent ? "Current" : undefined,
-          featured ? "Featured" : undefined,
+          hasExpandedItem ? "Expanded" : undefined,
         ]
           .filter(Boolean)
           .join(" • "),

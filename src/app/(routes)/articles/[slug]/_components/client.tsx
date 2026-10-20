@@ -75,7 +75,7 @@ export const ArticleDetailsClient: React.FC<{
               >
                 <Eyebrow label="Previous Article" icon={ArrowLeft5} />
 
-                <MiddleTruncation className="font-serif text-lg transition-colors group-hover:text-primary">
+                <MiddleTruncation className="font-medium font-serif text-base transition-colors group-hover:text-primary">
                   {previousArticle.title as string}
                 </MiddleTruncation>
               </Link>
@@ -92,7 +92,7 @@ export const ArticleDetailsClient: React.FC<{
               >
                 <Eyebrow label="Next Article" icon={ArrowRight5} reverse />
 
-                <MiddleTruncation className="font-serif text-lg transition-colors group-hover:text-primary">
+                <MiddleTruncation className="font-medium font-serif text-base transition-colors group-hover:text-primary">
                   {nextArticle.title as string}
                 </MiddleTruncation>
               </Link>

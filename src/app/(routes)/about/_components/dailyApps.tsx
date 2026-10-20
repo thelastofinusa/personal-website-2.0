@@ -94,7 +94,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-6">
-      <div className="lg:h-87.5">
+      <div className="lg:min-h-105">
         <Frame className="h-max! rounded-[28px]">
           <div className="relative flex min-h-44 w-full shrink-0 flex-col overflow-hidden rounded-3xl border bg-card lg:w-85">
             <AnimatePresence mode="wait">
@@ -134,6 +134,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     className={buttonVariants({
+                      size: "lg",
                       className: "mt-6 inline-flex md:hidden",
                     })}
                     style={{
@@ -258,7 +259,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
         </motion.div>
 
         {totalPages > 1 && (
-          <Pagination>
+          <Pagination className="mt-auto">
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
