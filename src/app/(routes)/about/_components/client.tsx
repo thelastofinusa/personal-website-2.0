@@ -47,9 +47,9 @@ import { DailyApps } from "./dailyApps";
 
 const introduction = `Hey, I’m **${siteConfig.author.name}**, though most people call me **${siteConfig.author.nickname}** [🔊](pronunciation) or **${siteConfig.author.nicknameShorten}**.
 
-${siteConfig.author.nickname} is my tribal name. It means **“requesting something from God.”** Apparently. I’ve never personally witnessed the naming meeting.
+${siteConfig.author.nickname} is my tribal name. It means **“requesting something from God.”** I’ve never personally witnessed the naming meeting. But I’ve grown into it.
 
-But I’ve grown into it. It’s meaningful, even if it sounds like my parents were submitting a support ticket to heaven.
+It’s meaningful, even if it sounds like my parents were submitting a support ticket to heaven.
 
 Anyway, that’s me — ${siteConfig.author.name.split(" ")[0]} on official documents, ${siteConfig.author.nickname} everywhere else, and somewhere in between is where I build things for the web.`;
 
@@ -72,6 +72,13 @@ export const AboutPageClient: React.FC<{
   const pathname = usePathname();
   const rotations = [-12, -6, 0, 6, 12];
   const verticalOffsets = [20, 4, 0, 4, 20];
+  const imageHeights = [
+    "h-24 md:h-32",
+    "h-28 md:h-38",
+    "h-32 md:h-44",
+    "h-28 md:h-38",
+    "h-24 md:h-32",
+  ];
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
@@ -142,7 +149,7 @@ export const AboutPageClient: React.FC<{
         >
           {snapshots?.images && snapshots.images.length > 0 && (
             <Container size="md">
-              <div className="flex items-center justify-center">
+              <div className="flex items-end justify-center">
                 {snapshots.images.map((image, idx) => (
                   <motion.button
                     type="button"
@@ -155,21 +162,19 @@ export const AboutPageClient: React.FC<{
                     whileHover={{
                       scale: 1.1,
                       rotate: 0,
-                      zIndex: 100,
                     }}
                     whileTap={{
                       scale: 1.1,
                       rotate: 0,
-                      zIndex: 100,
                     }}
-                    className="-mr-4 shrink-0 overflow-hidden rounded-md bg-card p-1"
+                    className="nth-[3]:z-50 -mr-4 shrink-0 overflow-hidden rounded-[12px] border bg-card p-0.5"
                   >
                     <CustomImage
                       src={image.url as string}
                       alt={`${siteConfig.author.nickname}'s ${idx + 1}`}
                       width={500}
                       height={500}
-                      className="aspect-square w-24 shrink-0 rounded-sm object-cover md:w-40"
+                      className={`w-24 md:w-40 ${imageHeights[idx % imageHeights.length]} shrink-0 rounded-[9px] object-cover`}
                     />
                   </motion.button>
                 ))}
