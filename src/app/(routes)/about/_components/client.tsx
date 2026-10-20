@@ -166,7 +166,7 @@ export const AboutPageClient: React.FC<{
                   >
                     <CustomImage
                       src={image.url as string}
-                      alt={`Travel photo ${idx + 1}`}
+                      alt={`${siteConfig.author.nickname}'s ${idx + 1}`}
                       width={500}
                       height={500}
                       className="h-24 w-24 shrink-0 rounded-md object-cover sm:h-32 sm:w-32 md:h-40 md:w-40"
