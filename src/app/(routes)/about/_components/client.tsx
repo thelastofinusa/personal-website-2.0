@@ -158,16 +158,19 @@ export const AboutPageClient: React.FC<{
                     style={{
                       rotate: rotations[idx % rotations.length],
                       y: verticalOffsets[idx % verticalOffsets.length],
+                      zIndex: idx === 2 ? 10 : idx === 1 || idx === 3 ? 5 : 0,
                     }}
                     whileHover={{
                       scale: 1.1,
                       rotate: 0,
+                      zIndex: 20,
                     }}
                     whileTap={{
                       scale: 1.1,
                       rotate: 0,
+                      zIndex: 20,
                     }}
-                    className="nth-[3]:z-50 -mr-4 shrink-0 overflow-hidden rounded-[12px] border bg-card p-0.5"
+                    className="-mr-4 shrink-0 overflow-hidden rounded-[12px] border bg-card p-0.5"
                   >
                     <CustomImage
                       src={image.url as string}
