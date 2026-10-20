@@ -67,10 +67,7 @@ const ImagePreviewProvider = dynamic(
 const aboutContent = `
 I work across **Frontend**, **Web3**, and **Developer Experience** — building interfaces, wiring up APIs and smart contracts, and spending a fair amount of time wondering why that one thing suddenly stopped working.
 
-Lately, I’ve been exploring **AI**, building **open-source** and **dev tools**, and experimenting with new ways to make software more useful and enjoyable to work with.
-
-There’s more to the story, but this paragraph is already getting suspiciously long. Go bother my **[about page](/about)** if you want the full lore.
-`;
+Lately, I’ve been exploring **AI**, building **open-source** and **dev tools**, and experimenting with new ways to make software and web apps more useful and enjoyable to work with.`;
 
 export const HomeClientPage: React.FC<{
   projects: ProjectsListQueryResult;
@@ -79,7 +76,9 @@ export const HomeClientPage: React.FC<{
   const { play } = useSoundFx();
 
   const projectsRoute = navLinksData("/projects");
-  const Icon = projectsRoute?.icon;
+  const ProjectIcon = projectsRoute?.icon;
+  const aboutRoute = navLinksData("/about");
+  const AboutIcon = aboutRoute?.icon;
 
   if (projects.length === 0) return null;
 
@@ -130,6 +129,34 @@ export const HomeClientPage: React.FC<{
           <Container size="xs">
             <TextContent content={aboutContent} />
           </Container>
+
+          <Container size="md">
+            {projects.length > 0 && (
+              <AnimatePresence mode="popLayout">
+                <motion.div
+                  variants={workItemVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  exit="exit"
+                  layout
+                  className="relative"
+                >
+                  <Link
+                    href={aboutRoute?.href as Route}
+                    onClick={() => play("forward")}
+                    className="wrapper mx-auto flex w-max items-center"
+                  >
+                    <Button variant="inverse">
+                      <span>{aboutRoute?.action}</span>
+                    </Button>
+                    <Button variant="inverse" size="icon">
+                      {AboutIcon && <AboutIcon />}
+                    </Button>
+                  </Link>
+                </motion.div>
+              </AnimatePresence>
+            )}
+          </Container>
         </motion.div>
 
         <LivePreviewProvider projects={projects}>
@@ -162,7 +189,7 @@ export const HomeClientPage: React.FC<{
                         <span>{projectsRoute?.action}</span>
                       </Button>
                       <Button variant="inverse" size="icon">
-                        {Icon && <Icon />}
+                        {ProjectIcon && <ProjectIcon />}
                       </Button>
                     </Link>
                   </motion.div>
