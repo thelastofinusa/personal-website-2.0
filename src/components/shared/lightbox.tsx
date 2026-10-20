@@ -14,6 +14,7 @@ import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Xmark } from "reicon-react";
 import { cn } from "@/lib/utils";
 import { Button } from "../reusable/shadcn/button";
+import { CustomImage } from "./image";
 
 export type LightboxImage = {
   url?: string | null;
@@ -197,11 +198,11 @@ export function ImageLightbox({
                 hasMany && "cursor-grab active:cursor-grabbing",
               )}
             >
-              <img
+              <CustomImage
                 src={current.url}
                 alt={current.alt ?? ""}
                 draggable={false}
-                className="max-h-[75vh] max-w-full select-none border bg-card object-contain shadow-2xl"
+                className="max-h-[75vh] w-max max-w-full select-none object-contain"
               />
             </motion.div>
           </AnimatePresence>

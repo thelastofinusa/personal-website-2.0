@@ -10,7 +10,7 @@ export default async function TimelinePage() {
 
   return (
     <div className="flex-1 overflow-x-clip">
-      <CurveThingy>
+      <CurveThingy hideHash>
         <Container size="sm" className="pt-20 sm:pt-30 md:pt-36">
           <div className="flex flex-col gap-6 md:gap-10">
             <Eyebrow

@@ -162,14 +162,14 @@ export const AboutPageClient: React.FC<{
                       rotate: 0,
                       zIndex: 100,
                     }}
-                    className="mt-4 -mr-4 shrink-0 overflow-hidden rounded-lg bg-card p-1"
+                    className="-mr-4 shrink-0 overflow-hidden rounded-md bg-card p-1"
                   >
                     <CustomImage
                       src={image.url as string}
                       alt={`${siteConfig.author.nickname}'s ${idx + 1}`}
                       width={500}
                       height={500}
-                      className="h-24 w-24 shrink-0 rounded-md object-cover sm:h-32 sm:w-32 md:h-40 md:w-40"
+                      className="aspect-square w-24 shrink-0 rounded-sm object-cover md:w-40"
                     />
                   </motion.button>
                 ))}
