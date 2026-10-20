@@ -124,7 +124,7 @@ export const HomeClientPage: React.FC<{
           variants={parentVariants}
           initial="hidden"
           whileInView="visible"
-          className="flex flex-col gap-6 pt-20 sm:pt-30 md:pt-36"
+          className="flex flex-col gap-10 pt-20 sm:pt-30 md:pt-36"
         >
           <Container size="xs">
             <TextContent content={aboutContent} />
