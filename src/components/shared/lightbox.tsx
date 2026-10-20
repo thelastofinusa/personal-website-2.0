@@ -11,6 +11,7 @@ import {
 } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { ChevronLeft, ChevronRight, Xmark } from "reicon-react";
 import { cn } from "@/lib/utils";
 import { Button } from "../reusable/shadcn/button";
 
@@ -147,17 +148,7 @@ export function ImageLightbox({
             onClose();
           }}
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.75"
-            strokeLinecap="round"
-            className="size-4"
-            aria-hidden
-          >
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
+          <Xmark />
         </Button>
       </div>
 
@@ -175,18 +166,7 @@ export function ImageLightbox({
             }}
             className={cn("absolute left-3 z-10 sm:left-6")}
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="size-4"
-              aria-hidden
-            >
-              <path d="M15 5l-7 7 7 7" />
-            </svg>
+            <ChevronLeft />
           </Button>
         )}
 
@@ -239,18 +219,7 @@ export function ImageLightbox({
             variant="secondary"
             size="icon"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="size-4"
-              aria-hidden
-            >
-              <path d="M9 5l7 7-7 7" />
-            </svg>
+            <ChevronRight />
           </Button>
         )}
       </div>

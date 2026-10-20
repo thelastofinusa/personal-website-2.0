@@ -471,16 +471,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div
-              className={cn(
-                "grid gap-2.5",
-                images.length > 2
-                  ? "grid-cols-2 sm:grid-cols-4"
-                  : images.length === 2
-                    ? "grid-cols-2 sm:grid-cols-3"
-                    : "grid-cols-2",
-              )}
-            >
+            <div className="flex flex-wrap gap-2">
               {images.map((image, idx) => (
                 <motion.div
                   key={image.url ?? idx}
@@ -491,7 +482,15 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                     damping: 28,
                     delay: isExpanded ? idx * 0.03 : 0,
                   }}
-                  className="relative"
+                  className={cn(
+                    "relative min-w-0",
+                    images.length <= 2 && "w-[calc(50%-4px)]",
+                    images.length === 3 && "w-[calc(33.333%-6px)]",
+                    images.length === 4 && "w-[calc(50%-4px)]",
+                    images.length === 5 &&
+                      (idx < 3 ? "w-[calc(33.333%-6px)]" : "w-[calc(50%-4px)]"),
+                    images.length >= 6 && "w-[calc(33.333%-6px)]",
+                  )}
                 >
                   <Frame
                     className="rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/5"
@@ -503,7 +502,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                         alt={image.alt ?? ""}
                         className="size-full object-cover"
                       />
-                      {/* Click target that opens the lightbox */}
+
                       <button
                         type="button"
                         aria-label={`View image ${idx + 1} of ${images.length}${
