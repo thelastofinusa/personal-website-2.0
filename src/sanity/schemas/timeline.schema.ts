@@ -281,7 +281,7 @@ export const timelineSchema = defineType({
                 },
               ],
               options: {
-                layout: "grid",
+                layout: "list",
               },
               validation: (Rule) => Rule.max(10),
             }),

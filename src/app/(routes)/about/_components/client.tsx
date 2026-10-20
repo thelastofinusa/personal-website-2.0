@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
@@ -5,7 +6,7 @@ import type { Route } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { useSoundFx } from "@/components/provider/sound-fx";
 
 const ImagePreviewProvider = dynamic(
@@ -28,6 +29,8 @@ import { ArticleList } from "@/components/shared/article-items";
 import { Container } from "@/components/shared/container";
 import { CurveThingy } from "@/components/shared/curve-thingy";
 import { Eyebrow } from "@/components/shared/eyebrow";
+import { CustomImage } from "@/components/shared/image";
+import { ImageLightbox } from "@/components/shared/lightbox";
 import { QuickHero } from "@/components/shared/quick-hero";
 import { TextContent } from "@/components/shared/text-content";
 import { siteConfig } from "@/config/site.config";
@@ -37,6 +40,7 @@ import type { IImagePreviewPortalProps } from "@/types";
 import type {
   ArticlesListQueryResult,
   DailyAppListQueryResult,
+  SnapshotQueryResult,
   TimelineListQueryResult,
 } from "~/sanity.types";
 import { DailyApps } from "./dailyApps";
@@ -62,14 +66,30 @@ export const AboutPageClient: React.FC<{
   contributions: GitHubContributionsResult;
   articles: ArticlesListQueryResult;
   dailyApps: DailyAppListQueryResult;
-}> = ({ timeline, contributions, articles, dailyApps }) => {
+  snapshots: SnapshotQueryResult;
+}> = ({ timeline, contributions, articles, dailyApps, snapshots }) => {
   const { play } = useSoundFx();
   const pathname = usePathname();
+  const rotations = [-12, -6, 0, 6, 12];
+  const verticalOffsets = [20, 4, 0, 4, 20];
+
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const articleRoute = navLinksData("/articles");
   const Icon = articleRoute?.icon;
   const timelineRoute = navLinksData("/about/timeline");
   const TimelineIcon = timelineRoute?.icon;
+
+  const openLightbox = (e: React.MouseEvent, idx: number) => {
+    e.stopPropagation();
+    play("expand");
+    setActiveIndex(idx);
+  };
+
+  const closeLightbox = useCallback(() => {
+    play("collapse");
+    setActiveIndex(null);
+  }, [play]);
 
   const githubProfileUrl = siteConfig.socials.find(
     (social) => social.platform.toLowerCase() === "github",
@@ -114,11 +134,55 @@ export const AboutPageClient: React.FC<{
       />
 
       <CurveThingy tCurve>
-        <TextContent
-          content={introduction}
-          namePronunciationUrl={siteConfig.author.namePronunciationUrl}
-          className="pt-20 sm:pt-30 md:pt-36"
-        />
+        <motion.div
+          variants={parentVariants}
+          initial="hidden"
+          whileInView="visible"
+          className="flex flex-col gap-16 pt-20 sm:pt-30 md:pt-36"
+        >
+          {snapshots?.images && snapshots.images.length > 0 && (
+            <Container size="md">
+              <div className="flex items-center justify-center">
+                {snapshots.images.map((image, idx) => (
+                  <motion.button
+                    type="button"
+                    onClick={(e) => openLightbox(e, idx)}
+                    key={`images${idx}`}
+                    style={{
+                      rotate: rotations[idx % rotations.length],
+                      y: verticalOffsets[idx % verticalOffsets.length],
+                    }}
+                    whileHover={{
+                      scale: 1.1,
+                      rotate: 0,
+                      zIndex: 100,
+                    }}
+                    whileTap={{
+                      scale: 1.1,
+                      rotate: 0,
+                      zIndex: 100,
+                    }}
+                    className="mt-4 -mr-4 shrink-0 overflow-hidden rounded-lg bg-card p-1"
+                  >
+                    <CustomImage
+                      src={image.url as string}
+                      alt={`Travel photo ${idx + 1}`}
+                      width={500}
+                      height={500}
+                      className="h-24 w-24 shrink-0 rounded-md object-cover sm:h-32 sm:w-32 md:h-40 md:w-40"
+                    />
+                  </motion.button>
+                ))}
+              </div>
+            </Container>
+          )}
+          <Container size="xs">
+            <TextContent
+              content={introduction}
+              namePronunciationUrl={siteConfig.author.namePronunciationUrl}
+            />
+          </Container>
+        </motion.div>
 
         {/* Unified Timeline Container */}
         {timeline.length > 0 && (
@@ -176,7 +240,16 @@ export const AboutPageClient: React.FC<{
           </motion.div>
         )}
 
-        <TextContent content={moreContent} />
+        <motion.div
+          variants={parentVariants}
+          initial="hidden"
+          whileInView="visible"
+          className="flex flex-col gap-6"
+        >
+          <Container size="xs">
+            <TextContent content={moreContent} />
+          </Container>
+        </motion.div>
 
         {/* Articles Section */}
         {articles.length > 0 && (
@@ -219,6 +292,19 @@ export const AboutPageClient: React.FC<{
             </Container>
           </motion.div>
         )}
+
+        {/* Lightbox (portals to document.body so transforms above can't break `fixed`) */}
+        <AnimatePresence>
+          {snapshots?.images &&
+            snapshots.images.length > 0 &&
+            activeIndex !== null && (
+              <ImageLightbox
+                images={snapshots?.images}
+                initialIndex={activeIndex}
+                onClose={closeLightbox}
+              />
+            )}
+        </AnimatePresence>
       </CurveThingy>
     </div>
   );

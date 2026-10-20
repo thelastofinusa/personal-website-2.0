@@ -117,7 +117,7 @@ export const MenuToggle: React.FC<
             animate="open"
             exit="closed"
             className={cn(
-              "absolute top-full right-0 z-40 mt-3 w-80 origin-top-right rounded-[20px]!",
+              "absolute top-full right-0 z-40 mt-3 w-85 origin-top-right rounded-[20px]!",
               "shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)]",
             )}
           >

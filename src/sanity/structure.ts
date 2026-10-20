@@ -1,4 +1,4 @@
-import { Backpack, LinkCircle } from "reicon-react";
+import { Backpack, GalleryWide, LinkCircle } from "reicon-react";
 import type { StructureResolver } from "sanity/structure";
 
 export const structure: StructureResolver = (S) =>
@@ -65,4 +65,10 @@ export const structure: StructureResolver = (S) =>
 
       S.documentTypeListItem("projectFilter").title("Project Filters"),
       S.documentTypeListItem("articleUrl").title("Article URLs"),
+      S.listItem()
+        .title("Snapshots Gallery")
+        .icon(GalleryWide)
+        .child(
+          S.document().schemaType("snapshot").documentId("aboutPageSnapshots"),
+        ),
     ]);

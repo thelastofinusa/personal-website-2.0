@@ -22,6 +22,38 @@ export type SanityImageAssetReference = {
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
 };
 
+export type Snapshot = {
+  _id: string;
+  _type: "snapshot";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  images?: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
+};
+
 export type DailyApp = {
   _id: string;
   _type: "dailyApp";
@@ -77,22 +109,6 @@ export type Color = {
   hsl?: HslaColor;
   hsv?: HsvaColor;
   rgb?: RgbaColor;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
 };
 
 export type Timeline = {
@@ -461,10 +477,11 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
-  | DailyApp
-  | Color
+  | Snapshot
   | SanityImageCrop
   | SanityImageHotspot
+  | DailyApp
+  | Color
   | Timeline
   | BlockContent
   | ArticleUrl
@@ -836,6 +853,18 @@ export type ProjectFiltersListQueryResult = Array<{
   icon: string | null;
 }>;
 
+// Source: src/sanity/queries/snapshot.query.ts
+// Variable: snapshotQuery
+// Query: *[_type == "snapshot" && _id == "aboutPageSnapshots"][0] {    _id,    "images": images[] {      "url": asset->url,      "width": asset->metadata.dimensions.width,      "height": asset->metadata.dimensions.height    }  }
+export type SnapshotQueryResult = {
+  _id: "aboutPageSnapshots";
+  images: Array<{
+    url: string | null;
+    width: number | null;
+    height: number | null;
+  }> | null;
+} | null;
+
 // Source: src/sanity/queries/timeline.query.ts
 // Variable: timelineListQuery
 // Query: *[_type == "timeline"] {  _id,category,organization,"logo": select(  logo.type == "url" => { "type": "url", "value": logo.url },  logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },  logo.type == "icon" => { "type": "icon", "value": logo.icon }),website,isCurrent,featured,items[] {  _key,  title,  period {    start,    end  },  "images": images[]{    "url": asset->url,    "width": asset->metadata.dimensions.width,    "height": asset->metadata.dimensions.height,    "alt": coalesce(asset->altText, "")  },  type,  icon,  description,  skills,  isExpanded},"timelineStart": items[0].period.start,"timelineEnd": items[0].period.end } | order(timelineStart desc, timelineEnd desc)
@@ -992,6 +1021,7 @@ declare module "@sanity/client" {
     '\n*[_type == "project"] | order(date desc) {\n  \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n}': ProjectsListQueryResult;
     '\n  *[_type == "project" && featured == true]\n  | order(_createdAt desc)[0...4] {\n    \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n  }\n': FeaturedProjectsQueryResult;
     '\n*[_type == "projectFilter"] | order(_createdAt asc) {\n  \n_id,\nname,\n"slug": value.current,\ndescription,\nicon,\n\n}': ProjectFiltersListQueryResult;
+    '\n  *[_type == "snapshot" && _id == "aboutPageSnapshots"][0] {\n    _id,\n    "images": images[] {\n      "url": asset->url,\n      "width": asset->metadata.dimensions.width,\n      "height": asset->metadata.dimensions.height\n    }\n  }\n': SnapshotQueryResult;
     '\n *[_type == "timeline"] {\n  \n_id,\ncategory,\norganization,\n\n"logo": select(\n  logo.type == "url" => { "type": "url", "value": logo.url },\n  logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },\n  logo.type == "icon" => { "type": "icon", "value": logo.icon }\n),\n\nwebsite,\nisCurrent,\nfeatured,\n\nitems[] {\n  _key,\n  title,\n  period {\n    start,\n    end\n  },\n  "images": images[]{\n    "url": asset->url,\n    "width": asset->metadata.dimensions.width,\n    "height": asset->metadata.dimensions.height,\n    "alt": coalesce(asset->altText, "")\n  },\n  type,\n  icon,\n  description,\n  skills,\n  isExpanded\n},\n\n"timelineStart": items[0].period.start,\n"timelineEnd": items[0].period.end\n\n } | order(timelineStart desc, timelineEnd desc)\n': TimelineListQueryResult;
     '\n *[_type == "timeline" && featured == true] {\n  \n_id,\ncategory,\norganization,\n\n"logo": select(\n  logo.type == "url" => { "type": "url", "value": logo.url },\n  logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },\n  logo.type == "icon" => { "type": "icon", "value": logo.icon }\n),\n\nwebsite,\nisCurrent,\nfeatured,\n\nitems[] {\n  _key,\n  title,\n  period {\n    start,\n    end\n  },\n  "images": images[]{\n    "url": asset->url,\n    "width": asset->metadata.dimensions.width,\n    "height": asset->metadata.dimensions.height,\n    "alt": coalesce(asset->altText, "")\n  },\n  type,\n  icon,\n  description,\n  skills,\n  isExpanded\n},\n\n"timelineStart": items[0].period.start,\n"timelineEnd": items[0].period.end\n\n } | order(timelineStart desc, timelineEnd desc)[0...4]\n': LatestTimelinesQueryResult;
   }

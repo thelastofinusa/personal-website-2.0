@@ -7,81 +7,72 @@ import type React from "react";
 import ReactMarkdown from "react-markdown";
 import { itemVariants, parentVariants } from "@/constants/variants";
 import { LinkPreview } from "../reusable/aceternity/link-preview";
-import { Container } from "./container";
 import { PronounceMyName } from "./pronunce-my-name";
 
 interface TextContentProps {
   content: string;
-  hash?: string;
   namePronunciationUrl?: string;
-  className?: string;
 }
 
 export const TextContent: React.FC<TextContentProps> = ({
   content,
-  hash,
   namePronunciationUrl,
-  className,
 }) => {
   return (
-    <section id={hash} className={className}>
-      <Container size="xs">
-        <motion.div
-          variants={parentVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-        >
-          <ReactMarkdown
-            components={{
-              p: ({ children }) => (
-                <motion.p
-                  variants={itemVariants}
-                  className="mb-6 font-extralight text-[15px] tracking-[0.03em] last:mb-0 md:text-[17px]"
+    <motion.div
+      variants={parentVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-80px" }}
+    >
+      <ReactMarkdown
+        components={{
+          p: ({ children }) => (
+            <motion.p
+              variants={itemVariants}
+              className="mb-6 font-extralight text-[15px] tracking-[0.03em] last:mb-0 md:text-[17px]"
+            >
+              {children}
+            </motion.p>
+          ),
+
+          a: ({ href, children }) => {
+            if (href === "pronunciation") {
+              return (
+                <PronounceMyName
+                  namePronunciationUrl={namePronunciationUrl as string}
+                />
+              );
+            }
+
+            const isInternal = href?.startsWith("/");
+
+            if (isInternal) {
+              return (
+                <Link
+                  href={href as Route}
+                  className="link-underline transition-colors hover:text-primary!"
                 >
                   {children}
-                </motion.p>
-              ),
+                </Link>
+              );
+            }
 
-              a: ({ href, children }) => {
-                if (href === "pronunciation") {
-                  return (
-                    <PronounceMyName
-                      namePronunciationUrl={namePronunciationUrl as string}
-                    />
-                  );
-                }
-
-                const isInternal = href?.startsWith("/");
-
-                if (isInternal) {
-                  return (
-                    <Link
-                      href={href as Route}
-                      className="link-underline transition-colors hover:text-primary!"
-                    >
-                      {children}
-                    </Link>
-                  );
-                }
-
-                return (
-                  <LinkPreview
-                    href={href as string}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="link-underline transition-colors hover:text-primary!"
-                  >
-                    {children}
-                  </LinkPreview>
-                );
-              },
-            }}
-          >
-            {content}
-          </ReactMarkdown>
-        </motion.div>
-      </Container>
-    </section>
+            return (
+              <LinkPreview
+                href={href as string}
+                target="_blank"
+                rel="noreferrer"
+                className="link-underline transition-colors hover:text-primary!"
+              >
+                {children}
+              </LinkPreview>
+            );
+          },
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </motion.div>
   );
 };

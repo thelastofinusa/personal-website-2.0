@@ -31,16 +31,16 @@ export const QuickHero: React.FC<IQuickHeroProps> = (props) => {
                 />
               )}
 
-              <motion.h4
+              <motion.h1
                 variants={itemVariants}
                 className={cn(
-                  "text-2xl text-primary md:text-3xl lg:text-4xl",
-                  "font-medium font-serif lowercase",
+                  "text-3xl text-primary lg:text-4xl",
+                  "font-normal font-serif lowercase",
                   "max-w-lg",
                 )}
               >
                 {props.title}
-              </motion.h4>
+              </motion.h1>
 
               <motion.p
                 variants={itemVariants}

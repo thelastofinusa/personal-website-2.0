@@ -26,8 +26,6 @@ import {
 import { PortableText } from "@/components/shared/portable-text";
 import { Reicon } from "@/components/shared/reicon";
 import { getTimelineVariants, workItemVariants } from "@/constants/variants";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { splitIntoColumns } from "@/lib/masonry";
 import { cn } from "@/lib/utils";
 import type { TimelineListQueryResult } from "~/sanity.types";
 import { LinkPreview } from "../aceternity/link-preview";
@@ -389,11 +387,6 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const { play } = useSoundFx();
-
-  // Same 1 / 2 / 3 column breakpoints as the projects grid
-  const isTablet = useMediaQuery("(min-width: 768px)");
-  const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const _columns = splitIntoColumns(images, isDesktop ? 3 : isTablet ? 2 : 1);
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
