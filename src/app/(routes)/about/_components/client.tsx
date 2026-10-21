@@ -35,7 +35,11 @@ import { QuickHero } from "@/components/shared/quick-hero";
 import { TextContent } from "@/components/shared/text-content";
 import { siteConfig } from "@/config/site.config";
 import { navLinksData } from "@/constants/navigation";
-import { parentVariants, workItemVariants } from "@/constants/variants";
+import {
+  parentVariants,
+  snapshotImageVariants,
+  workItemVariants,
+} from "@/constants/variants";
 import type { IImagePreviewPortalProps } from "@/types";
 import type {
   ArticlesListQueryResult,
@@ -70,8 +74,8 @@ export const AboutPageClient: React.FC<{
 }> = ({ timeline, contributions, articles, dailyApps, snapshots }) => {
   const { play } = useSoundFx();
   const pathname = usePathname();
-  const rotations = [-12, -6, 0, 6, 12];
-  const verticalOffsets = [20, 4, 0, 4, 20];
+  const _rotations = [-12, -6, 0, 6, 12];
+  const _verticalOffsets = [20, 4, 0, 4, 20];
   const imageHeights = [
     "h-24 md:h-32",
     "h-28 md:h-38",
@@ -155,32 +159,15 @@ export const AboutPageClient: React.FC<{
                     type="button"
                     onClick={(e) => openLightbox(e, idx)}
                     key={`images${idx}`}
-                    // Initial state: centered, un-rotated, flat position
-                    initial={{
-                      rotate: 0,
-                      y: 40,
-                      scale: 0.8,
-                      opacity: 0,
-                    }}
-                    // Target state: animate outward to calculated values
-                    animate={{
-                      rotate: rotations[idx % rotations.length],
-                      y: verticalOffsets[idx % verticalOffsets.length],
-                      scale: 1,
-                      opacity: 1,
-                    }}
-                    // Smooth physics-based spring transition
-                    transition={{
-                      type: "spring",
-                      stiffness: 260,
-                      damping: 20,
-                      delay: idx * 0.05, // Optional stagger delay for each image
-                    }}
+                    variants={snapshotImageVariants}
+                    initial="hidden"
+                    animate="visible"
+                    custom={idx} // Passes index dynamically into the variant function
                     style={{
                       zIndex: idx === 2 ? 10 : idx === 1 || idx === 3 ? 5 : 0,
                     }}
                     whileHover={{
-                      scale: 1.1,
+                      scale: 1.2,
                       rotate: 0,
                       zIndex: 20,
                     }}
@@ -189,7 +176,7 @@ export const AboutPageClient: React.FC<{
                       rotate: 0,
                       zIndex: 20,
                     }}
-                    className="-mr-4 shrink-0 overflow-hidden rounded-[12px] border bg-card p-0.5"
+                    className="-mr-4 shrink-0 overflow-hidden rounded-[12px] bg-card p-0.5 md:p-1"
                   >
                     <CustomImage
                       src={image.url as string}

@@ -1,5 +1,28 @@
 import type { Variants } from "motion/react";
 
+const rotations = [-12, -6, 0, 6, 12];
+const verticalOffsets = [20, 4, 0, 4, 20];
+
+const snapshotImageVariants: Variants = {
+  hidden: {
+    rotate: 0,
+    y: 40,
+    scale: 0.8,
+    opacity: 0,
+  },
+  visible: (idx: number) => ({
+    rotate: rotations[idx % rotations.length],
+    y: verticalOffsets[idx % verticalOffsets.length],
+    scale: 1,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 260,
+      damping: 20,
+    },
+  }),
+};
+
 const getTimelineVariants = (isOpen: boolean) => {
   const nodeColor = isOpen ? "var(--primary)" : "var(--foreground)";
 
@@ -113,9 +136,6 @@ const workItemVariants: Variants = {
     opacity: 1,
     y: 0,
     transition: {
-      // Stagger the first 6 items on load/filter.
-      // Items below the fold have a 0 delay, so they animate instantly
-      // the moment they cross the viewport threshold as you scroll.
       delay: index < 6 ? index * 0.08 : 0,
       duration: 0.6,
       ease: [0.16, 1, 0.3, 1],
@@ -176,5 +196,8 @@ export {
   menuItemVariants,
   menuVariants,
   parentVariants,
+  rotations,
+  snapshotImageVariants,
+  verticalOffsets,
   workItemVariants,
 };
