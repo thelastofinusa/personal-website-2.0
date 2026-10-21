@@ -49,21 +49,21 @@ import type {
 } from "~/sanity.types";
 import { DailyApps } from "./dailyApps";
 
-const introduction = `Hey, I’m **${siteConfig.author.name}**, though most people call me **${siteConfig.author.nickname}** [🔊](pronunciation) or **${siteConfig.author.nicknameShorten}**.
+const introduction = `Hey, I’m **${siteConfig.author.name}**—though most people just call me **${siteConfig.author.nickname}** [🔊](pronunciation) or **${siteConfig.author.nicknameShorten}**.
 
-${siteConfig.author.nickname} is my tribal name. It means **“requesting something from God.”** I’ve never personally witnessed the naming meeting. But I’ve grown into it.
+${siteConfig.author.nickname} is my tribal name, which translates to **“requesting something from God.”** I missed the naming meeting, but I’ve grown into it.
 
-It’s meaningful, even if it sounds like my parents were submitting a support ticket to heaven.
+It’s deeply meaningful, even if it occasionally sounds like my parents were filing a support ticket straight to heaven.
 
-Anyway, that’s me — ${siteConfig.author.name.split(" ")[0]} on official documents, ${siteConfig.author.nickname} everywhere else, and somewhere in between is where I build things for the web.`;
+Anyway, that’s me: ${siteConfig.author.name.split(" ")[0]} on government forms, ${siteConfig.author.nickname} everywhere else, and somewhere in that mix is where I build things for the web.`;
 
-const moreContent = `So that's the official-ish version of the story.
+const moreContent = `That’s the official-ish rundown.
 
-The rest is mostly me making things, breaking things, fixing things, and occasionally deciding that the problem would be easier to solve if I built an entirely new system around it.
+The rest of the time, I’m usually building things, breaking them, fixing them, or convincing myself that a minor problem is best solved by designing an entirely new system from scratch.
 
-Naturally, this has resulted in a collection of side projects, tiny experiments, and apps that probably didn't need to exist.
+Unsurprisingly, this loop has produced a mountain of side projects, tiny experiments, and apps that probably had no business existing.
 
-Made it this far? [come find me on Telegram](https://t.me/thelastofinusa).`;
+Made it this far? [come say hi on Telegram](https://t.me/thelastofinusa).`;
 
 export const AboutPageClient: React.FC<{
   timeline: TimelineListQueryResult;

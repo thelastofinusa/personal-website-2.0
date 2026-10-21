@@ -95,10 +95,10 @@ export const HomeHero = () => {
         >
           Equal parts{" "}
           <span className="font-normal text-foreground">design</span> and{" "}
-          <span className="font-normal text-foreground">code</span>, powered by{" "}
+          <span className="font-normal text-foreground">code</span>, fueled by{" "}
           <span className="font-normal text-foreground">curiosity</span>,{" "}
-          <span className="font-normal text-foreground">chai</span>, and a
-          slightly unreasonable attention to detail.
+          <span className="font-normal text-foreground">chai</span>, and an
+          unhealthy amount of attention to detail. I guess.
         </motion.p>
       </motion.div>
     </motion.div>

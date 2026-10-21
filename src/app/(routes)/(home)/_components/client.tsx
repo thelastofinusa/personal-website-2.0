@@ -65,9 +65,9 @@ const ImagePreviewProvider = dynamic(
 );
 
 const aboutContent = `
-I work across **Frontend**, **Web3**, and **Developer Experience** — building interfaces, wiring up APIs and smart contracts, and spending a fair amount of time wondering why that one thing suddenly stopped working.
+I spend my time on **Frontend**, **Web3**, and **Developer Experience**—building interfaces, hooking up APIs and smart contracts, and occasionally staring at the screen trying to figure out why something broke for no apparent reason.
 
-Lately, I’ve been exploring **AI**, building **open-source** and **dev tools**, and experimenting with new ways to make software and web apps more useful and enjoyable to work with.`;
+Lately, I've been diving into **AI**, building **open-source** tools, and experimenting with ways to make software development a bit smoother and a lot more fun.`;
 
 export const HomeClientPage: React.FC<{
   projects: ProjectsListQueryResult;
