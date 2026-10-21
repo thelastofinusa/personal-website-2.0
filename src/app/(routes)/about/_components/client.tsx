@@ -155,9 +155,28 @@ export const AboutPageClient: React.FC<{
                     type="button"
                     onClick={(e) => openLightbox(e, idx)}
                     key={`images${idx}`}
-                    style={{
+                    // Initial state: centered, un-rotated, flat position
+                    initial={{
+                      rotate: 0,
+                      y: 40,
+                      scale: 0.8,
+                      opacity: 0,
+                    }}
+                    // Target state: animate outward to calculated values
+                    animate={{
                       rotate: rotations[idx % rotations.length],
                       y: verticalOffsets[idx % verticalOffsets.length],
+                      scale: 1,
+                      opacity: 1,
+                    }}
+                    // Smooth physics-based spring transition
+                    transition={{
+                      type: "spring",
+                      stiffness: 260,
+                      damping: 20,
+                      delay: idx * 0.05, // Optional stagger delay for each image
+                    }}
+                    style={{
                       zIndex: idx === 2 ? 10 : idx === 1 || idx === 3 ? 5 : 0,
                     }}
                     whileHover={{
