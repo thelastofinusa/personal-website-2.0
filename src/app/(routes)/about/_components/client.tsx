@@ -176,7 +176,7 @@ export const AboutPageClient: React.FC<{
                       rotate: 0,
                       zIndex: 20,
                     }}
-                    className="-mr-4 shrink-0 overflow-hidden rounded-[12px] bg-card p-0.5 md:p-1"
+                    className="-mr-4 shrink-0 overflow-hidden rounded-[12px] border bg-card p-0.5 md:p-1"
                   >
                     <CustomImage
                       src={image.url as string}
