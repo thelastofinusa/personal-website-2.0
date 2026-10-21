@@ -1,5 +1,6 @@
 import { Backpack, GalleryWide, LinkCircle } from "reicon-react";
 import type { StructureResolver } from "sanity/structure";
+import { apiVersion } from "./env";
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -29,6 +30,7 @@ export const structure: StructureResolver = (S) =>
         .child(
           S.documentList()
             .title("Experience")
+            .apiVersion(apiVersion)
             .filter('_type == "timeline" && category == "experience"')
             .defaultOrdering([
               {
@@ -48,6 +50,7 @@ export const structure: StructureResolver = (S) =>
         .child(
           S.documentList()
             .title("Education")
+            .apiVersion(apiVersion)
             .filter('_type == "timeline" && category == "education"')
             .defaultOrdering([
               {

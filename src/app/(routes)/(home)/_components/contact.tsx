@@ -56,7 +56,7 @@ export const ContactComp = () => {
         size="xs"
         className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-6"
       >
-        {["links", "details"].map((group, _index) => (
+        {["links", "details"].map((group) => (
           <motion.div
             key={group}
             variants={parentVariants}
