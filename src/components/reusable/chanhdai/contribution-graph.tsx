@@ -1,4 +1,5 @@
 // Credit: https://www.kibo-ui.com/components/contribution-graph
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: just ignore */
 
 import type { Day as WeekDay } from "date-fns";
@@ -15,6 +16,7 @@ import {
 } from "date-fns";
 import type { CSSProperties, HTMLAttributes, ReactNode, Ref } from "react";
 import { createContext, Fragment, useContext, useMemo } from "react";
+import { useSoundFx } from "@/components/provider/sound-fx";
 import { cn } from "@/lib/utils";
 
 export type Activity = {
@@ -318,6 +320,7 @@ export const ContributionGraphBlock = ({
   className,
   ...props
 }: ContributionGraphBlockProps) => {
+  const { play } = useSoundFx();
   const { blockSize, blockMargin, blockRadius, labelHeight, maxLevel } =
     useContributionGraph();
 
@@ -329,6 +332,7 @@ export const ContributionGraphBlock = ({
 
   return (
     <rect
+      onMouseEnter={() => play("hover")}
       className={cn(THEME, className)}
       data-count={activity.count}
       data-date={activity.date}
