@@ -202,7 +202,7 @@ export function ImageLightbox({
                 src={current.url}
                 alt={current.alt ?? ""}
                 draggable={false}
-                className="max-h-[75vh] w-max max-w-full select-none object-contain"
+                className="max-h-[75vh] w-max max-w-full select-none border object-contain"
               />
             </motion.div>
           </AnimatePresence>
