@@ -11,7 +11,7 @@ import * as z from "zod";
 export const CONTACT_LIMITS = {
   name: { min: 5, max: 32 },
   email: { min: 5, max: 254 }, // 254 is the practical max length of an email address
-  message: { min: 10, max: 100 },
+  message: { min: 10, max: 200 },
   from: { max: 80 },
   maxLinksInMessage: 2,
 } as const;
@@ -57,7 +57,7 @@ export const contactSchema = z.strictObject({
     .string()
     .trim()
     .min(CONTACT_LIMITS.message.min, "Message must be at least 10 chars.")
-    .max(CONTACT_LIMITS.message.max, "Message must be at most 100 chars.")
+    .max(CONTACT_LIMITS.message.max, "Message must be at most 200 chars.")
     .refine((v) => !hasControlChars(v, true), "Message has invalid characters.")
     .refine(
       (v) => countLinks(v) <= CONTACT_LIMITS.maxLinksInMessage,
