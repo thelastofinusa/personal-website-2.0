@@ -202,6 +202,8 @@ export function ImageLightbox({
                 src={current.url}
                 alt={current.alt ?? ""}
                 draggable={false}
+                preload
+                quality={100}
                 className="max-h-[75vh] w-max max-w-full select-none object-contain"
               />
             </motion.div>

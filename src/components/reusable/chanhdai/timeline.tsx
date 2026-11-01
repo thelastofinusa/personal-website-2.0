@@ -446,6 +446,8 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                     src={img.url as string}
                     alt={img.alt ?? ""}
                     className="size-full object-cover"
+                    preload
+                    quality={100}
                   />
                 </motion.div>
               )}
@@ -468,41 +470,40 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="flex flex-wrap gap-1">
+            <div
+              className={cn("grid grid-cols-2 gap-1", {
+                "grid-cols-3": images.length > 2,
+              })}
+            >
               {images.length <= 3
-                ? // Render all images normally for 1, 2, or 3 images
-                  images.map((image, idx) => (
+                ? images.map((img, idx) => (
                     <motion.div
-                      key={image.url ?? idx}
-                      layoutId={`gallery-img-${image.url ?? idx}`}
+                      key={img.url ?? idx}
+                      layoutId={`gallery-img-${img.url ?? idx}`}
                       transition={{
                         type: "spring",
                         stiffness: 350,
                         damping: 28,
                         delay: isExpanded ? idx * 0.03 : 0,
                       }}
-                      className={cn(
-                        "relative min-w-0",
-                        images.length === 1 && "w-full",
-                        images.length === 2 && "w-[calc(50%-4px)]",
-                        images.length === 3 && "w-[calc(33.333%-6px)]",
-                      )}
+                      className="relative flex-1"
                     >
                       <Frame
                         className="rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/5"
                         variant="inverse"
                       >
-                        <div className="relative aspect-[1.5] overflow-hidden rounded-sm border bg-card">
+                        <div className="relative aspect-[1.4] overflow-hidden rounded-sm border bg-card">
                           <CustomImage
-                            src={image.url as string}
-                            alt={image.alt ?? ""}
+                            src={img.url as string}
+                            alt={img.alt ?? ""}
                             className="size-full object-cover"
+                            quality={100}
                           />
 
                           <button
                             type="button"
                             aria-label={`View image ${idx + 1} of ${images.length}${
-                              image.alt ? `: ${image.alt}` : ""
+                              img.alt ? `: ${img.alt}` : ""
                             }`}
                             onClick={(e) => openLightbox(e, idx)}
                             className="absolute inset-0 z-10 cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
@@ -511,31 +512,32 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                       </Frame>
                     </motion.div>
                   ))
-                : // Render max 3 items with an overflow card on the 3rd slot when 4+ images
-                  images.slice(0, 3).map((image, idx) => {
+                : images.slice(0, 3).map((img, idx) => {
                     const isOverflowCard = idx === 2;
                     const remainingCount = images.length - 3;
 
                     return (
                       <motion.div
-                        key={image.url ?? idx}
-                        layoutId={`gallery-img-${image.url ?? idx}`}
+                        key={img.url ?? idx}
+                        layoutId={`gallery-img-${img.url ?? idx}`}
                         transition={{
                           type: "spring",
                           stiffness: 350,
                           damping: 28,
                           delay: isExpanded ? idx * 0.03 : 0,
                         }}
-                        className="relative w-[calc(33.333%-6px)] min-w-0"
+                        className="relative flex-1"
                       >
                         <Frame
                           className="rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/5"
                           variant="inverse"
                         >
-                          <div className="relative aspect-[1.5] overflow-hidden rounded-sm border bg-card">
+                          <div className="relative aspect-[1.4] overflow-hidden rounded-sm border bg-card">
                             <CustomImage
-                              src={image.url as string}
-                              alt={image.alt ?? ""}
+                              src={img.url as string}
+                              alt={img.alt ?? ""}
+                              preload
+                              quality={isOverflowCard ? 75 : 100}
                               className={cn(
                                 "size-full object-cover transition-transform duration-300",
                                 isOverflowCard && "scale-105 blur-[2px] filter",
@@ -556,7 +558,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                                 isOverflowCard
                                   ? `View remaining ${remainingCount + 1} images`
                                   : `View image ${idx + 1} of ${images.length}${
-                                      image.alt ? `: ${image.alt}` : ""
+                                      img.alt ? `: ${img.alt}` : ""
                                     }`
                               }
                               onClick={(e) => openLightbox(e, idx)}
