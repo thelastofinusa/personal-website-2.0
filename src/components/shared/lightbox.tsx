@@ -194,7 +194,7 @@ export function ImageLightbox({
               onDragEnd={handleDragEnd}
               onClick={(e) => e.stopPropagation()}
               className={cn(
-                "flex max-h-full max-w-full items-center justify-center",
+                "flex max-h-full max-w-full items-center justify-center border",
                 hasMany && "cursor-grab active:cursor-grabbing",
               )}
             >
@@ -202,7 +202,7 @@ export function ImageLightbox({
                 src={current.url}
                 alt={current.alt ?? ""}
                 draggable={false}
-                className="max-h-[75vh] w-max max-w-full select-none border object-contain"
+                className="max-h-[75vh] w-max max-w-full select-none object-contain"
               />
             </motion.div>
           </AnimatePresence>
