@@ -414,7 +414,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
       <button
         type="button"
         onClick={handleToggle}
-        className="group/deck flex w-max cursor-pointer select-none items-center gap-3 border-0 p-0 outline-0"
+        className="group/deck flex w-max cursor-pointer select-none items-center gap-4 border-0 p-0 outline-0"
       >
         {/* Deck Container stays permanently mounted */}
         <div className="relative ml-2 h-5 w-7 shrink-0">
@@ -422,13 +422,17 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
             <div
               key={img.url ?? idx}
               className={cn(
-                "absolute inset-0 rounded-[4px] border border-border/60 bg-background shadow-2xs transition-transform duration-300 ease-out",
+                "absolute inset-0 rounded-[4px] border bg-background shadow-2xs transition-all duration-300 ease-out",
+                isExpanded && "border-primary",
                 idx === 0 &&
-                  "z-30 group-hover/deck:-translate-x-1.5 group-hover/deck:-rotate-6",
+                  "z-20 group-hover/deck:-translate-y-0.5 group-hover/deck:scale-105",
+                isExpanded && idx === 0 && "z-20 -translate-y-0.5 scale-105",
                 idx === 1 &&
-                  "z-20 rotate-6 scale-95 opacity-80 group-hover/deck:translate-x-1.5 group-hover/deck:rotate-12",
+                  "group-hover/deck:-translate-x-2 group-hover/deck:-rotate-6",
+                isExpanded && idx === 1 && "-translate-x-2 -rotate-6",
                 idx === 2 &&
-                  "z-10 -rotate-3 scale-90 opacity-60 group-hover/deck:-translate-x-3 group-hover/deck:-rotate-12",
+                  "group-hover/deck:translate-x-2 group-hover/deck:rotate-6",
+                isExpanded && idx === 2 && "translate-x-2 rotate-6",
               )}
             >
               {/* Image card sits in stack slot when collapsed */}
@@ -464,50 +468,105 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="flex flex-wrap gap-2">
-              {images.map((image, idx) => (
-                <motion.div
-                  key={image.url ?? idx}
-                  layoutId={`gallery-img-${image.url ?? idx}`}
-                  transition={{
-                    type: "spring",
-                    stiffness: 350,
-                    damping: 28,
-                    delay: isExpanded ? idx * 0.03 : 0,
-                  }}
-                  className={cn(
-                    "relative min-w-0",
-                    images.length <= 2 && "w-[calc(50%-4px)]",
-                    images.length === 3 && "w-[calc(33.333%-6px)]",
-                    images.length === 4 && "w-[calc(50%-4px)]",
-                    images.length === 5 &&
-                      (idx < 3 ? "w-[calc(33.333%-6px)]" : "w-[calc(50%-4px)]"),
-                    images.length >= 6 && "w-[calc(33.333%-6px)]",
-                  )}
-                >
-                  <Frame
-                    className="rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/5"
-                    variant="inverse"
-                  >
-                    <div className="relative aspect-[1.5] overflow-hidden rounded-sm border bg-card">
-                      <CustomImage
-                        src={image.url as string}
-                        alt={image.alt ?? ""}
-                        className="size-full object-cover"
-                      />
+            <div className="flex flex-wrap gap-1">
+              {images.length <= 3
+                ? // Render all images normally for 1, 2, or 3 images
+                  images.map((image, idx) => (
+                    <motion.div
+                      key={image.url ?? idx}
+                      layoutId={`gallery-img-${image.url ?? idx}`}
+                      transition={{
+                        type: "spring",
+                        stiffness: 350,
+                        damping: 28,
+                        delay: isExpanded ? idx * 0.03 : 0,
+                      }}
+                      className={cn(
+                        "relative min-w-0",
+                        images.length === 1 && "w-full",
+                        images.length === 2 && "w-[calc(50%-4px)]",
+                        images.length === 3 && "w-[calc(33.333%-6px)]",
+                      )}
+                    >
+                      <Frame
+                        className="rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/5"
+                        variant="inverse"
+                      >
+                        <div className="relative aspect-[1.5] overflow-hidden rounded-sm border bg-card">
+                          <CustomImage
+                            src={image.url as string}
+                            alt={image.alt ?? ""}
+                            className="size-full object-cover"
+                          />
 
-                      <button
-                        type="button"
-                        aria-label={`View image ${idx + 1} of ${images.length}${
-                          image.alt ? `: ${image.alt}` : ""
-                        }`}
-                        onClick={(e) => openLightbox(e, idx)}
-                        className="absolute inset-0 z-10 cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-                      />
-                    </div>
-                  </Frame>
-                </motion.div>
-              ))}
+                          <button
+                            type="button"
+                            aria-label={`View image ${idx + 1} of ${images.length}${
+                              image.alt ? `: ${image.alt}` : ""
+                            }`}
+                            onClick={(e) => openLightbox(e, idx)}
+                            className="absolute inset-0 z-10 cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                          />
+                        </div>
+                      </Frame>
+                    </motion.div>
+                  ))
+                : // Render max 3 items with an overflow card on the 3rd slot when 4+ images
+                  images.slice(0, 3).map((image, idx) => {
+                    const isOverflowCard = idx === 2;
+                    const remainingCount = images.length - 3;
+
+                    return (
+                      <motion.div
+                        key={image.url ?? idx}
+                        layoutId={`gallery-img-${image.url ?? idx}`}
+                        transition={{
+                          type: "spring",
+                          stiffness: 350,
+                          damping: 28,
+                          delay: isExpanded ? idx * 0.03 : 0,
+                        }}
+                        className="relative w-[calc(33.333%-6px)] min-w-0"
+                      >
+                        <Frame
+                          className="rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/5"
+                          variant="inverse"
+                        >
+                          <div className="relative aspect-[1.5] overflow-hidden rounded-sm border bg-card">
+                            <CustomImage
+                              src={image.url as string}
+                              alt={image.alt ?? ""}
+                              className={cn(
+                                "size-full object-cover transition-transform duration-300",
+                                isOverflowCard && "scale-105 blur-[2px] filter",
+                              )}
+                            />
+
+                            {isOverflowCard && (
+                              <div className="absolute inset-0 top-0 left-0 z-10 flex size-full items-center justify-center bg-black/40">
+                                <span className="font-mono font-semibold text-3xl text-white shadow-xs">
+                                  +{remainingCount}
+                                </span>
+                              </div>
+                            )}
+
+                            <button
+                              type="button"
+                              aria-label={
+                                isOverflowCard
+                                  ? `View remaining ${remainingCount + 1} images`
+                                  : `View image ${idx + 1} of ${images.length}${
+                                      image.alt ? `: ${image.alt}` : ""
+                                    }`
+                              }
+                              onClick={(e) => openLightbox(e, idx)}
+                              className="absolute inset-0 z-20 cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                            />
+                          </div>
+                        </Frame>
+                      </motion.div>
+                    );
+                  })}
             </div>
           </motion.div>
         )}
