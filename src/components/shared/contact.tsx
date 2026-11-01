@@ -357,7 +357,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
     <form
       ref={setFormEl}
       onSubmit={form.handleSubmit(onSubmit)}
-      className="w-full max-w-xs"
+      className="w-full sm:max-w-xs"
       noValidate
     >
       {/* Honeypot: invisible to people, tempting to bots */}
@@ -462,7 +462,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
                             placeholder={current.placeholder}
                             maxLength={maxLength}
                             aria-invalid={!!currentError}
-                            className="min-h-16 pb-12"
+                            className="min-h-16"
                           />
                           <InputGroupAddon
                             align="block-end"
