@@ -9,7 +9,7 @@ import type { ElementType } from "react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { AlarmClock, AtSign, User2 } from "reicon-react";
-import * as z from "zod";
+import { sendContactMessage } from "@/actions/contact.action";
 import { useSoundFx } from "@/components/provider/sound-fx";
 import { Button } from "@/components/reusable/shadcn/button";
 import {
@@ -39,8 +39,14 @@ import {
 import { useLocationTime } from "@/hooks/use-location-time";
 import { resolveIcon } from "@/lib/icons";
 import { cn, decodeString } from "@/lib/utils";
+import {
+  CONTACT_LIMITS,
+  type ContactField,
+  type ContactFormValues,
+  contactSchema,
+} from "@/lib/validations/contact";
 
-type StepId = "name" | "email" | "message";
+type StepId = ContactField;
 type Status = "idle" | "active" | "sending" | "sent";
 
 const STEPS = [
@@ -64,24 +70,6 @@ const STEPS = [
   label: string;
   placeholder: string;
 }[];
-
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(5, "Name must be at least 5 chars.")
-    .max(32, "Name must be at most 32 chars."),
-  email: z
-    .string()
-    .email("That email doesn't look right.")
-    .min(5, "Email must be at least 5 chars."),
-  message: z
-    .string()
-    .min(10, "Message must be at least 10 chars.")
-    .max(100, "Message must be at most 100 chars."),
-  from: z.string().optional(),
-});
-
-type FormSchemaType = z.infer<typeof formSchema>;
 
 const shouldInclude = ["twitter", "linkedin", "telegram", "youtube"];
 
@@ -206,13 +194,14 @@ export const ContactComp: React.FC<{ from?: string }> = (props) => {
 
 const ContactForm: React.FC<{ from?: string }> = (props) => {
   const { play } = useSoundFx();
-  const form = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactSchema),
     defaultValues: {
       name: "",
       email: "",
       message: "",
-      from: props.from ? `from "${props.from}" page` : props.from,
+      website: "", // honeypot
+      from: props.from ? `the ${props.from} page` : undefined,
     },
   });
 
@@ -220,6 +209,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
   const [direction, setDirection] = React.useState<1 | -1>(1);
   const [status, setStatus] = React.useState<Status>("idle");
   const [isInView, setIsInView] = React.useState<boolean>(false);
+  const [serverError, setServerError] = React.useState<string | null>(null);
 
   const [formEl, setFormEl] = React.useState<HTMLFormElement | null>(null);
 
@@ -283,7 +273,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
     return () => clearTimeout(timer);
   }, [status, form]);
 
-  const maxLength = 100;
+  const maxLength = CONTACT_LIMITS.message.max;
   const current = STEPS[step];
   const isSending = status === "sending";
 
@@ -306,6 +296,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
   };
 
   const goBack = () => {
+    setServerError(null);
     setDirection(-1);
     setStep((prev) => Math.max(prev - 1, 0));
     play("skip-previous");
@@ -318,21 +309,47 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
     }
   };
 
-  async function onSubmit(data: FormSchemaType) {
-    const isValid = await form.trigger();
-    if (!isValid) return;
+  async function onSubmit(data: ContactFormValues) {
+    setServerError(null);
 
     const task = play("processing");
     setStatus("sending");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      setStatus("sent");
+      const result = await sendContactMessage(data);
       task?.stop();
-      console.log(data);
-      play("success");
-    } catch {
+
+      if (result.ok) {
+        setStatus("sent");
+        play("success");
+        return;
+      }
+
       setStatus("active");
+
+      if (result.error === "invalid") {
+        // Surface the server's field errors and jump to the first bad step
+        let firstBadStep = -1;
+
+        STEPS.forEach((item, index) => {
+          const message = result.fieldErrors[item.id];
+          if (!message) return;
+
+          form.setError(item.id, { type: "server", message });
+          if (firstBadStep === -1) firstBadStep = index;
+        });
+
+        if (firstBadStep !== -1 && firstBadStep !== step) {
+          setDirection(firstBadStep < step ? -1 : 1);
+          setStep(firstBadStep);
+        }
+      }
+
+      setServerError(result.message);
+    } catch {
+      task?.stop();
+      setStatus("active");
+      setServerError("Something went wrong. Please try again.");
     }
   }
 
@@ -341,7 +358,18 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
       ref={setFormEl}
       onSubmit={form.handleSubmit(onSubmit)}
       className="w-full max-w-xs"
+      noValidate
     >
+      {/* Honeypot: invisible to people, tempting to bots */}
+      <input
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute -left-[9999px] h-0 w-0 opacity-0"
+        {...form.register("website")}
+      />
+
       <AnimatePresence mode="popLayout">
         {status === "idle" ? (
           <motion.div
@@ -494,7 +522,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
 
                   <div className="px-2">
                     <FieldError className="font-normal text-[13px]">
-                      <span>{currentError}</span>
+                      <span>{currentError ?? serverError}</span>
                     </FieldError>
 
                     <FieldDescription className="flex h-7 items-center gap-1">
