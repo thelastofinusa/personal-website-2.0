@@ -9,6 +9,7 @@ import type React from "react";
 import { useSoundFx } from "@/components/provider/sound-fx";
 import { Button } from "@/components/reusable/shadcn/button";
 import { Skeleton } from "@/components/reusable/shadcn/skeleton";
+import { ContactComp } from "@/components/shared/contact";
 import { Container } from "@/components/shared/container";
 import { CurveThingy } from "@/components/shared/curve-thingy";
 import { ProjectsView } from "@/components/shared/projects-view";
@@ -20,7 +21,6 @@ import type {
   ProjectFiltersListQueryResult,
   ProjectsListQueryResult,
 } from "~/sanity.types";
-import { ContactComp } from "./contact";
 import { HomeHero } from "./hero";
 
 const LivePreviewProvider = dynamic(
@@ -199,7 +199,7 @@ export const HomeClientPage: React.FC<{
           </div>
         </LivePreviewProvider>
 
-        <ContactComp />
+        <ContactComp from="Home" />
       </CurveThingy>
     </div>
   );

@@ -26,6 +26,7 @@ import {
 import { Timeline } from "@/components/reusable/chanhdai/timeline";
 import { Button } from "@/components/reusable/shadcn/button";
 import { ArticleList } from "@/components/shared/article-items";
+import { ContactComp } from "@/components/shared/contact";
 import { Container } from "@/components/shared/container";
 import { CurveThingy } from "@/components/shared/curve-thingy";
 import { Eyebrow } from "@/components/shared/eyebrow";
@@ -319,6 +320,8 @@ export const AboutPageClient: React.FC<{
               />
             )}
         </AnimatePresence>
+
+        <ContactComp from="About" />
       </CurveThingy>
     </div>
   );

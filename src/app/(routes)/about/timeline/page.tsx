@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ArrowLeft5 } from "reicon-react";
 import { Timeline } from "@/components/reusable/chanhdai/timeline";
+import { ContactComp } from "@/components/shared/contact";
 import { Container } from "@/components/shared/container";
 import { CurveThingy } from "@/components/shared/curve-thingy";
 import { Eyebrow } from "@/components/shared/eyebrow";
@@ -64,6 +65,8 @@ export default async function TimelinePage() {
             <Timeline className="w-full" items={timeline} />
           </div>
         </Container>
+
+        <ContactComp from="Timeline" />
       </CurveThingy>
     </div>
   );

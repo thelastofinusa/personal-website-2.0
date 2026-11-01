@@ -190,6 +190,23 @@ const menuItemVariants: Variants = {
   },
 };
 
+const slideVariants: Variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 48 : -48,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? -48 : 48,
+    opacity: 0,
+    transition: { duration: 0.2, ease: "easeIn" },
+  }),
+};
+
 export {
   getTimelineVariants,
   itemVariants,
@@ -197,6 +214,7 @@ export {
   menuVariants,
   parentVariants,
   rotations,
+  slideVariants,
   snapshotImageVariants,
   verticalOffsets,
   workItemVariants,

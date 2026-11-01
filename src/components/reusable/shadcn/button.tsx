@@ -1,6 +1,7 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
+import { Loader } from "lucide-react";
 
 const buttonVariants = cva(
   "group/button inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full font-light text-sm outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -43,14 +44,30 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  isLoading = false,
+  loadingTxt,
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: ButtonPrimitive.Props &
+  VariantProps<typeof buttonVariants> & {
+    isLoading?: boolean;
+    loadingTxt?: string;
+  }) {
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      disabled={isLoading || props.disabled}
       {...props}
-    />
+    >
+      {isLoading ? (
+        <>
+          <Loader className="size-3.5 animate-spin" />{" "}
+          {loadingTxt && <span>{loadingTxt}</span>}{" "}
+        </>
+      ) : (
+        props.children
+      )}
+    </ButtonPrimitive>
   );
 }
 
