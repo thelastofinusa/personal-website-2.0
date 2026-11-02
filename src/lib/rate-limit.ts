@@ -28,7 +28,7 @@ type Rule = { key: string; max: number; windowMs: number };
 const globalRef = globalThis as unknown as {
   __contactRateLimit?: Map<string, number[]>;
 };
-// biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+// biome-ignore lint/suspicious/noAssignInExpressions: ignore
 const store = (globalRef.__contactRateLimit ??= new Map<string, number[]>());
 
 /** Drops IPs we haven't seen for a day so the Map can't grow forever. */

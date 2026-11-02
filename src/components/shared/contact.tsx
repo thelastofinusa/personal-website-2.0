@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/a11y/useSemanticElements: <explanation> */
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
+/** biome-ignore-all lint/a11y/useSemanticElements: ignore */
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: ignore */
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";

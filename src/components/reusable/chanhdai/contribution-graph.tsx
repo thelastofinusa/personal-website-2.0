@@ -1,5 +1,5 @@
 // Credit: https://www.kibo-ui.com/components/contribution-graph
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: ignore */
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: just ignore */
 
 import type { Day as WeekDay } from "date-fns";
