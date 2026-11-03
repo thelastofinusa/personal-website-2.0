@@ -2,7 +2,7 @@
 
 import React from "react";
 
-type ToggleId = "menu" | "soundfx";
+type ToggleId = "menu" | "soundfx" | "theme";
 
 type ToggleContextValue = {
   activeToggle: ToggleId | null;

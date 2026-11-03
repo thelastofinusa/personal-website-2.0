@@ -5,9 +5,6 @@ import {
   useTheme as useNextTheme,
 } from "@teispace/next-themes";
 import React from "react";
-import { useHotkeys } from "react-hotkeys-hook";
-
-import { THEME_KEY } from "@/constants/keys";
 import { useSoundFx } from "./sound-fx";
 
 type Theme = "dark" | "light" | "system";
@@ -93,14 +90,6 @@ function ThemeController({
     },
     [setNextTheme, play],
   );
-
-  const toggleTheme = React.useCallback(() => {
-    if (!resolvedTheme) return;
-
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
-  }, [resolvedTheme, setTheme]);
-
-  useHotkeys(THEME_KEY, toggleTheme);
 
   return (
     <ThemeContext.Provider
