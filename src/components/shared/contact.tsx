@@ -71,7 +71,7 @@ const STEPS = [
   placeholder: string;
 }[];
 
-const shouldInclude = ["twitter", "linkedin", "telegram", "youtube"];
+const shouldInclude = ["twitter", "linkedin", "telegram", "whatsapp"];
 
 type ContactRowProps = {
   id: string;

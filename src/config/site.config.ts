@@ -21,6 +21,7 @@ export const siteConfig = {
       ? process.env.NEXT_PUBLIC_BASE_URL || "https://thelastofinusa.vercel.app"
       : "http://localhost:3000",
   socials: [
+    { platform: "whatsapp", url: "https://wa.link/bjgckl" },
     { platform: "twitter", url: "https://twitter.com/thelastofinusa" },
     { platform: "github", url: "https://github.com/thelastofinusa" },
     { platform: "instagram", url: "https://www.instagram.com/thelastofinusa/" },

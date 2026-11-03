@@ -10,6 +10,7 @@ import {
   FaLinkedinIn,
   FaMedium,
   FaProductHunt,
+  FaWhatsapp,
   FaXTwitter,
 } from "react-icons/fa6";
 import { FiChrome } from "react-icons/fi";
@@ -93,6 +94,10 @@ const DEFAULT_ICONS: IconMatcher[] = [
   {
     keywords: ["daily"],
     icon: SiDailydotdev,
+  },
+  {
+    keywords: ["whatsapp"],
+    icon: FaWhatsapp,
   },
 ];
 
