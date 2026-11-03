@@ -16,6 +16,7 @@ const ImagePreviewProvider = dynamic(
   { ssr: false, loading: () => null },
 );
 
+import { ContactComp } from "@/components/shared/contact";
 import { Container } from "@/components/shared/container";
 import { CurveThingy } from "@/components/shared/curve-thingy";
 import { QuickHero } from "@/components/shared/quick-hero";
@@ -81,6 +82,8 @@ export const ArticlesPageClient: React.FC<{
             </ImagePreviewProvider>
           </Container>
         </div>
+
+        <ContactComp from="Articles" />
       </CurveThingy>
     </div>
   );

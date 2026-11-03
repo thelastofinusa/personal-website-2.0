@@ -1,17 +1,13 @@
 import {
-  Body,
   Button,
   Column,
-  Container,
-  Head,
   Hr,
-  Html,
   Link,
-  Preview,
   Row,
   Section,
   Text,
 } from "@react-email/components";
+import ParentEmail from "./parent";
 
 export interface ContactEmailProps {
   name: string;
@@ -44,61 +40,56 @@ export default function ContactEmail({
   )}`;
 
   return (
-    <Html lang="en">
-      <Head />
-      <Preview>{`${firstName} sent you a message from your portfolio`}</Preview>
+    <ParentEmail
+      preview={`${firstName} sent you a message from your portfolio`}
+    >
+      <Section style={styles.card}>
+        <Text style={styles.title}>New message from {firstName}</Text>
+        <Text style={styles.subtitle}>
+          Sent through your portfolio contact form.
+        </Text>
 
-      <Body style={styles.body}>
-        <Container style={styles.container}>
-          <Section style={styles.card}>
-            <Text style={styles.title}>New message from {firstName}</Text>
-            <Text style={styles.subtitle}>
-              Sent through your portfolio contact form.
-            </Text>
+        <Hr style={styles.hr} />
 
-            <Hr style={styles.hr} />
+        <Row style={styles.row}>
+          <Column style={styles.label}>Name</Column>
+          <Column style={styles.value}>{name}</Column>
+        </Row>
+        <Row style={styles.row}>
+          <Column style={styles.label}>Email</Column>
+          <Column style={styles.value}>
+            <Link href={`mailto:${email}`} style={styles.link}>
+              {email}
+            </Link>
+          </Column>
+        </Row>
+        {from ? (
+          <Row style={styles.row}>
+            <Column style={styles.label}>Sent from</Column>
+            <Column style={styles.value}>{from}</Column>
+          </Row>
+        ) : null}
+        <Row style={styles.row}>
+          <Column style={styles.label}>Received</Column>
+          <Column style={styles.value}>{received} (WAT)</Column>
+        </Row>
 
-            <Row style={styles.row}>
-              <Column style={styles.label}>Name</Column>
-              <Column style={styles.value}>{name}</Column>
-            </Row>
-            <Row style={styles.row}>
-              <Column style={styles.label}>Email</Column>
-              <Column style={styles.value}>
-                <Link href={`mailto:${email}`} style={styles.link}>
-                  {email}
-                </Link>
-              </Column>
-            </Row>
-            {from ? (
-              <Row style={styles.row}>
-                <Column style={styles.label}>Sent from</Column>
-                <Column style={styles.value}>{from}</Column>
-              </Row>
-            ) : null}
-            <Row style={styles.row}>
-              <Column style={styles.label}>Received</Column>
-              <Column style={styles.value}>{received} (WAT)</Column>
-            </Row>
+        <Hr style={styles.hr} />
 
-            <Hr style={styles.hr} />
+        <Text style={styles.messageLabel}>Message</Text>
+        <Text style={styles.message}>{message}</Text>
 
-            <Text style={styles.messageLabel}>Message</Text>
-            <Text style={styles.message}>{message}</Text>
+        <Section style={styles.buttonWrap}>
+          <Button href={replyHref} style={styles.button}>
+            Reply to {firstName}
+          </Button>
+        </Section>
+      </Section>
 
-            <Section style={styles.buttonWrap}>
-              <Button href={replyHref} style={styles.button}>
-                Reply to {firstName}
-              </Button>
-            </Section>
-          </Section>
-
-          <Text style={styles.footer}>
-            Replying to this email also goes straight to {email}.
-          </Text>
-        </Container>
-      </Body>
-    </Html>
+      <Text style={styles.footer}>
+        Replying to this email also goes straight to {email}.
+      </Text>
+    </ParentEmail>
   );
 }
 
@@ -112,15 +103,6 @@ ContactEmail.PreviewProps = {
 } satisfies ContactEmailProps;
 
 const styles = {
-  body: {
-    margin: 0,
-    paddingBottom: "12px",
-    fontFamily,
-  },
-  container: {
-    maxWidth: "520px",
-    margin: "0 auto",
-  },
   card: {
     backgroundColor: "#ffffff",
     paddingInline: "24px",

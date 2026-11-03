@@ -30,6 +30,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/reusable/shadcn/empty";
+import { ContactComp } from "@/components/shared/contact";
 import { Container } from "@/components/shared/container";
 import { CurveThingy } from "@/components/shared/curve-thingy";
 import { StackedPagesIllustration } from "@/components/shared/illustration";
@@ -306,6 +307,8 @@ export const ProjectsPageClient: React.FC<{
               </p>
             </div>
           )}
+
+          <ContactComp from="Projects" />
         </CurveThingy>
       </div>
     </LivePreviewProvider>
