@@ -7,9 +7,9 @@ import { cn } from "cn";
 import { AnimatePresence, motion } from "motion/react";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { GiSoundWaves } from "react-icons/gi";
 import {
   ArrowRight5,
-  Soundwave,
   VolumeHigh,
   VolumeLow2,
   VolumeMute,
@@ -246,7 +246,7 @@ export const SoundFXToggle: React.FC<
         onClick={toggleOpenMenu}
         aria-label="Sound settings"
       >
-        <Soundwave />
+        <GiSoundWaves aria-hidden="true" />
       </Button>
 
       <AnimatePresence>
