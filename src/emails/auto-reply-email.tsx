@@ -6,9 +6,6 @@ export interface AutoReplyEmailProps {
   senderName: string;
 }
 
-const fontFamily =
-  "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
-
 export default function AutoReplyEmail({
   name,
   senderName,
@@ -16,29 +13,31 @@ export default function AutoReplyEmail({
   const firstName = name.trim().split(" ")[0];
 
   return (
-    <ParentEmail preview="Thanks for reaching out. I'll reply within 48 hours.">
-      <Section style={styles.card}>
-        <Text style={styles.title}>Thanks for reaching out, {firstName}</Text>
+    <ParentEmail preview="Thanks for reaching out. I’ll reply within 48 hours.">
+      <Section>
+        <Text className="em-text" style={styles.title}>
+          Thanks for reaching out, {firstName}
+        </Text>
 
-        <Text style={styles.text}>
+        <Text className="em-text" style={styles.text}>
           Your message has landed in my inbox. I read every one personally and
           will get back to you within 48 hours.
         </Text>
 
-        <Text style={styles.text}>
-          If it's urgent or you forgot to mention something, just reply to this
+        <Text className="em-text" style={styles.text}>
+          If it’s urgent or you forgot to mention something, just reply to this
           email and it will come straight to me.
         </Text>
 
-        <Text style={styles.signoff}>
+        <Text className="em-text" style={styles.signoff}>
           Talk soon,
           <br />
           {senderName}
         </Text>
 
-        <Hr style={styles.hr} />
+        <Hr className="em-rule" style={styles.hr} />
 
-        <Text style={styles.note}>
+        <Text className="em-muted" style={styles.note}>
           This is an automatic confirmation that your message was received.
         </Text>
       </Section>
@@ -52,10 +51,6 @@ AutoReplyEmail.PreviewProps = {
 } satisfies AutoReplyEmailProps;
 
 const styles = {
-  card: {
-    backgroundColor: "#ffffff",
-    paddingInline: "24px",
-  },
   title: {
     margin: "0 0 16px",
     fontSize: "20px",
@@ -65,14 +60,14 @@ const styles = {
   },
   text: {
     margin: "0 0 14px",
-    fontSize: "15px",
-    lineHeight: "24px",
-    color: "#374151",
+    fontSize: "16px",
+    lineHeight: "25px",
+    color: "#111827",
   },
   signoff: {
     margin: "20px 0 0",
-    fontSize: "15px",
-    lineHeight: "24px",
+    fontSize: "16px",
+    lineHeight: "25px",
     color: "#111827",
   },
   hr: {
