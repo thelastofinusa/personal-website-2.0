@@ -8,33 +8,35 @@ const testimonialFields = `
   role,
   company,
   rating,
-  pinned,
+  approve,
   content,
   "avatar": avatar.asset->url,
   url
 `;
 
+// Filters strictly for testimonials where approve is true
 const testimonialsListQuery = defineQuery(`
-  *[_type == "testimonial"] | order(pinned desc, _createdAt desc) {
+  *[_type == "testimonial" && approve == true] | order(_createdAt desc) {
     ${testimonialFields}
   }
 `);
 
-const pinnedTestimonialsQuery = defineQuery(`
-  *[_type == "testimonial" && pinned == true] | order(_createdAt desc) {
+// Filters strictly for approved testimonials, orders by newest first, and slices the first 6
+const latestTestimonialsQuery = defineQuery(`
+  *[_type == "testimonial" && approve == true] | order(_createdAt desc)[0...6] {
     ${testimonialFields}
   }
 `);
 
 const query = {
   all: testimonialsListQuery,
-  pinned: pinnedTestimonialsQuery,
+  latest: latestTestimonialsQuery,
 };
 
 export async function fetchAllTestimonials(): Promise<TestimonialsListQueryResult> {
   return sanityQuery<TestimonialsListQueryResult>({ query: query.all });
 }
 
-export async function fetchPinnedTestimonials(): Promise<TestimonialsListQueryResult> {
-  return sanityQuery<TestimonialsListQueryResult>({ query: query.pinned });
+export async function fetchLatestTestimonials(): Promise<TestimonialsListQueryResult> {
+  return sanityQuery<TestimonialsListQueryResult>({ query: query.latest });
 }

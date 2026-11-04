@@ -6,7 +6,7 @@ import { getOgImage } from "@/lib/og";
 import { fetchPinnedArticles } from "@/sanity/queries/article.query";
 import { fetchDailyApp } from "@/sanity/queries/dailyApp.query";
 import { fetchSnapshots } from "@/sanity/queries/snapshot.query";
-import { fetchPinnedTestimonials } from "@/sanity/queries/testimonial.query";
+import { fetchLatestTestimonials } from "@/sanity/queries/testimonial.query";
 import { fetchLatestTimelines } from "@/sanity/queries/timeline.query";
 import { AboutPageClient } from "./_components/client";
 
@@ -52,7 +52,7 @@ export default async function About() {
   const articles = await fetchPinnedArticles();
   const dailyApps = await fetchDailyApp();
   const snapshots = await fetchSnapshots();
-  const testimonials = await fetchPinnedTestimonials();
+  const testimonials = await fetchLatestTestimonials();
   const contributions = await fetchGitHubContributions(
     siteConfig.author.username,
   );

@@ -11,7 +11,7 @@ import {
   AvatarImage,
 } from "@/components/reusable/shadcn/avatar";
 import { itemVariants } from "@/constants/variants";
-import { getInitials } from "@/lib/utils";
+import { cn, getInitials } from "@/lib/utils";
 import type { TestimonialsListQueryResult } from "~/sanity.types";
 
 export const Testimonials: React.FC<{
@@ -47,7 +47,10 @@ export const Testimonials: React.FC<{
               layout
               key={item._id}
               variants={itemVariants}
-              className="group inline-block w-full break-inside-avoid rounded-[20px]! shadow-[0_5px_20px_rgba(0,0,0,0.05)] transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-[102%] dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]"
+              className={cn(
+                "group inline-block w-full break-inside-avoid rounded-[20px]! transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-[102%]",
+                "shadow-[0_5px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]",
+              )}
             >
               <Frame
                 variant="inverse"
@@ -55,13 +58,14 @@ export const Testimonials: React.FC<{
               >
                 <FramePanel className="bg-background flex flex-col gap-8 overflow-y-auto rounded-2xl px-4 py-3">
                   <div className="flex items-center justify-between gap-1">
-                    <div className="flex items-center gap-0.5">
+                    <div className="flex items-center">
                       {renderStars(item.rating as number)}
                     </div>
 
-                    <span className="text-muted-foreground font-mono text-xs font-normal">
-                      {item.rating?.toFixed(1)} of 5
-                    </span>
+                    <p className="font-mono text-xs font-normal">
+                      {item.rating?.toFixed(1)}{" "}
+                      <span className="text-muted-foreground">of</span> 5
+                    </p>
                   </div>
 
                   <blockquote className="text-sm font-light">
@@ -75,7 +79,7 @@ export const Testimonials: React.FC<{
                   rel="noopener noreferrer"
                   className="flex flex-col gap-0.5 px-4 py-3"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <Avatar size="xs">
                       <AvatarImage
                         src={item.avatar as string}

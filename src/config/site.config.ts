@@ -21,19 +21,19 @@ export const siteConfig = {
       ? process.env.NEXT_PUBLIC_BASE_URL || "https://thelastofinusa.vercel.app"
       : "http://localhost:3000",
   socials: [
-    { platform: "whatsapp", url: "https://wa.link/bjgckl" },
+    { platform: "whatsApp", url: "https://wa.link/bjgckl" },
     { platform: "twitter", url: "https://twitter.com/thelastofinusa" },
-    { platform: "github", url: "https://github.com/thelastofinusa" },
+    { platform: "gitHub", url: "https://github.com/thelastofinusa" },
     { platform: "instagram", url: "https://www.instagram.com/thelastofinusa/" },
     { platform: "telegram", url: "https://t.me/thelastofinusa" },
     {
-      platform: "linkedin",
+      platform: "linkedIn",
       url: "https://www.linkedin.com/in/thelastofinusa/",
     },
     { platform: "youtube", url: "https://www.youtube.com/@thelastofinusa" },
     { platform: "medium", url: "https://medium.com/@thelastofinusa" },
     {
-      platform: "producthunt",
+      platform: "productHunt",
       url: "https://www.producthunt.com/@thelastofinusa",
     },
   ],

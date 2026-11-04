@@ -35,10 +35,10 @@ export const testimonialSchema = defineType({
       initialValue: 5,
     }),
     defineField({
-      name: "pinned",
-      title: "Pin to top",
+      name: "approve",
+      title: "Approve Testimonial",
       type: "boolean",
-      description: "Pin this testimonial to feature it on the About page.",
+      description: "Approve testimonial to show on website",
       initialValue: false,
       validation: (Rule) => Rule.required(),
     }),
@@ -75,14 +75,13 @@ export const testimonialSchema = defineType({
       subtitle: "role",
       company: "company",
       rating: "rating",
-      pinned: "pinned",
+      approve: "approve",
       media: "avatar",
     },
-    prepare({ title, subtitle, company, rating, pinned, media }) {
+    prepare({ title, subtitle, company, rating, approve, media }) {
       return {
-        title,
+        title: [title, approve && "✅"].filter(Boolean).join(" "),
         subtitle: [
-          pinned && "📌 Pinned",
           subtitle,
           company ? `at ${company}` : null,
           rating ? `★ ${rating}` : null,

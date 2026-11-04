@@ -110,7 +110,7 @@ export const Footer = () => {
 
       <footer
         ref={footerRef}
-        className="sticky bottom-0 flex flex-col bg-background"
+        className="bg-background sticky bottom-0 flex flex-col"
       >
         <motion.div
           style={{ opacity, scale }}
@@ -119,7 +119,7 @@ export const Footer = () => {
         >
           <Container size="md" className="mb-8 sm:mb-16 md:mb-24">
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end md:gap-6">
-              <p className="font-extralight text-sm sm:text-base md:text-lg">
+              <p className="text-sm font-extralight sm:text-base md:text-lg">
                 Let's connect. <br /> I'm always down for a chat.
               </p>
 
@@ -143,12 +143,16 @@ export const Footer = () => {
                               aria-description={social.platform}
                               onClick={() => play("forward")}
                             >
-                              <Icon className="size-4.5 group-hover:text-primary" />
+                              <Icon className="group-hover:text-primary size-4.5" />
                             </Link>
                           }
                         />
-                        <TooltipContent className="text-center" sideOffset={12}>
-                          {social.platform} <br />@{siteConfig.author.username}
+                        <TooltipContent
+                          className="flex flex-col items-center gap-0!"
+                          sideOffset={12}
+                        >
+                          <span className="capitalize">{social.platform}</span>
+                          <span>@{siteConfig.author.username}</span>
                         </TooltipContent>
                       </Tooltip>
                     );
@@ -187,7 +191,7 @@ export const Footer = () => {
 
           <Container size="md" className="relative pt-6 md:pt-10">
             <div className="text-center md:text-right">
-              <p className="font-extralight text-[13px] text-muted-foreground sm:text-base">
+              <p className="text-muted-foreground text-[13px] font-extralight sm:text-base">
                 © {new Date().getFullYear()} Still shipping. Still figuring it
                 out.
               </p>

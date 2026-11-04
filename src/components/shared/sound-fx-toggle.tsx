@@ -258,15 +258,15 @@ export const SoundFXToggle: React.FC<
             exit="closed"
             className={cn(
               "absolute top-full right-0 z-40 mt-3 w-73 origin-top-right rounded-[20px]",
-              "shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)]",
+              "shadow-[0_5px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]",
             )}
           >
             <Frame
               variant="inverse"
-              className="rounded-[20px] bg-background dark:bg-card"
+              className="bg-background dark:bg-card rounded-[20px]"
             >
               {/* ─── Card Grid ──────────────────────── */}
-              <FramePanel className="flex flex-col gap-4 overflow-y-auto overscroll-contain rounded-2xl bg-background p-3">
+              <FramePanel className="bg-background flex flex-col gap-4 overflow-y-auto overscroll-contain rounded-2xl p-3">
                 <div className="grid grid-cols-2 gap-2">
                   {visiblePacks.map((packName, index) => {
                     const isActive = pack === packName && enabled;
@@ -351,7 +351,7 @@ export const SoundFXToggle: React.FC<
                       <span>Prev</span>
                     </Button>
 
-                    <span className="flex min-w-10 items-center justify-center font-medium text-[11px] text-muted-foreground">
+                    <span className="text-muted-foreground flex min-w-10 items-center justify-center text-[11px] font-medium">
                       {page + 1} / {totalPages}
                     </span>
 
@@ -386,7 +386,7 @@ export const SoundFXToggle: React.FC<
                     href="https://uisfx.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex w-max items-center gap-1.5 font-light text-muted-foreground! text-xs tracking-[0.03em] transition-colors hover:text-primary!"
+                    className="group text-muted-foreground! hover:text-primary! flex w-max items-center gap-1.5 text-xs font-light tracking-[0.03em] transition-colors"
                   >
                     <span>Powered by uisfx.com</span>
                     <ArrowRight5 className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -425,7 +425,7 @@ export const SoundFXToggle: React.FC<
                       play(showVolumeSlider ? "toggle-off" : "toggle-on");
                     }}
                   >
-                    <span className="w-7 font-medium font-mono text-xs tabular-nums">
+                    <span className="w-7 font-mono text-xs font-medium tabular-nums">
                       <CountingNumber
                         number={enabled ? Math.round(volume * 100) : 0}
                         fromNumber={0}

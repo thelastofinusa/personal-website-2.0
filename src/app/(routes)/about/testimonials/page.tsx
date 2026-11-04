@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import React from "react";
+import { notFound } from "next/navigation";
 import { ArrowLeft5 } from "reicon-react";
 import { ContactComp } from "@/components/shared/contact";
 import { Container } from "@/components/shared/container";
@@ -52,7 +51,7 @@ export const metadata: Metadata = {
 export default async function TestimonialsPage() {
   const testimonials = await fetchAllTestimonials();
 
-  if (!testimonials.length) redirect("/about");
+  if (!testimonials.length) notFound();
 
   return (
     <div className="flex-1 overflow-x-clip">
