@@ -134,7 +134,7 @@ export const NotFoundComp = () => {
 
   return (
     <div className="flex flex-1 flex-col justify-center overflow-x-clip">
-      <CurveThingy hideHash className="h-dvh">
+      <CurveThingy hideHash className="h-auto pt-36 pb-16 md:h-dvh">
         <Empty>
           <EmptyHeader>
             <EmptyMedia className="h-auto w-[80%]">
@@ -166,7 +166,7 @@ export const NotFoundComp = () => {
                   showClear
                   autoFocus
                   onKeyDown={handleKeyDown}
-                  className="h-9 rounded-full bg-background! px-3"
+                  className="bg-background! h-9 rounded-full px-3"
                 />
 
                 <AutocompleteContent>
@@ -198,17 +198,17 @@ export const NotFoundComp = () => {
                             ) : (
                               <item.icon className="size-4" />
                             )}
-                            <span className="font-medium text-sm leading-none">
+                            <span className="text-sm leading-none font-medium">
                               {item.eyebrow}
                             </span>
                           </div>
 
-                          <span className="font-light text-muted-foreground text-xs">
+                          <span className="text-muted-foreground text-xs font-light">
                             {item.title}
                           </span>
                         </div>
 
-                        <span className="ml-auto text-muted-foreground text-xs">
+                        <span className="text-muted-foreground ml-auto text-xs">
                           {item.to === "/" ? "/home" : item.to}
                         </span>
                       </AutocompleteItem>
@@ -238,7 +238,7 @@ export const NotFoundComp = () => {
                   router.back();
                   play("back");
                 }}
-                className="cursor-pointer underline underline-offset-4 hover:text-primary"
+                className="hover:text-primary cursor-pointer underline underline-offset-4"
               >
                 Take me back
               </button>{" "}

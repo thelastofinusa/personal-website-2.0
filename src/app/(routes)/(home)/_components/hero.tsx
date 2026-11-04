@@ -91,13 +91,13 @@ export const HomeHero = () => {
 
         <motion.p
           variants={itemVariants}
-          className="mt-4 max-w-lg font-extralight text-base text-muted-foreground md:text-center md:text-[17px]"
+          className="text-muted-foreground mt-4 max-w-lg text-base font-extralight md:text-center md:text-[17px]"
         >
           Equal parts{" "}
-          <span className="font-normal text-foreground">design</span> and{" "}
-          <span className="font-normal text-foreground">code</span>, fueled by{" "}
-          <span className="font-normal text-foreground">curiosity</span>,{" "}
-          <span className="font-normal text-foreground">chai</span>, and an
+          <span className="text-foreground font-normal">design</span> and{" "}
+          <span className="text-foreground font-normal">code</span>, fueled by{" "}
+          <span className="text-foreground font-normal">curiosity</span>,{" "}
+          <span className="text-foreground font-normal">chai</span>, and an
           unhealthy amount of attention to detail. I guess.
         </motion.p>
       </motion.div>
