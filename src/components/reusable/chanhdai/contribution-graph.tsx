@@ -398,7 +398,7 @@ export const ContributionGraphCalendar = ({
         {!hideMonthLabels && (
           <g
             data-slot="month-labels"
-            className="fill-current selection:fill-selection-foreground"
+            className="selection:fill-selection-foreground fill-current"
           >
             {monthLabels.map(({ label, weekIndex }) => (
               <text
@@ -495,7 +495,7 @@ export const ContributionGraphLegend = ({
       style={{ gap: blockMargin }}
       {...props}
     >
-      <span className="mr-1 text-muted-foreground">
+      <span className="text-muted-foreground mr-1">
         {labels.legend?.less || "Less"}
       </span>
 
@@ -510,7 +510,7 @@ export const ContributionGraphLegend = ({
               height: `${blockSize + 1}`,
               borderRadius: blockRadius,
             }}
-            className="z-10 -mx-1 flex items-center justify-center border-2 border-background bg-background last-of-type:mr-0"
+            className="border-background bg-background z-10 -mx-1 flex items-center justify-center border-2 last-of-type:mr-0"
           >
             <svg height={blockSize} width={blockSize}>
               <title>{`${level} contributions`}</title>
@@ -527,7 +527,7 @@ export const ContributionGraphLegend = ({
         ),
       )}
 
-      <span className="ml-1 text-muted-foreground">
+      <span className="text-muted-foreground ml-1">
         {labels.legend?.more || "More"}
       </span>
     </div>

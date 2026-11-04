@@ -175,7 +175,7 @@ export function GitHubContributions({
       <ContributionGraphCalendar
         calendarRef={calendarRef}
         className={cn(
-          "no-scrollbar fade-edges-x px-2 font-light font-mono text-[11px] uppercase transition-opacity duration-300 sm:text-xs",
+          "no-scrollbar fade-edges-x px-2 text-[11px] uppercase transition-opacity duration-300 sm:text-xs",
           ready ? "opacity-100" : "opacity-0",
         )}
         title="GitHub Contributions"
@@ -204,7 +204,7 @@ export function GitHubContributions({
           </Tooltip>
         )}
       </ContributionGraphCalendar>
-      <ContributionGraphFooter className="px-2 font-light text-sm">
+      <ContributionGraphFooter className="px-2 text-sm font-light">
         <ContributionGraphTotalCount>
           {({ totalCount, year }) => (
             <div className="text-muted-foreground">
