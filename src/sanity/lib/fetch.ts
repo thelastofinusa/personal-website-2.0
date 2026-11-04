@@ -16,7 +16,7 @@ export async function sanityQuery<T>({
   revalidate = 3600,
   tags,
 }: FetchOptions): Promise<T> {
-  const isDevelopment = process.env.NODE_ENV === "production";
+  const isDevelopment = process.env.NODE_ENV === "development";
 
   if (isDevelopment) {
     // Development: Use client.fetch and cache the data using Next.js fetch options
