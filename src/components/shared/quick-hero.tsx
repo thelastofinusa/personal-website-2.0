@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "cn";
 import { motion, useScroll, useTransform } from "motion/react";
 import type React from "react";
@@ -14,7 +15,7 @@ export const QuickHero: React.FC<IQuickHeroProps> = (props) => {
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
 
   return (
-    <section className="sticky top-0 bg-background pt-26 pb-16 md:py-30 lg:pt-36">
+    <section className="bg-background sticky top-0 pt-26 pb-16 md:py-30 lg:pt-36">
       <motion.div variants={parentVariants} initial="hidden" animate="visible">
         <motion.div
           style={{ opacity, scale }}
@@ -44,7 +45,7 @@ export const QuickHero: React.FC<IQuickHeroProps> = (props) => {
 
               <motion.p
                 variants={itemVariants}
-                className="max-w-xl flex-1 font-extralight text-sm md:text-base"
+                className="max-w-xl flex-1 text-sm font-extralight md:text-base"
               >
                 {props.description}
               </motion.p>

@@ -41,12 +41,12 @@ export const CurveThingy: React.FC<Props> = (props) => {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="pointer-events-none absolute bottom-full left-1/2 hidden w-full -translate-x-1/2 lg:block"
       >
-        <Container className="select-none bg-linear-to-b from-transparent via-background/50 to-background py-2">
+        <Container className="via-background/50 to-background bg-linear-to-b from-transparent py-2 select-none">
           <div className="flex items-center justify-between gap-8">
             {keyOptions.map((item) => (
               <p
                 key={item.key}
-                className="w-full max-w-33.75 text-center font-mono text-[10px] text-muted-foreground uppercase tracking-[0.12em]"
+                className="text-muted-foreground w-full max-w-33.75 text-center font-mono text-[10px] tracking-[0.12em] uppercase"
               >
                 <span className="text-foreground">[{item.key}]</span>
                 <span>{item.label}</span>
@@ -68,7 +68,7 @@ export const CurveThingy: React.FC<Props> = (props) => {
               play("swipe");
             }}
             disabled={!props.hash}
-            className="h-2 w-10 rounded-full bg-muted-foreground/50 transition-[width] duration-300 ease-in-out hover:w-16 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:w-10 md:h-2.5"
+            className="bg-muted-foreground/50 h-2 w-10 rounded-full transition-[width] duration-300 ease-in-out hover:w-16 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:w-10 md:h-2.5"
           />
         </div>
       )}

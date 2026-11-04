@@ -3,7 +3,7 @@ import type {
   ArticleBySlugQueryResult,
   ArticlesListQueryResult,
 } from "~/sanity.types";
-import { NO_STEGA, sanityFetch } from "../lib/live";
+import { sanityQuery } from "../lib/fetch";
 
 const articleList = `
   _id,
@@ -62,13 +62,11 @@ const query = {
 };
 
 export async function fetchAllArticles(): Promise<ArticlesListQueryResult> {
-  const { data } = await sanityFetch({ query: query.all, ...NO_STEGA });
-  return data;
+  return sanityQuery<ArticlesListQueryResult>({ query: query.all });
 }
 
 export async function fetchPinnedArticles(): Promise<ArticlesListQueryResult> {
-  const { data } = await sanityFetch({ query: query.pinned, ...NO_STEGA });
-  return data;
+  return sanityQuery<ArticlesListQueryResult>({ query: query.pinned });
 }
 
 export async function fetchArticleBySlug(slug: string): Promise<{
@@ -79,10 +77,9 @@ export async function fetchArticleBySlug(slug: string): Promise<{
   const articles = await fetchAllArticles();
   const index = articles.findIndex((article) => article.slug === slug);
 
-  const { data: singleArticle } = await sanityFetch({
+  const singleArticle = await sanityQuery<ArticleBySlugQueryResult | null>({
     query: query.slug,
     params: { slug },
-    ...NO_STEGA,
   });
 
   return {

@@ -17,6 +17,7 @@ const ImagePreviewProvider = dynamic(
   { ssr: false, loading: () => null },
 );
 
+import { cn } from "cn";
 import { Router3 } from "reicon-react";
 import {
   GitHubContributions,
@@ -37,6 +38,7 @@ import { TextContent } from "@/components/shared/text-content";
 import { siteConfig } from "@/config/site.config";
 import { navLinksData } from "@/constants/navigation";
 import {
+  itemVariants,
   parentVariants,
   snapshotImageVariants,
   workItemVariants,
@@ -46,9 +48,11 @@ import type {
   ArticlesListQueryResult,
   DailyAppListQueryResult,
   SnapshotQueryResult,
+  TestimonialsListQueryResult,
   TimelineListQueryResult,
 } from "~/sanity.types";
 import { DailyApps } from "./dailyApps";
+import { Testimonials } from "./testimonials";
 
 const introduction = `Hey, I’m **${siteConfig.author.name}**—though most people just call me **${siteConfig.author.nickname}** [🔊](pronunciation) or **${siteConfig.author.nicknameShorten}**.
 
@@ -72,11 +76,17 @@ export const AboutPageClient: React.FC<{
   articles: ArticlesListQueryResult;
   dailyApps: DailyAppListQueryResult;
   snapshots: SnapshotQueryResult;
-}> = ({ timeline, contributions, articles, dailyApps, snapshots }) => {
+  testimonials: TestimonialsListQueryResult;
+}> = ({
+  timeline,
+  contributions,
+  articles,
+  dailyApps,
+  snapshots,
+  testimonials,
+}) => {
   const { play } = useSoundFx();
   const pathname = usePathname();
-  const _rotations = [-12, -6, 0, 6, 12];
-  const _verticalOffsets = [20, 4, 0, 4, 20];
   const imageHeights = [
     "h-24 md:h-32",
     "h-28 md:h-38",
@@ -88,9 +98,8 @@ export const AboutPageClient: React.FC<{
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const articleRoute = navLinksData("/articles");
-  const Icon = articleRoute?.icon;
   const timelineRoute = navLinksData("/about/timeline");
-  const TimelineIcon = timelineRoute?.icon;
+  const testimonialsRoute = navLinksData("/about/testimonials");
 
   const openLightbox = (e: React.MouseEvent, idx: number) => {
     e.stopPropagation();
@@ -177,7 +186,7 @@ export const AboutPageClient: React.FC<{
                       rotate: 0,
                       zIndex: 20,
                     }}
-                    className="-mr-4 shrink-0 overflow-hidden rounded-[12px] border bg-card p-0.5 md:p-1"
+                    className="bg-card -mr-4 shrink-0 overflow-hidden rounded-[12px] border p-0.5 md:p-1"
                   >
                     <CustomImage
                       src={image.url as string}
@@ -228,7 +237,7 @@ export const AboutPageClient: React.FC<{
                       <span>{timelineRoute?.action}</span>
                     </Button>
                     <Button variant="inverse" size="icon">
-                      {TimelineIcon && <TimelineIcon />}
+                      {timelineRoute?.icon && <timelineRoute.icon />}
                     </Button>
                   </Link>
                 </motion.div>
@@ -266,6 +275,45 @@ export const AboutPageClient: React.FC<{
           </Container>
         </motion.div>
 
+        {testimonials.length > 0 && (
+          <motion.div
+            variants={parentVariants}
+            initial="hidden"
+            whileInView="visible"
+            className="flex flex-col gap-6 md:gap-8"
+          >
+            <Container size="md">
+              <div className="flex flex-col gap-8 md:gap-12">
+                <Testimonials testimonials={testimonials} />
+
+                <AnimatePresence mode="popLayout">
+                  <motion.div
+                    variants={workItemVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    exit="exit"
+                    layout
+                    className="relative"
+                  >
+                    <Link
+                      href={testimonialsRoute?.href as Route}
+                      onClick={() => play("forward")}
+                      className="wrapper mx-auto flex w-max items-center"
+                    >
+                      <Button variant="inverse" className="flex-1">
+                        <span>{testimonialsRoute?.action}</span>
+                      </Button>
+                      <Button variant="inverse" size="icon">
+                        {testimonialsRoute?.icon && <testimonialsRoute.icon />}
+                      </Button>
+                    </Link>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </Container>
+          </motion.div>
+        )}
+
         {/* Articles Section */}
         {articles.length > 0 && (
           <motion.div
@@ -298,7 +346,7 @@ export const AboutPageClient: React.FC<{
                         <span>{articleRoute?.action}</span>
                       </Button>
                       <Button variant="inverse" size="icon">
-                        {Icon && <Icon />}
+                        {articleRoute?.icon && <articleRoute.icon />}
                       </Button>
                     </Link>
                   </motion.div>

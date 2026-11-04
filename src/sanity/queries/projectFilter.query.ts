@@ -1,6 +1,6 @@
 import { defineQuery } from "next-sanity";
 import type { ProjectFiltersListQueryResult } from "~/sanity.types";
-import { NO_STEGA, sanityFetch } from "../lib/live";
+import { sanityQuery } from "../lib/fetch";
 
 const projectFiltersList = `
 _id,
@@ -20,6 +20,5 @@ const query = {
 };
 
 export async function fetchAllProjectFilters(): Promise<ProjectFiltersListQueryResult> {
-  const { data } = await sanityFetch({ query: query.all, ...NO_STEGA });
-  return data;
+  return sanityQuery<ProjectFiltersListQueryResult>({ query: query.all });
 }

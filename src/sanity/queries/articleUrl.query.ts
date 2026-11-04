@@ -1,6 +1,6 @@
 import { defineQuery } from "next-sanity";
 import type { ArticleUrlsListQueryResult } from "~/sanity.types";
-import { NO_STEGA, sanityFetch } from "../lib/live";
+import { sanityQuery } from "../lib/fetch";
 
 const articleUrlsList = `
 _id,
@@ -18,6 +18,5 @@ const query = {
 };
 
 export async function fetchAllArticleUrls(): Promise<ArticleUrlsListQueryResult> {
-  const { data } = await sanityFetch({ query: query.all, ...NO_STEGA });
-  return data;
+  return sanityQuery<ArticleUrlsListQueryResult>({ query: query.all });
 }

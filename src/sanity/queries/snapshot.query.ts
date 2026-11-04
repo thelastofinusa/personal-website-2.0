@@ -1,6 +1,6 @@
 import { defineQuery } from "next-sanity";
 import type { SnapshotQueryResult } from "~/sanity.types";
-import { NO_STEGA, sanityFetch } from "../lib/live";
+import { sanityQuery } from "../lib/fetch";
 
 const snapshotQuery = defineQuery(`
   *[_type == "snapshot" && _id == "aboutPageSnapshots"][0] {
@@ -14,10 +14,5 @@ const snapshotQuery = defineQuery(`
 `);
 
 export async function fetchSnapshots(): Promise<SnapshotQueryResult> {
-  const { data } = await sanityFetch({
-    query: snapshotQuery,
-    ...NO_STEGA,
-  });
-
-  return data;
+  return sanityQuery<SnapshotQueryResult>({ query: snapshotQuery });
 }

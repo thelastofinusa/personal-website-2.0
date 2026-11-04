@@ -247,3 +247,19 @@
     transparent 100%
   );
 }
+
+@utility bg-grid-pattern {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 27px,
+      var(--border) 27px 28px,
+      transparent 28px 56px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 27px,
+      var(--border) 27px 28px,
+      transparent 28px 56px
+    );
+}

@@ -23,10 +23,10 @@ export const Eyebrow: React.FC<{
 
   const content = (
     <>
-      {Icon && <Icon className="mb-px size-4 motion-safe:animate-bell-ring" />}
+      {Icon && <Icon className="motion-safe:animate-bell-ring mb-px size-4" />}
 
       <ShimmeringText
-        className="font-light text-xs uppercase tracking-[0.1em] sm:text-xs"
+        className="text-xs font-light tracking-[0.1em] uppercase sm:text-xs"
         text={label}
       />
     </>

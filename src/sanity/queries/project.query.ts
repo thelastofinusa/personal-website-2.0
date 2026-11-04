@@ -1,6 +1,6 @@
 import { defineQuery } from "next-sanity";
 import type { ProjectsListQueryResult } from "~/sanity.types";
-import { NO_STEGA, sanityFetch } from "../lib/live";
+import { sanityQuery } from "../lib/fetch";
 
 const projectsList = `
 _id,
@@ -39,11 +39,9 @@ const query = {
 };
 
 export async function fetchAllProjects(): Promise<ProjectsListQueryResult> {
-  const { data } = await sanityFetch({ query: query.all, ...NO_STEGA });
-  return data;
+  return sanityQuery<ProjectsListQueryResult>({ query: query.all });
 }
 
 export async function fetchFeaturedProjects(): Promise<ProjectsListQueryResult> {
-  const { data } = await sanityFetch({ query: query.featured, ...NO_STEGA });
-  return data;
+  return sanityQuery<ProjectsListQueryResult>({ query: query.featured });
 }

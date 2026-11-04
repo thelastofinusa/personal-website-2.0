@@ -3,6 +3,7 @@ import {
   Designtools,
   History2,
   type IconComponent,
+  MsgBubbleUser,
   PenWriting,
   Story,
   UserLaptop,
@@ -56,6 +57,15 @@ export const navLinks: NavLink[] = [
     icon: PenWriting,
     href: "/articles",
     show: true,
+  },
+  {
+    eyebrow: "Peer Pressure",
+    title: "Street Cred",
+    description: "Proof that real people actually like working with me.",
+    action: "See the claims",
+    icon: MsgBubbleUser,
+    href: "/about/testimonials",
+    show: false,
   },
   {
     eyebrow: "The Lore",

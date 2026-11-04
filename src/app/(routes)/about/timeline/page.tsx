@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { ArrowLeft5 } from "reicon-react";
 import { Timeline } from "@/components/reusable/chanhdai/timeline";
 import { ContactComp } from "@/components/shared/contact";
@@ -49,6 +50,8 @@ export const metadata: Metadata = {
 
 export default async function TimelinePage() {
   const timeline = await fetchTimeline();
+
+  if (!timeline.length) redirect("/about");
 
   return (
     <div className="flex-1 overflow-x-clip">

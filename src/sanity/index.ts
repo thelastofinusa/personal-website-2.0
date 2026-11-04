@@ -6,6 +6,7 @@ import { dailyAppSchema } from "./schemas/dailyApp.schema";
 import { projectSchema } from "./schemas/project.schema";
 import { projectFilterSchema } from "./schemas/projectFilter.schema";
 import { snapshotSchema } from "./schemas/snapshot.schema";
+import { testimonialSchema } from "./schemas/testimonial.schema";
 import { timelineSchema } from "./schemas/timeline.schema";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
@@ -18,5 +19,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     timelineSchema,
     dailyAppSchema,
     snapshotSchema,
+    testimonialSchema,
   ],
 };

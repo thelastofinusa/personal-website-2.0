@@ -123,9 +123,9 @@ export const MenuToggle: React.FC<
           >
             <Frame
               variant="inverse"
-              className="rounded-[20px] bg-background dark:bg-card"
+              className="bg-background dark:bg-card rounded-[20px]"
             >
-              <FramePanel className="flex flex-col gap-1 rounded-2xl bg-background p-2">
+              <FramePanel className="bg-background flex flex-col gap-1 rounded-2xl p-2">
                 {navLinks
                   .filter((route) => route.show)
                   .map((route) => {
@@ -170,21 +170,21 @@ export const MenuToggle: React.FC<
                                   <Icon className="size-4" />
                                 )}
 
-                                <span className="font-medium text-sm leading-none transition-transform duration-200 group-hover:translate-x-0.5">
+                                <span className="text-sm leading-none font-medium transition-transform duration-200 group-hover:translate-x-0.5">
                                   {route.eyebrow}
                                 </span>
                               </div>
 
                               <span
                                 id={`${route.href}-description`}
-                                className="line-clamp-1 font-light text-muted-foreground text-xs"
+                                className="text-muted-foreground line-clamp-1 text-xs font-light"
                               >
                                 {route.description}
                               </span>
                             </div>
 
                             {isActive ? (
-                              <Discover2 className="size-4 shrink-0 text-primary motion-safe:animate-bell-ring" />
+                              <Discover2 className="text-primary motion-safe:animate-bell-ring size-4 shrink-0" />
                             ) : (
                               <ForwardRight2
                                 className={cn(
@@ -219,7 +219,7 @@ export const MenuToggle: React.FC<
                           aria-label={social.platform}
                           onClick={() => play("forward")}
                         >
-                          <Icon className="size-4 group-hover:text-primary" />
+                          <Icon className="group-hover:text-primary size-4" />
                         </Link>
                       </motion.div>
                     );
@@ -231,7 +231,7 @@ export const MenuToggle: React.FC<
                     variants={menuItemVariants}
                     href={`mailto:${email}`}
                     onClick={() => play("forward")}
-                    className="flex w-max items-center gap-1.5 font-extralight text-sm tracking-[0.03em] hover:text-primary"
+                    className="hover:text-primary flex w-max items-center gap-1.5 text-sm font-extralight tracking-[0.03em]"
                   >
                     {email}
                   </motion.a>
@@ -240,7 +240,7 @@ export const MenuToggle: React.FC<
                     variants={menuItemVariants}
                     href={`tel:${phone}`}
                     onClick={() => play("forward")}
-                    className="flex w-max items-center gap-1.5 font-extralight text-sm tracking-[0.03em] hover:text-primary"
+                    className="hover:text-primary flex w-max items-center gap-1.5 text-sm font-extralight tracking-[0.03em]"
                   >
                     {phone}
                   </motion.a>

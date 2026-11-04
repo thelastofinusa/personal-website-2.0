@@ -87,7 +87,7 @@ const rowClass =
 const ContactRow = ({ label, href, external, icon: Icon }: ContactRowProps) => {
   const content = (
     <>
-      {Icon && <Icon className="size-4 motion-safe:animate-bell-ring" />}
+      {Icon && <Icon className="motion-safe:animate-bell-ring size-4" />}
 
       <span className={external ? "capitalize" : undefined}>{label}</span>
     </>
@@ -383,10 +383,10 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
               role="button"
               tabIndex={0}
               onClick={handleStart}
-              className="group flex cursor-pointer flex-col gap-3 rounded-lg border bg-background px-4 py-3.5 transition-colors hover:text-primary"
+              className="group bg-background hover:text-primary flex cursor-pointer flex-col gap-3 rounded-lg border px-4 py-3.5 transition-colors"
             >
               <div className="flex items-center justify-between">
-                <p className="flex flex-col font-light text-sm">
+                <p className="flex flex-col text-sm font-light">
                   <span>Have something on your mind?</span>
                   <span>Leave a message</span>
                 </p>
@@ -405,7 +405,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
           >
             <div className="group flex flex-col gap-3 rounded-lg border border-green-500 bg-green-500/5 px-4 py-3.5 text-green-600 transition-colors dark:bg-green-500/10">
               <div className="flex items-center justify-between">
-                <p className="font-light text-sm">
+                <p className="text-sm font-light">
                   Thanks{" "}
                   <strong>
                     {watchedValues.name
@@ -429,7 +429,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
             <FieldSet>
               <FieldGroup>
                 <Field>
-                  <FieldLabel className="flex items-center justify-between px-2 font-normal text-[13px]">
+                  <FieldLabel className="flex items-center justify-between px-2 text-[13px] font-normal">
                     <span>{current.label}</span>
                     <span>
                       Steps {step + 1} / {STEPS.length}
@@ -477,7 +477,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
                               className="ml-auto"
                               isLoading={isSending}
                             >
-                              <span className="font-medium text-xs">
+                              <span className="text-xs font-medium">
                                 Submit
                               </span>
                             </InputGroupButton>
@@ -512,7 +512,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
                               disabled={isSending}
                               onClick={goNext}
                             >
-                              <span className="font-medium text-xs">Next</span>
+                              <span className="text-xs font-medium">Next</span>
                             </InputGroupButton>
                           </InputGroupAddon>
                         </InputGroup>
@@ -521,7 +521,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
                   </AnimatePresence>
 
                   <div className="px-2">
-                    <FieldError className="font-normal text-[13px]">
+                    <FieldError className="text-[13px] font-normal">
                       <span>{currentError ?? serverError}</span>
                     </FieldError>
 
@@ -545,7 +545,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
                           size="xs"
                           onClick={goBack}
                           disabled={isSending}
-                          className="ml-auto py-0 text-foreground hover:no-underline"
+                          className="text-foreground ml-auto py-0 hover:no-underline"
                         >
                           <ChevronLeftIcon className="size-3.5" />
                           <span>Go Back</span>

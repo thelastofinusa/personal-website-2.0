@@ -1,5 +1,6 @@
 import { defineQuery } from "next-sanity";
 import type { TimelineListQueryResult } from "~/sanity.types";
+import { sanityQuery } from "../lib/fetch";
 import { NO_STEGA, sanityFetch } from "../lib/live";
 
 const timelineList = `
@@ -59,11 +60,9 @@ const query = {
 };
 
 export async function fetchTimeline(): Promise<TimelineListQueryResult> {
-  const { data } = await sanityFetch({ query: query.all, ...NO_STEGA });
-  return data;
+  return sanityQuery<TimelineListQueryResult>({ query: query.all });
 }
 
 export async function fetchLatestTimelines(): Promise<TimelineListQueryResult> {
-  const { data } = await sanityFetch({ query: query.latest, ...NO_STEGA });
-  return data;
+  return sanityQuery<TimelineListQueryResult>({ query: query.latest });
 }

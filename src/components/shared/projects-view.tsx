@@ -120,12 +120,12 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
               <div className="flex items-start gap-4 lg:col-span-7 lg:gap-6">
                 {/* Index + Icon Stack */}
                 <div className="mt-1.5 hidden flex-col items-center gap-1 md:block">
-                  <span className="font-mono font-normal text-muted-foreground text-xs transition-colors group-hover:text-primary">
+                  <span className="text-muted-foreground group-hover:text-primary font-mono text-xs font-normal transition-colors">
                     {formattedIndex}
                   </span>
                   <Reicon
                     name={icon}
-                    className="size-4 text-muted-foreground transition-transform duration-300 group-hover:scale-110 group-hover:text-primary"
+                    className="text-muted-foreground group-hover:text-primary size-4 transition-transform duration-300 group-hover:scale-110"
                   />
                 </div>
 
@@ -134,15 +134,15 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
                   <div className="flex items-center gap-2">
                     <Reicon
                       name={icon}
-                      className="mb-0.5 block size-5 text-muted-foreground transition-transform duration-300 group-hover:scale-110 group-hover:text-primary md:hidden"
+                      className="text-muted-foreground group-hover:text-primary mb-0.5 block size-5 transition-transform duration-300 group-hover:scale-110 md:hidden"
                     />
-                    <h1 className="font-light font-serif text-[28px] tracking-tight transition-colors duration-300 group-hover:text-primary md:text-[32px] lg:text-[42px]">
+                    <h1 className="group-hover:text-primary font-serif text-[28px] font-light tracking-tight transition-colors duration-300 md:text-[32px] lg:text-[42px]">
                       {item.name}
                     </h1>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-muted-foreground/70 text-xs">
+                    <span className="text-muted-foreground/70 font-mono text-xs">
                       {formatDate(item.date as string)}
                     </span>
 
@@ -165,7 +165,7 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
                   </div>
 
                   {/* Mobile Description */}
-                  <div className="mt-2 font-light text-muted-foreground/80 text-sm leading-relaxed lg:hidden">
+                  <div className="text-muted-foreground/80 mt-2 text-sm leading-relaxed font-light lg:hidden">
                     <InlineMarkdown>{item.description}</InlineMarkdown>
                   </div>
                 </div>
@@ -173,7 +173,7 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
 
               {/* Right Column: Desktop Description */}
               <div className="hidden lg:col-span-5 lg:flex lg:items-center lg:justify-between lg:gap-6">
-                <div className="text-right font-light text-muted-foreground/80 text-sm leading-relaxed transition-colors duration-300 group-hover:text-foreground">
+                <div className="text-muted-foreground/80 group-hover:text-foreground text-right text-sm leading-relaxed font-light transition-colors duration-300">
                   <InlineMarkdown>{item.description}</InlineMarkdown>
                 </div>
               </div>
@@ -213,7 +213,7 @@ const ProjectGridItem: React.FC<ProjectItemProps> = ({
         variant="inverse"
         className="rounded-3xl transition-transform duration-500 ease-out group-hover:-translate-y-1"
       >
-        <div className="relative h-auto overflow-hidden rounded-[20px]! border border-border/60 bg-muted/20">
+        <div className="border-border/60 bg-muted/20 relative h-auto overflow-hidden rounded-[20px]! border">
           <CustomImage
             src={item.mainImage?.image as string}
             ogUrl={item.url as string}
@@ -242,15 +242,15 @@ const ProjectGridItem: React.FC<ProjectItemProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Reicon name={icon} className="mb-0.5 size-4" />
-            <p className="font-normal font-serif text-lg">{item.name}</p>
+            <p className="font-serif text-lg font-normal">{item.name}</p>
           </div>
 
-          <p className="font-light text-sm">
+          <p className="text-sm font-light">
             {formatDate(item.date as string)}
           </p>
         </div>
 
-        <div className="font-extralight text-[13px] leading-relaxed">
+        <div className="text-[13px] leading-relaxed font-extralight">
           <InlineMarkdown>{item.description}</InlineMarkdown>
         </div>
       </div>

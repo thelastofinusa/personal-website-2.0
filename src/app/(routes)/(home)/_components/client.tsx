@@ -112,7 +112,7 @@ export const HomeClientPage: React.FC<{
   );
 
   return (
-    <div className="flex-1 overflow-x-clip bg-background">
+    <div className="bg-background flex-1 overflow-x-clip">
       <section className="sticky top-0 flex-1 md:h-dvh">
         <Container className="h-full" size="xs">
           <HomeHero />
