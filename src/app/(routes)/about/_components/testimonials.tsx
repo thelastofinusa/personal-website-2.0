@@ -62,7 +62,7 @@ export const Testimonials: React.FC<{
                       {renderStars(item.rating as number)}
                     </div>
 
-                    <p className="font-mono text-xs font-normal">
+                    <p className="text-sm font-normal">
                       {item.rating?.toFixed(1)}{" "}
                       <span className="text-muted-foreground">of</span> 5
                     </p>
