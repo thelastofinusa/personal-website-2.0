@@ -1,5 +1,7 @@
 export { cn } from "cn";
 
+import { Avatar, Style } from "@dicebear/core";
+import definition from "@dicebear/styles/slice.json" with { type: "json" };
 import { format } from "date-fns";
 import type { FilteredResponseQueryOptions } from "next-sanity";
 
@@ -48,3 +50,17 @@ export const revalidateOption: FilteredResponseQueryOptions = {
     revalidate: 60 * 60 * 24, // 24 hours
   },
 };
+
+export function generateAvatar(value: string) {
+  const style = new Style(definition);
+  const avatar = new Avatar(style, {
+    seed: value,
+  });
+
+  const dataUri = avatar.toDataUri();
+
+  // Use in HTML
+  // <img src={dataUri} alt="Avatar" />
+
+  return dataUri;
+}

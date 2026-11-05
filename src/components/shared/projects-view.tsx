@@ -136,7 +136,7 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
                       name={icon}
                       className="text-muted-foreground group-hover:text-primary mb-0.5 block size-5 transition-transform duration-300 group-hover:scale-110 md:hidden"
                     />
-                    <h1 className="group-hover:text-primary font-serif text-[28px] font-light tracking-tight transition-colors duration-300 md:text-[32px] lg:text-[42px]">
+                    <h1 className="group-hover:text-primary font-serif text-[28px] font-light tracking-tight transition-colors duration-300 md:text-[32px] lg:text-[40px]">
                       {item.name}
                     </h1>
                   </div>
@@ -250,7 +250,7 @@ const ProjectGridItem: React.FC<ProjectItemProps> = ({
           </p>
         </div>
 
-        <div className="text-[13px] leading-relaxed font-extralight">
+        <div className="text-[13px] leading-relaxed font-normal">
           <InlineMarkdown>{item.description}</InlineMarkdown>
         </div>
       </div>

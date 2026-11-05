@@ -36,7 +36,7 @@ export const HomeHero = () => {
           variants={itemVariants}
           className="flex items-center gap-2 text-sm md:text-lg"
         >
-          <span className="font-extralight">Your friendly</span>
+          <span className="font-normal">Your friendly</span>
           <Avatar size="xs" className="mb-0.5">
             <AvatarImage
               src={siteConfig.author.avatar}
@@ -46,7 +46,7 @@ export const HomeHero = () => {
               {getInitials(siteConfig.author.name)}
             </AvatarFallback>
           </Avatar>
-          <span className="font-extralight">neighborhood developer</span>
+          <span className="font-normal">neighborhood developer</span>
         </motion.p>
 
         <motion.h1
@@ -91,7 +91,7 @@ export const HomeHero = () => {
 
         <motion.p
           variants={itemVariants}
-          className="text-muted-foreground mt-4 max-w-lg text-base font-extralight md:text-center md:text-[17px]"
+          className="text-muted-foreground mt-4 max-w-lg text-base font-normal md:text-center md:text-[17px]"
         >
           Equal parts{" "}
           <span className="text-foreground font-normal">design</span> and{" "}

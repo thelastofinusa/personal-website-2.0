@@ -3,6 +3,7 @@
 import { Resend } from "resend";
 import AutoReplyEmail from "@/emails/auto-reply-email";
 import ContactEmail from "@/emails/contact-email";
+import TestimonialEmail from "@/emails/testimonial-email";
 
 type TestResult = { ok: boolean; message: string };
 
@@ -18,7 +19,11 @@ export async function sendTestEmail(template: unknown): Promise<TestResult> {
     return { ok: false, message: "Test emails are disabled in production." };
   }
 
-  if (template !== "contact" && template !== "auto-reply") {
+  if (
+    template !== "contact" &&
+    template !== "auto-reply" &&
+    template !== "testimonial"
+  ) {
     return { ok: false, message: "Unknown template." };
   }
 
@@ -43,12 +48,16 @@ export async function sendTestEmail(template: unknown): Promise<TestResult> {
       subject:
         template === "contact"
           ? "[Test] New message from Amara"
-          : "[Test] Thanks for reaching out",
+          : template === "auto-reply"
+            ? "[Test] Thanks for reaching out"
+            : "[Test] New testimonial from Amara (needs approval)",
       react:
         template === "contact" ? (
           <ContactEmail {...ContactEmail.PreviewProps} />
-        ) : (
+        ) : template === "auto-reply" ? (
           <AutoReplyEmail {...AutoReplyEmail.PreviewProps} />
+        ) : (
+          <TestimonialEmail {...TestimonialEmail.PreviewProps} />
         ),
     });
 

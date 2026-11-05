@@ -82,12 +82,12 @@ type ContactRowProps = {
 };
 
 const rowClass =
-  "flex w-max items-center gap-2 font-extralight text-[15px] tracking-[0.03em]";
+  "flex w-max items-center gap-2 font-light text-[15px] tracking-[0.03em]";
 
 const ContactRow = ({ label, href, external, icon: Icon }: ContactRowProps) => {
   const content = (
     <>
-      {Icon && <Icon className="motion-safe:animate-bell-ring size-4" />}
+      {Icon && <Icon className="motion-safe:animate-bell-ring size-4.5" />}
 
       <span className={external ? "capitalize" : undefined}>{label}</span>
     </>
@@ -366,7 +366,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"
-        className="absolute -left-[9999px] h-0 w-0 opacity-0"
+        className="absolute left-[-9999px] h-0 w-0 opacity-0"
         {...form.register("website")}
       />
 
@@ -386,7 +386,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
               className="group bg-background hover:text-primary flex cursor-pointer flex-col gap-3 rounded-lg border px-4 py-3.5 transition-colors"
             >
               <div className="flex items-center justify-between">
-                <p className="flex flex-col text-sm font-light">
+                <p className="flex flex-col text-sm">
                   <span>Have something on your mind?</span>
                   <span>Leave a message</span>
                 </p>
@@ -512,7 +512,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
                               disabled={isSending}
                               onClick={goNext}
                             >
-                              <span className="text-xs font-medium">Next</span>
+                              <span className="font-medium">Next</span>
                             </InputGroupButton>
                           </InputGroupAddon>
                         </InputGroup>

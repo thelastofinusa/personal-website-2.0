@@ -17,7 +17,6 @@ const ImagePreviewProvider = dynamic(
   { ssr: false, loading: () => null },
 );
 
-import { cn } from "cn";
 import { Router3 } from "reicon-react";
 import {
   GitHubContributions,
@@ -38,7 +37,6 @@ import { TextContent } from "@/components/shared/text-content";
 import { siteConfig } from "@/config/site.config";
 import { navLinksData } from "@/constants/navigation";
 import {
-  itemVariants,
   parentVariants,
   snapshotImageVariants,
   workItemVariants,
@@ -51,8 +49,9 @@ import type {
   TestimonialsListQueryResult,
   TimelineListQueryResult,
 } from "~/sanity.types";
+import { AddReview } from "./add-review";
 import { DailyApps } from "./dailyApps";
-import { Testimonials } from "./testimonials";
+import { Testimonial } from "./testimonial";
 
 const introduction = `Hey, I’m **${siteConfig.author.name}**—though most people just call me **${siteConfig.author.nickname}** [🔊](pronunciation) or **${siteConfig.author.nicknameShorten}**.
 
@@ -284,7 +283,13 @@ export const AboutPageClient: React.FC<{
           >
             <Container size="md">
               <div className="flex flex-col gap-8 md:gap-12">
-                <Testimonials testimonials={testimonials} />
+                <div className="columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3">
+                  {testimonials.map((item) => (
+                    <Testimonial key={item._id} testimonial={item} />
+                  ))}
+
+                  <AddReview />
+                </div>
 
                 <AnimatePresence mode="popLayout">
                   <motion.div

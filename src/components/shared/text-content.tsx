@@ -30,7 +30,7 @@ export const TextContent: React.FC<TextContentProps> = ({
           p: ({ children }) => (
             <motion.p
               variants={itemVariants}
-              className="mb-6 font-extralight text-[15px] tracking-[0.03em] last:mb-0 md:text-[17px]"
+              className="mb-6 text-[15px] font-light tracking-[0.03em] last:mb-0 md:text-[17px]"
             >
               {children}
             </motion.p>
@@ -51,7 +51,7 @@ export const TextContent: React.FC<TextContentProps> = ({
               return (
                 <Link
                   href={href as Route}
-                  className="link-underline transition-colors hover:text-primary!"
+                  className="link-underline hover:text-primary! transition-colors"
                 >
                   {children}
                 </Link>
@@ -63,7 +63,7 @@ export const TextContent: React.FC<TextContentProps> = ({
                 href={href as string}
                 target="_blank"
                 rel="noreferrer"
-                className="link-underline transition-colors hover:text-primary!"
+                className="link-underline hover:text-primary! transition-colors"
               >
                 {children}
               </LinkPreview>

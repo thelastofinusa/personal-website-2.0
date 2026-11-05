@@ -316,7 +316,7 @@ export const SoundFXToggle: React.FC<
 
                           <span
                             className={cn(
-                              "font-medium text-xs capitalize",
+                              "font-medium text-[10px]",
                               isActive ? colors.text : "text-foreground",
                             )}
                           >
@@ -343,7 +343,7 @@ export const SoundFXToggle: React.FC<
                         setPage((prev) => Math.max(0, prev - 1));
                       }}
                       className={cn(
-                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-lg border-border/50 bg-muted/20 py-2.5 font-medium text-muted-foreground text-xs transition-all duration-200",
+                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-lg border-border/50 bg-muted/20 py-2.5 font-medium text-muted-foreground transition-all duration-200",
                         "hover:border-muted-foreground/30 hover:bg-muted/30 hover:text-foreground active:scale-[0.98]",
                       )}
                     >
@@ -365,7 +365,7 @@ export const SoundFXToggle: React.FC<
                         setPage((prev) => Math.min(totalPages - 1, prev + 1));
                       }}
                       className={cn(
-                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-lg border-border/50 bg-muted/20 py-2.5 font-medium text-muted-foreground text-xs transition-all duration-200",
+                        "flex h-auto flex-1 items-center justify-center gap-1.5 rounded-lg border-border/50 bg-muted/20 py-2.5 font-medium text-muted-foreground transition-all duration-200",
                         "hover:border-muted-foreground/30 hover:bg-muted/30 hover:text-foreground active:scale-[0.98]",
                       )}
                     >

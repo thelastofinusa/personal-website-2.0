@@ -50,15 +50,6 @@ export const testimonialSchema = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "avatar",
-      title: "Avatar / Image",
-      type: "image",
-      description: "Optional profile picture or logo.",
-      options: {
-        hotspot: true,
-      },
-    }),
-    defineField({
       name: "url",
       title: "URL",
       type: "url",
@@ -76,9 +67,8 @@ export const testimonialSchema = defineType({
       company: "company",
       rating: "rating",
       approve: "approve",
-      media: "avatar",
     },
-    prepare({ title, subtitle, company, rating, approve, media }) {
+    prepare({ title, subtitle, company, rating, approve }) {
       return {
         title: [title, approve && "✅"].filter(Boolean).join(" "),
         subtitle: [
@@ -88,7 +78,6 @@ export const testimonialSchema = defineType({
         ]
           .filter(Boolean)
           .join(" • "),
-        media,
       };
     },
   },

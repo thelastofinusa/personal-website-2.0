@@ -64,7 +64,7 @@ export default async function Projects() {
 const PageLoading = () => {
   return (
     <>
-      <section className="sticky top-0 bg-background pt-26 pb-16 md:py-30 lg:pt-36">
+      <section className="bg-background sticky top-0 pt-26 pb-16 md:py-30 lg:pt-36">
         <Container size="sm">
           <div className="flex flex-col gap-1.5">
             <div className="mb-4 flex w-max items-center gap-2">

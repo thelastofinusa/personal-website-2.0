@@ -6,8 +6,9 @@ import { sendTestEmail } from "@/actions/email-test.action";
 import { Button } from "@/components/reusable/shadcn/button";
 import AutoReplyEmail from "@/emails/auto-reply-email";
 import ContactEmail from "@/emails/contact-email";
+import TestimonialEmail from "@/emails/testimonial-email";
 
-type TemplateId = "contact" | "auto-reply";
+type TemplateId = "contact" | "auto-reply" | "testimonial";
 type Device = "mobile" | "desktop";
 type Mode = "light" | "dark";
 
@@ -20,8 +21,10 @@ function buildDocument(template: TemplateId, device: Device, mode: Mode) {
   const element =
     template === "contact" ? (
       <ContactEmail {...ContactEmail.PreviewProps} />
-    ) : (
+    ) : template === "auto-reply" ? (
       <AutoReplyEmail {...AutoReplyEmail.PreviewProps} />
+    ) : (
+      <TestimonialEmail {...TestimonialEmail.PreviewProps} />
     );
 
   // Force the dark stylesheet on (or off) so you can preview both modes
@@ -105,7 +108,7 @@ export const EmailPreview = () => {
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-4 py-10">
       <header className="flex flex-col gap-1">
-        <h1 className="font-medium text-lg">Email preview</h1>
+        <h1 className="text-lg font-medium">Email preview</h1>
         <p className="text-muted-foreground text-sm">
           Development only. Mail apps add their own padding and background, so
           the frame simulates them.
@@ -120,6 +123,7 @@ export const EmailPreview = () => {
           options={[
             { id: "contact", label: "Email to you" },
             { id: "auto-reply", label: "Visitor confirmation" },
+            { id: "testimonial", label: "New testimonial" },
           ]}
         />
         <Segmented
@@ -142,7 +146,7 @@ export const EmailPreview = () => {
         />
       </div>
 
-      <div className="overflow-x-auto rounded-lg border bg-muted/30 p-4">
+      <div className="bg-muted/30 overflow-x-auto rounded-lg border p-4">
         <iframe
           ref={iframeRef}
           title="Email preview"
@@ -169,7 +173,7 @@ export const EmailPreview = () => {
           <p
             role="status"
             className={
-              result.ok ? "text-green-600 text-sm" : "text-destructive text-sm"
+              result.ok ? "text-sm text-green-600" : "text-destructive text-sm"
             }
           >
             {result.message}

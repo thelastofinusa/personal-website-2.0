@@ -71,11 +71,11 @@ export const ArticleDetailsClient: React.FC<{
               <Link
                 href={`/articles/${previousArticle?.slug}`}
                 onClick={() => play("back")}
-                className="group flex min-w-0 flex-col gap-2 rounded-md border p-6 transition-colors hover:border-primary"
+                className="group hover:border-primary flex min-w-0 flex-col gap-2 rounded-md border p-6 transition-colors"
               >
                 <Eyebrow label="Previous Article" icon={ArrowLeft5} />
 
-                <MiddleTruncation className="line-clamp-1 font-medium font-serif text-base transition-colors group-hover:text-primary">
+                <MiddleTruncation className="group-hover:text-primary line-clamp-1 font-serif text-base font-medium transition-colors">
                   {previousArticle.title as string}
                 </MiddleTruncation>
               </Link>
@@ -92,7 +92,7 @@ export const ArticleDetailsClient: React.FC<{
               >
                 <Eyebrow label="Next Article" icon={ArrowRight5} reverse />
 
-                <MiddleTruncation className="line-clamp-1 font-medium font-serif text-base transition-colors group-hover:text-primary">
+                <MiddleTruncation className="group-hover:text-primary line-clamp-1 font-serif text-base font-medium transition-colors">
                   {nextArticle.title as string}
                 </MiddleTruncation>
               </Link>

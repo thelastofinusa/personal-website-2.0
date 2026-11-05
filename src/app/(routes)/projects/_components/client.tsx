@@ -300,7 +300,7 @@ export const ProjectsPageClient: React.FC<{
             <div className="flex flex-col items-center justify-center gap-3 px-6">
               <span className="bg-border h-px w-8" />
 
-              <p className="text-muted-foreground/60 text-center text-sm font-extralight italic md:text-base">
+              <p className="text-muted-foreground/60 text-center text-sm font-normal italic md:text-base">
                 More things are being built.
                 <br />
                 They’ll show up when they’re ready.

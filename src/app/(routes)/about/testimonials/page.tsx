@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ArrowLeft5 } from "reicon-react";
+import { redirect } from "next/navigation";
+import { Undo } from "reicon-react";
 import { ContactComp } from "@/components/shared/contact";
 import { Container } from "@/components/shared/container";
 import { CurveThingy } from "@/components/shared/curve-thingy";
@@ -9,7 +9,8 @@ import { siteConfig } from "@/config/site.config";
 import { navLinksData } from "@/constants/navigation";
 import { getOgImage } from "@/lib/og";
 import { fetchAllTestimonials } from "@/sanity/queries/testimonial.query";
-import { Testimonials } from "../_components/testimonials";
+import { AddReview } from "../_components/add-review";
+import { Testimonial } from "../_components/testimonial";
 
 const nav = navLinksData("/about/testimonials");
 
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
 export default async function TestimonialsPage() {
   const testimonials = await fetchAllTestimonials();
 
-  if (!testimonials.length) notFound();
+  if (!testimonials.length) redirect("/about");
 
   return (
     <div className="flex-1 overflow-x-clip">
@@ -60,15 +61,21 @@ export default async function TestimonialsPage() {
           <div className="flex flex-col gap-6 md:gap-10">
             <Container size="sm">
               <Eyebrow
-                label="Abort Exploration"
+                label="Take me back"
                 href="/about"
-                icon={ArrowLeft5}
+                icon={Undo}
                 className="mb-4"
               />
             </Container>
 
             <Container size="md">
-              <Testimonials testimonials={testimonials} />
+              <div className="columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3">
+                <AddReview />
+
+                {testimonials.map((item) => (
+                  <Testimonial key={item._id} testimonial={item} />
+                ))}
+              </div>
             </Container>
           </div>
         </div>

@@ -177,7 +177,7 @@ export const MenuToggle: React.FC<
 
                               <span
                                 id={`${route.href}-description`}
-                                className="text-muted-foreground line-clamp-1 text-xs font-light"
+                                className="text-muted-foreground line-clamp-1 text-xs font-normal"
                               >
                                 {route.description}
                               </span>
@@ -231,7 +231,7 @@ export const MenuToggle: React.FC<
                     variants={menuItemVariants}
                     href={`mailto:${email}`}
                     onClick={() => play("forward")}
-                    className="hover:text-primary flex w-max items-center gap-1.5 text-sm font-extralight tracking-[0.03em]"
+                    className="hover:text-primary flex w-max items-center gap-1.5 text-sm font-normal tracking-[0.03em]"
                   >
                     {email}
                   </motion.a>
@@ -240,7 +240,7 @@ export const MenuToggle: React.FC<
                     variants={menuItemVariants}
                     href={`tel:${phone}`}
                     onClick={() => play("forward")}
-                    className="hover:text-primary flex w-max items-center gap-1.5 text-sm font-extralight tracking-[0.03em]"
+                    className="hover:text-primary flex w-max items-center gap-1.5 text-sm font-normal tracking-[0.03em]"
                   >
                     {phone}
                   </motion.a>

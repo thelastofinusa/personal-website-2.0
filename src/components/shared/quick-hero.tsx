@@ -45,7 +45,7 @@ export const QuickHero: React.FC<IQuickHeroProps> = (props) => {
 
               <motion.p
                 variants={itemVariants}
-                className="max-w-xl flex-1 text-sm font-extralight md:text-base"
+                className="max-w-xl flex-1 text-sm font-normal md:text-base"
               >
                 {props.description}
               </motion.p>

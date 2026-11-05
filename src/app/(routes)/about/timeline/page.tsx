@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ArrowLeft5 } from "reicon-react";
+import { redirect } from "next/navigation";
+import { Undo } from "reicon-react";
 import { Timeline } from "@/components/reusable/chanhdai/timeline";
 import { ContactComp } from "@/components/shared/contact";
 import { Container } from "@/components/shared/container";
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
 export default async function TimelinePage() {
   const timeline = await fetchTimeline();
 
-  if (!timeline.length) notFound();
+  if (!timeline.length) redirect("/about");
 
   return (
     <div className="flex-1 overflow-x-clip">
@@ -59,9 +59,9 @@ export default async function TimelinePage() {
         <Container size="sm" className="pt-20 sm:pt-30 md:pt-36">
           <div className="flex flex-col gap-6 md:gap-10">
             <Eyebrow
-              label="Abort Exploration"
+              label="Take me back"
               href="/about"
-              icon={ArrowLeft5}
+              icon={Undo}
               className="mb-4"
             />
 

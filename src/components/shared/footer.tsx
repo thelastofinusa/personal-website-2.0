@@ -119,7 +119,7 @@ export const Footer = () => {
         >
           <Container size="md" className="mb-8 sm:mb-16 md:mb-24">
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end md:gap-6">
-              <p className="text-sm font-extralight sm:text-base md:text-lg">
+              <p className="text-sm font-normal sm:text-base md:text-lg">
                 Let's connect. <br /> I'm always down for a chat.
               </p>
 
@@ -191,7 +191,7 @@ export const Footer = () => {
 
           <Container size="md" className="relative pt-6 md:pt-10">
             <div className="text-center md:text-right">
-              <p className="text-muted-foreground text-[13px] font-extralight sm:text-base">
+              <p className="text-muted-foreground text-[13px] font-normal sm:text-base">
                 © {new Date().getFullYear()} Still shipping. Still figuring it
                 out.
               </p>
