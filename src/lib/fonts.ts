@@ -1,5 +1,4 @@
 import { cn } from "cn";
-import { Cinzel as FontSerif } from "next/font/google";
 import localFont from "next/font/local";
 
 const fontSans = localFont({
@@ -9,9 +8,11 @@ const fontSans = localFont({
   style: "normal",
 });
 
-const fontSerif = FontSerif({
+const fontSerif = localFont({
+  src: "../../public/fonts/Cinzel/Cinzel-VariableFont_wght.ttf",
   variable: "--font-serif",
-  subsets: ["latin"],
+  display: "swap",
+  style: "normal",
 });
 
 const fontMono = localFont({
