@@ -33,5 +33,12 @@
     "source.organizeImports.biome": "explicit",
     "source.fixAll.biome": "explicit"
   },
-  "cSpell.words": ["extralight", "osilama", "reicon", "STEGA", "uisfx"]
+  "cSpell.words": [
+    "extralight",
+    "keltra",
+    "osilama",
+    "reicon",
+    "STEGA",
+    "uisfx"
+  ]
 }

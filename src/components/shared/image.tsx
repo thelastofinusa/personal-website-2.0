@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/correctness/useExhaustiveDependencies: just ignore */
 "use client";
 
+import { assetPath } from "keltra";
 import Image, { type ImageProps as NextImageProps } from "next/image";
 import { forwardRef, type ReactEventHandler, useEffect, useState } from "react";
 
@@ -64,8 +65,8 @@ export const CustomImage = forwardRef<HTMLImageElement, CustomImageProps>(
   (
     {
       src,
-      fallbackSrc = "/broken.gif",
-      loadingGif = "/loading.gif",
+      fallbackSrc = assetPath("/broken.gif"),
+      loadingGif = assetPath("/loading.gif"),
       ogUrl,
       imageType = "og",
       onError,
