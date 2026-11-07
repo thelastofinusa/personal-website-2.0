@@ -146,6 +146,8 @@ export const AddReview = () => {
     formState: { errors },
   } = form;
 
+  const consent = useWatch({ control, name: "consentToDisplay" });
+
   React.useEffect(() => {
     if (status !== "sent") return;
 
@@ -269,8 +271,9 @@ export const AddReview = () => {
                           Testimonial Received!
                         </h3>
                         <p className="text-muted-foreground max-w-sm text-xs leading-relaxed md:text-sm">
-                          Thank you for your feedback. It’s pending quick review
-                          and will show up on the site soon.
+                          {consent
+                            ? "Thank you for your feedback. It’s pending quick review and will show up on the site soon."
+                            : "Thank you for your feedback. It’s saved privately and won’t be shown on the site."}
                         </p>
                       </div>
                     </motion.div>
@@ -541,7 +544,7 @@ export const AddReview = () => {
                             name="consentToDisplay"
                             control={control}
                             render={({ field }) => (
-                              <FieldLabel className="col-span-4 max-w-sm">
+                              <FieldLabel className="col-span-4">
                                 <Field
                                   orientation="horizontal"
                                   data-invalid={!!errors.consentToDisplay}
@@ -553,7 +556,7 @@ export const AddReview = () => {
                                     aria-invalid={!!errors.consentToDisplay}
                                   />
                                   <FieldContent>
-                                    <FieldTitle required>
+                                    <FieldTitle>
                                       You may show this on the site.
                                     </FieldTitle>
                                     {errors.consentToDisplay?.message ? (
@@ -563,7 +566,7 @@ export const AddReview = () => {
                                     ) : (
                                       <FieldDescription>
                                         With the name and role above, next to
-                                        the quote.
+                                        the quote. Leave off to keep it private.
                                       </FieldDescription>
                                     )}
                                   </FieldContent>

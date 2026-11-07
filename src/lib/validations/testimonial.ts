@@ -46,12 +46,11 @@ export const testimonialSchema = z.strictObject({
     .max(TESTIMONIAL_LIMITS.role.max, "Role must be at most 100 chars."),
 
   email: z
-    .string()
+    .email("That email doesn't look right.")
     .trim()
     .toLowerCase()
     .min(TESTIMONIAL_LIMITS.email.min, "Email must be at least 5 chars.")
-    .max(TESTIMONIAL_LIMITS.email.max, "That email is too long.")
-    .email("That email doesn't look right."),
+    .max(TESTIMONIAL_LIMITS.email.max, "That email is too long."),
 
   company: z
     .string()
@@ -96,10 +95,9 @@ export const testimonialSchema = z.strictObject({
       "Enter a valid website URL (e.g. example.com)",
     ),
 
-  // Inside your Zod schema definition:
-  consentToDisplay: z.boolean().refine((val) => val === true, {
-    message: "Turn on permission so we may show your card",
-  }),
+  // Optional: visitors choose true or false. false means "keep it private".
+  // Defaults to false so a missing value is never treated as permission.
+  consentToDisplay: z.boolean().default(false),
 });
 
 export type TestimonialFormValues = z.infer<typeof testimonialSchema>;

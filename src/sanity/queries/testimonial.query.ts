@@ -14,16 +14,16 @@ const testimonialFields = `
   consentToDisplay
 `;
 
-// Filters strictly for testimonials where approve is true
+// Only approved testimonials whose author allowed them to be shown
 const testimonialsListQuery = defineQuery(`
-  *[_type == "testimonial" && approve == true] | order(_createdAt desc) {
+  *[_type == "testimonial" && approve == true && consentToDisplay == true] | order(_createdAt desc) {
     ${testimonialFields}
   }
 `);
 
 // Filters strictly for approved testimonials, orders by newest first, and slices the first 6
 const latestTestimonialsQuery = defineQuery(`
-  *[_type == "testimonial" && approve == true] | order(_createdAt desc)[0...5] {
+  *[_type == "testimonial" && approve == true && consentToDisplay == true] | order(_createdAt desc)[0...5] {
     ${testimonialFields}
   }
 `);

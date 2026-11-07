@@ -69,10 +69,9 @@ export const testimonialSchema = defineType({
       name: "consentToDisplay",
       title: "Consent to Display",
       type: "boolean",
-      description: "User agreed to show this on the site",
+      description:
+        "Whether the author allows this to be shown on the site. If off, approving only sends the author a confirmation email; it stays off the site.",
       initialValue: false,
-      validation: (Rule) =>
-        Rule.required().error("You must agree to show this on the site."),
     }),
     defineField({
       name: "approve",
@@ -81,6 +80,14 @@ export const testimonialSchema = defineType({
       description: "Approve testimonial to show on website",
       initialValue: false,
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "approvalEmailSentAt",
+      title: "Approval email sent at",
+      type: "datetime",
+      description:
+        "Set automatically when the approval email goes out. Stops duplicate emails.",
+      readOnly: true,
     }),
   ],
   preview: {

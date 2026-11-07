@@ -1,8 +1,9 @@
 "use server";
 
 import { headers } from "next/headers";
-import { Resend } from "resend";
+import AutoReplyEmail, { getAutoReplySubject } from "@/emails/auto-reply-email";
 import TestimonialEmail from "@/emails/testimonial-email";
+import { canEmailVisitors, sendMail } from "@/lib/mailer";
 import { checkContactRateLimit } from "@/lib/rate-limit";
 import {
   type TestimonialActionResult,
@@ -10,7 +11,6 @@ import {
 } from "@/lib/validations/testimonial";
 import { writeClient } from "@/sanity/lib/client";
 
-const SEND_TIMEOUT_MS = 15_000;
 const FIELDS: readonly string[] = [
   "name",
   "email",
@@ -20,26 +20,10 @@ const FIELDS: readonly string[] = [
   "consentToDisplay",
 ];
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
-
 async function getClientIp(): Promise<string> {
   const h = await headers();
   const forwarded = h.get("x-forwarded-for")?.split(",")[0]?.trim();
   return h.get("x-real-ip") ?? forwarded ?? "unknown";
-}
-
-async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error("Timed out")), ms);
-  });
-  try {
-    return await Promise.race([promise, timeout]);
-  } finally {
-    clearTimeout(timer);
-  }
 }
 
 export async function submitTestimonial(
@@ -123,40 +107,55 @@ export async function submitTestimonial(
   }
 
   const to = process.env.CONTACT_TO_EMAIL;
-  const fromAddress =
-    process.env.CONTACT_FROM_EMAIL ?? "Portfolio <onboarding@resend.dev>";
 
-  if (resend && to) {
-    try {
-      const { error } = await withTimeout(
-        resend.emails.send({
-          from: fromAddress,
-          to: [to],
-          subject: `New testimonial from ${name} (needs approval)`,
-          react: (
-            <TestimonialEmail
-              _id={createdId}
-              name={name}
-              email={email}
-              role={role}
-              company={company || undefined}
-              content={content}
-              rating={rating}
-              url={url || undefined}
-              receivedAt={new Date()}
-            />
-          ),
-          headers: { "X-Entity-Ref-ID": crypto.randomUUID() },
-        }),
-        SEND_TIMEOUT_MS,
-      );
+  // Both emails are best effort. The testimonial is already saved in Sanity,
+  // so an email problem must never show the visitor an error.
 
-      if (error) {
-        console.error("[testimonial] Resend error:", error.name, error.message);
-      }
-    } catch (sendError) {
-      console.error("[testimonial] send failed:", sendError);
-    }
+  // 1. Notification to you, with the "Approve in Sanity" button
+  if (to) {
+    const notice = await sendMail({
+      to,
+      replyTo: email,
+      subject: `New testimonial from ${name} (needs approval)`,
+      react: (
+        <TestimonialEmail
+          _id={createdId}
+          name={name}
+          email={email}
+          role={role}
+          company={company || undefined}
+          content={content}
+          rating={rating}
+          url={url || undefined}
+          consentToDisplay={consentToDisplay}
+          receivedAt={new Date()}
+        />
+      ),
+    });
+
+    if (!notice.ok) console.error("[testimonial] notify failed:", notice.error);
+  }
+
+  // 2. "We got it" email to the visitor. Wording depends on their consent.
+  // Never echoes their text back, so this can't be used to relay content.
+  if (canEmailVisitors()) {
+    const props = {
+      variant: "testimonial-received",
+      name,
+      senderName: process.env.CONTACT_SENDER_NAME ?? "Osilama",
+      consentToDisplay,
+    } as const;
+
+    const receipt = await sendMail({
+      to: email,
+      replyTo: to,
+      subject: getAutoReplySubject(props),
+      react: <AutoReplyEmail {...props} />,
+      automatic: true,
+    });
+
+    if (!receipt.ok)
+      console.error("[testimonial] receipt failed:", receipt.error);
   }
 
   return { ok: true };

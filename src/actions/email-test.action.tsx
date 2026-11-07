@@ -1,76 +1,72 @@
 "use server";
 
-import { Resend } from "resend";
-import AutoReplyEmail from "@/emails/auto-reply-email";
+import type { ReactElement } from "react";
+import AutoReplyEmail, {
+  type AutoReplyPreviewId,
+  autoReplyPreviews,
+  getAutoReplySubject,
+} from "@/emails/auto-reply-email";
 import ContactEmail from "@/emails/contact-email";
 import TestimonialEmail from "@/emails/testimonial-email";
+import { getMailProvider, sendMail } from "@/lib/mailer";
 
 type TestResult = { ok: boolean; message: string };
 
+const STATIC_TEMPLATES = ["contact", "testimonial"] as const;
+
 /**
- * Development helper for the /email-preview page.
+ * Development helper for the /preview page.
  *
  * - Disabled in production builds.
  * - Always sends to CONTACT_TO_EMAIL, never to an address from the client.
- * - Returns Resend's real error text so you can see why a send fails.
+ * - Returns the real provider error so you can see why a send fails.
  */
 export async function sendTestEmail(template: unknown): Promise<TestResult> {
   if (process.env.NODE_ENV === "production") {
     return { ok: false, message: "Test emails are disabled in production." };
   }
 
-  if (
-    template !== "contact" &&
-    template !== "auto-reply" &&
-    template !== "testimonial"
-  ) {
+  const isStatic = STATIC_TEMPLATES.includes(
+    template as (typeof STATIC_TEMPLATES)[number],
+  );
+  const isVariant =
+    typeof template === "string" && template in autoReplyPreviews;
+
+  if (!isStatic && !isVariant)
     return { ok: false, message: "Unknown template." };
-  }
 
-  const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO_EMAIL;
+  const provider = getMailProvider();
 
-  if (!apiKey || !to) {
+  if (!provider || !to) {
     return {
       ok: false,
       message:
-        "Set RESEND_API_KEY and CONTACT_TO_EMAIL in .env.local, then restart the dev server.",
+        "Set CONTACT_TO_EMAIL plus GMAIL_USER and GMAIL_APP_PASSWORD (or RESEND_API_KEY) in .env.local, then restart the dev server.",
     };
   }
 
-  const from =
-    process.env.CONTACT_FROM_EMAIL ?? "Portfolio <onboarding@resend.dev>";
+  let subject: string;
+  let react: ReactElement;
 
-  try {
-    const { data, error } = await new Resend(apiKey).emails.send({
-      from,
-      to: [to],
-      subject:
-        template === "contact"
-          ? "[Test] New message from Amara"
-          : template === "auto-reply"
-            ? "[Test] Thanks for reaching out"
-            : "[Test] New testimonial from Amara (needs approval)",
-      react:
-        template === "contact" ? (
-          <ContactEmail {...ContactEmail.PreviewProps} />
-        ) : template === "auto-reply" ? (
-          <AutoReplyEmail {...AutoReplyEmail.PreviewProps} />
-        ) : (
-          <TestimonialEmail {...TestimonialEmail.PreviewProps} />
-        ),
-    });
-
-    if (error) return { ok: false, message: `${error.name}: ${error.message}` };
-
-    return {
-      ok: true,
-      message: `Sent to ${to} (id ${data?.id}). Check your inbox and spam folder.`,
-    };
-  } catch (error) {
-    return {
-      ok: false,
-      message: error instanceof Error ? error.message : "Unknown error",
-    };
+  if (template === "contact") {
+    subject = "[Test] New message from Amara";
+    react = <ContactEmail {...ContactEmail.PreviewProps} />;
+  } else if (template === "testimonial") {
+    subject = "[Test] New testimonial from Amara (needs approval)";
+    react = <TestimonialEmail {...TestimonialEmail.PreviewProps} />;
+  } else {
+    const props = autoReplyPreviews[template as AutoReplyPreviewId];
+    subject = `[Test] ${getAutoReplySubject(props)}`;
+    react = <AutoReplyEmail {...props} />;
   }
+
+  const result = await sendMail({ to, subject, react });
+
+  if (!result.ok) return { ok: false, message: result.error };
+
+  return {
+    ok: true,
+    message: `Sent to ${to} via ${provider}. Check your inbox and spam folder.`,
+  };
 }

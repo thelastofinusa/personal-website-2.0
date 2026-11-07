@@ -19,6 +19,7 @@ export interface TestimonialEmailProps {
   content: string;
   rating: number;
   url?: string;
+  consentToDisplay: boolean;
   receivedAt: Date;
 }
 
@@ -31,6 +32,7 @@ export default function TestimonialEmail({
   content,
   rating,
   url,
+  consentToDisplay,
   receivedAt,
 }: TestimonialEmailProps) {
   const firstName = name.trim().split(" ")[0];
@@ -109,6 +111,14 @@ export default function TestimonialEmail({
         </Row>
         <Row style={styles.row}>
           <Column className="em-muted" style={styles.label}>
+            Display
+          </Column>
+          <Column className="em-text" style={styles.value}>
+            {consentToDisplay ? "Allowed on the site" : "Keep private"}
+          </Column>
+        </Row>
+        <Row style={styles.row}>
+          <Column className="em-muted" style={styles.label}>
             Email
           </Column>
           <Column className="em-text" style={styles.value}>
@@ -132,8 +142,12 @@ export default function TestimonialEmail({
       </Section>
 
       <Text className="em-muted" style={styles.footer}>
-        This testimonial was saved with <strong>approve = false</strong>. Review
-        it in Sanity and toggle "Approve Testimonial" to show it on the site.
+        This testimonial was saved with <strong>approve = false</strong>. Toggle
+        "Approve Testimonial" in Sanity and click Publish. The author gets an
+        email automatically.
+        {consentToDisplay
+          ? ""
+          : " They chose to keep it private, so it will not appear on the site."}
       </Text>
     </ParentEmail>
   );
@@ -149,6 +163,7 @@ TestimonialEmail.PreviewProps = {
     "Amazing work! The portfolio site really captures my brand. Highly recommended.",
   rating: 5,
   url: "https://example.com",
+  consentToDisplay: true,
   receivedAt: new Date("2026-11-05T09:15:00Z"),
 } satisfies TestimonialEmailProps;
 

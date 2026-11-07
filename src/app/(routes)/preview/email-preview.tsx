@@ -4,11 +4,14 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { sendTestEmail } from "@/actions/email-test.action";
 import { Button } from "@/components/reusable/shadcn/button";
-import AutoReplyEmail from "@/emails/auto-reply-email";
+import AutoReplyEmail, {
+  type AutoReplyPreviewId,
+  autoReplyPreviews,
+} from "@/emails/auto-reply-email";
 import ContactEmail from "@/emails/contact-email";
 import TestimonialEmail from "@/emails/testimonial-email";
 
-type TemplateId = "contact" | "auto-reply" | "testimonial";
+type TemplateId = "contact" | "testimonial" | AutoReplyPreviewId;
 type Device = "mobile" | "desktop";
 type Mode = "light" | "dark";
 
@@ -21,10 +24,10 @@ function buildDocument(template: TemplateId, device: Device, mode: Mode) {
   const element =
     template === "contact" ? (
       <ContactEmail {...ContactEmail.PreviewProps} />
-    ) : template === "auto-reply" ? (
-      <AutoReplyEmail {...AutoReplyEmail.PreviewProps} />
-    ) : (
+    ) : template === "testimonial" ? (
       <TestimonialEmail {...TestimonialEmail.PreviewProps} />
+    ) : (
+      <AutoReplyEmail {...autoReplyPreviews[template]} />
     );
 
   // Force the dark stylesheet on (or off) so you can preview both modes
@@ -121,9 +124,25 @@ export const EmailPreview = () => {
           value={template}
           onChange={setTemplate}
           options={[
-            { id: "contact", label: "Email to you" },
-            { id: "auto-reply", label: "Visitor confirmation" },
-            { id: "testimonial", label: "New testimonial" },
+            { id: "contact", label: "To you: contact" },
+            { id: "testimonial", label: "To you: testimonial" },
+            { id: "contact-received", label: "Visitor: contact" },
+            {
+              id: "testimonial-received-public",
+              label: "Visitor: received (public)",
+            },
+            {
+              id: "testimonial-received-private",
+              label: "Visitor: received (private)",
+            },
+            {
+              id: "testimonial-approved-public",
+              label: "Visitor: approved (public)",
+            },
+            {
+              id: "testimonial-approved-private",
+              label: "Visitor: approved (private)",
+            },
           ]}
         />
         <Segmented

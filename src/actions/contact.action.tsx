@@ -1,9 +1,9 @@
 "use server";
 
 import { headers } from "next/headers";
-import { Resend } from "resend";
-import AutoReplyEmail from "@/emails/auto-reply-email";
+import AutoReplyEmail, { getAutoReplySubject } from "@/emails/auto-reply-email";
 import ContactEmail from "@/emails/contact-email";
+import { canEmailVisitors, sendMail } from "@/lib/mailer";
 import { checkContactRateLimit } from "@/lib/rate-limit";
 import {
   type ContactActionResult,
@@ -11,31 +11,13 @@ import {
   contactSchema,
 } from "@/lib/validations/contact";
 
-const SEND_TIMEOUT_MS = 15_000;
 const FIELDS: readonly string[] = ["name", "email", "message"];
-
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
 
 async function getClientIp(): Promise<string> {
   const h = await headers();
   // On Vercel these are set by the platform, not by the client.
   const forwarded = h.get("x-forwarded-for")?.split(",")[0]?.trim();
   return h.get("x-real-ip") ?? forwarded ?? "unknown";
-}
-
-async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error("Timed out")), ms);
-  });
-
-  try {
-    return await Promise.race([promise, timeout]);
-  } finally {
-    clearTimeout(timer);
-  }
 }
 
 /**
@@ -46,7 +28,7 @@ async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
  * Order matters:
  *   1. validate  (cheap, no network)
  *   2. honeypot  (bots get a fake success, so they don't adapt)
- *   3. rate limit (one Redis round trip, only for well-formed requests)
+ *   3. rate limit
  *   4. send
  */
 export async function sendContactMessage(
@@ -96,13 +78,11 @@ export async function sendContactMessage(
     };
   }
 
-  // 4. Send
+  // 4. Send: the notification to you comes first
   const to = process.env.CONTACT_TO_EMAIL;
-  const fromAddress =
-    process.env.CONTACT_FROM_EMAIL ?? "Portfolio <onboarding@resend.dev>";
 
-  if (!resend || !to) {
-    console.error("[contact] RESEND_API_KEY or CONTACT_TO_EMAIL is missing");
+  if (!to) {
+    console.error("[contact] CONTACT_TO_EMAIL is missing");
     return {
       ok: false,
       error: "send_failed",
@@ -110,88 +90,52 @@ export async function sendContactMessage(
     };
   }
 
-  try {
-    const { error } = await withTimeout(
-      resend.emails.send({
-        from: fromAddress,
-        to: [to],
-        replyTo: email,
-        subject: `New message from ${name}`,
-        react: (
-          <ContactEmail
-            name={name}
-            email={email}
-            message={message}
-            from={from}
-            receivedAt={new Date()}
-          />
-        ),
-        // Stops Gmail from threading every contact email together
-        headers: { "X-Entity-Ref-ID": crypto.randomUUID() },
-      }),
-      SEND_TIMEOUT_MS,
-    );
+  const sent = await sendMail({
+    to,
+    replyTo: email,
+    subject: `New message from ${name}`,
+    react: (
+      <ContactEmail
+        name={name}
+        email={email}
+        message={message}
+        from={from}
+        receivedAt={new Date()}
+      />
+    ),
+  });
 
-    if (error) {
-      console.error("[contact] Resend error:", error.name, error.message);
-      return {
-        ok: false,
-        error: "send_failed",
-        message: "Your message couldn't be sent. Please try again.",
-      };
-    }
-
-    // Confirmation to the visitor. Best effort: your inbox already has the
-    // message, so a failure here must never show the visitor an error.
-    //
-    // Deliberately does NOT echo their message back. This endpoint can be
-    // pointed at any address, so it should never relay visitor-written text.
-    try {
-      // The test sender (onboarding@resend.dev) can only deliver to your own
-      // Resend account email, so skip the confirmation until a verified
-      // sender is set in CONTACT_FROM_EMAIL.
-      if (!process.env.CONTACT_FROM_EMAIL) return { ok: true };
-
-      const { error: replyError } = await withTimeout(
-        resend.emails.send({
-          from: fromAddress,
-          to: [email],
-          replyTo: to,
-          subject: "Thanks for reaching out",
-          react: (
-            <AutoReplyEmail
-              name={name}
-              senderName={process.env.CONTACT_SENDER_NAME ?? "Holiday"}
-            />
-          ),
-          headers: {
-            // Tells mail systems this is automatic, so autoresponders don't loop
-            "Auto-Submitted": "auto-replied",
-            "X-Auto-Response-Suppress": "All",
-            "X-Entity-Ref-ID": crypto.randomUUID(),
-          },
-        }),
-        10_000,
-      );
-
-      if (replyError) {
-        console.error(
-          "[contact] auto-reply error:",
-          replyError.name,
-          replyError.message,
-        );
-      }
-    } catch (replyError) {
-      console.error("[contact] auto-reply failed:", replyError);
-    }
-
-    return { ok: true };
-  } catch (error) {
-    console.error("[contact] send failed:", error);
+  if (!sent.ok) {
+    console.error("[contact] send failed:", sent.error);
     return {
       ok: false,
       error: "send_failed",
       message: "Your message couldn't be sent. Please try again.",
     };
   }
+
+  // Confirmation to the visitor. Best effort: your inbox already has the
+  // message, so a failure here must never show the visitor an error.
+  //
+  // Deliberately does NOT echo their message back. This endpoint can be
+  // pointed at any address, so it should never relay visitor-written text.
+  if (canEmailVisitors()) {
+    const props = {
+      variant: "contact-received",
+      name,
+      senderName: process.env.CONTACT_SENDER_NAME ?? "Osilama",
+    } as const;
+
+    const reply = await sendMail({
+      to: email,
+      replyTo: to,
+      subject: getAutoReplySubject(props),
+      react: <AutoReplyEmail {...props} />,
+      automatic: true,
+    });
+
+    if (!reply.ok) console.error("[contact] auto-reply failed:", reply.error);
+  }
+
+  return { ok: true };
 }
