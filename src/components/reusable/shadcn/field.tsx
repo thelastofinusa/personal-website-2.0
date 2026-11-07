@@ -114,16 +114,23 @@ function FieldLabel({
   );
 }
 
-function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
+function FieldTitle({
+  className,
+  required,
+  ...props
+}: React.ComponentProps<"div"> & { required?: boolean }) {
   return (
     <div
       data-slot="field-label"
       className={cn(
-        "flex w-fit items-center gap-2 font-medium text-sm group-data-[disabled=true]/field:opacity-50",
+        "flex w-fit items-center gap-1.5 font-medium text-sm group-data-[disabled=true]/field:opacity-50",
         className,
       )}
       {...props}
-    />
+    >
+      {props.children}
+      {required && <span className="text-destructive">*</span>}
+    </div>
   );
 }
 

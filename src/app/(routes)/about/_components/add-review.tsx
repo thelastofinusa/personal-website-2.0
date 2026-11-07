@@ -27,6 +27,7 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
+  FieldTitle,
 } from "@/components/reusable/shadcn/field";
 import {
   InputGroup,
@@ -557,9 +558,9 @@ export const AddReview = () => {
                                     aria-invalid={!!errors.consentToDisplay}
                                   />
                                   <FieldContent>
-                                    <FieldLabel required>
+                                    <FieldTitle required>
                                       You may show this on the site.
-                                    </FieldLabel>
+                                    </FieldTitle>
                                     {errors.consentToDisplay?.message ? (
                                       <FieldError>
                                         {errors.consentToDisplay.message}
