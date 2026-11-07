@@ -114,7 +114,7 @@ export const AddReview = () => {
   const { play } = useSoundFx();
 
   const { isOpen: open, toggle: setOpen, close } = useToggle("testimonial");
-  const [status, setStatus] = React.useState<Status>("sent");
+  const [status, setStatus] = React.useState<Status>("idle");
   const [serverError, setServerError] = React.useState<string | null>(null);
   const [isSending, startTransition] = React.useTransition();
 
