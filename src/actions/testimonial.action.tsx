@@ -17,6 +17,7 @@ const FIELDS: readonly string[] = [
   "role",
   "content",
   "rating",
+  "consentToDisplay",
 ];
 
 const resend = process.env.RESEND_API_KEY
@@ -67,10 +68,7 @@ export async function submitTestimonial(
     };
   }
 
-  const { name, email, role, company, content, rating, url, website } =
-    parsed.data;
-
-  if (website) return { ok: true };
+  const { name, email, role, company, content, rating, url } = parsed.data;
 
   const ip = await getClientIp();
   const limit = await checkContactRateLimit(ip);

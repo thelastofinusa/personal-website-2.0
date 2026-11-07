@@ -10,7 +10,8 @@ const testimonialFields = `
   rating,
   approve,
   content,
-  url
+  url,
+  consentToDisplay
 `;
 
 // Filters strictly for testimonials where approve is true

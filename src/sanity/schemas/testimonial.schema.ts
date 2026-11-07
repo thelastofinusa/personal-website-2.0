@@ -11,6 +11,7 @@ export const testimonialSchema = defineType({
       name: "name",
       title: "Name",
       type: "string",
+      readOnly: process.env.NODE_ENV === "production",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -18,6 +19,7 @@ export const testimonialSchema = defineType({
       title: "Email",
       type: "string",
       description: "Client email address.",
+      readOnly: process.env.NODE_ENV === "production",
       validation: (Rule) => Rule.required().email(),
     }),
     defineField({
@@ -25,6 +27,7 @@ export const testimonialSchema = defineType({
       title: "Role",
       type: "string",
       description: "e.g. Engineering Lead, Founder",
+      readOnly: process.env.NODE_ENV === "production",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -32,14 +35,44 @@ export const testimonialSchema = defineType({
       title: "Company",
       type: "string",
       description: "Optional company name.",
+      readOnly: process.env.NODE_ENV === "production",
     }),
     defineField({
       name: "rating",
       title: "Rating",
       type: "number",
       description: "Rating score between 1 and 5 (e.g. 5.0, 4.9)",
+      readOnly: process.env.NODE_ENV === "production",
       validation: (Rule) => Rule.required().min(1).max(5),
       initialValue: 5,
+    }),
+    defineField({
+      name: "content",
+      title: "Content",
+      type: "text",
+      description: "The testimonial text/quote.",
+      readOnly: process.env.NODE_ENV === "production",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "url",
+      title: "URL",
+      type: "url",
+      description: "Optional link when clicking the testimonial card.",
+      readOnly: process.env.NODE_ENV === "production",
+      validation: (Rule) =>
+        Rule.uri({
+          scheme: ["http", "https"],
+        }),
+    }),
+    defineField({
+      name: "consentToDisplay",
+      title: "Consent to Display",
+      type: "boolean",
+      description: "User agreed to show this on the site",
+      initialValue: false,
+      validation: (Rule) =>
+        Rule.required().error("You must agree to show this on the site."),
     }),
     defineField({
       name: "approve",
@@ -48,23 +81,6 @@ export const testimonialSchema = defineType({
       description: "Approve testimonial to show on website",
       initialValue: false,
       validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "content",
-      title: "Content",
-      type: "text",
-      description: "The testimonial text/quote.",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "url",
-      title: "URL",
-      type: "url",
-      description: "Optional link when clicking the testimonial card.",
-      validation: (Rule) =>
-        Rule.uri({
-          scheme: ["http", "https"],
-        }),
     }),
   ],
   preview: {
@@ -75,10 +91,17 @@ export const testimonialSchema = defineType({
       rating: "rating",
       approve: "approve",
       email: "email",
+      consentToDisplay: "consentToDisplay",
     },
-    prepare({ title, subtitle, company, rating, approve }) {
+    prepare({ title, subtitle, company, rating, approve, consentToDisplay }) {
       return {
-        title: [title, approve && "✅"].filter(Boolean).join(" "),
+        title: [
+          title,
+          approve ? "✅" : null,
+          consentToDisplay ? " - Consent" : null,
+        ]
+          .filter(Boolean)
+          .join(" "),
         subtitle: [
           subtitle,
           company ? `at ${company}` : null,

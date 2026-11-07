@@ -12,6 +12,7 @@ import { useSoundFx } from "@/components/provider/sound-fx";
 import { useToggle } from "@/components/provider/toggle";
 import { Frame, FramePanel } from "@/components/reusable/reui/frame";
 import { Button } from "@/components/reusable/shadcn/button";
+import { Checkbox } from "@/components/reusable/shadcn/checkbox";
 import {
   Drawer,
   DrawerClose,
@@ -22,15 +23,11 @@ import {
 import {
   Field,
   FieldContent,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/reusable/shadcn/field";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/reusable/shadcn/hover-card";
 import {
   InputGroup,
   InputGroupAddon,
@@ -39,6 +36,11 @@ import {
   InputGroupText,
   InputGroupTextarea,
 } from "@/components/reusable/shadcn/input-group";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/reusable/shadcn/popover";
 import { Container } from "@/components/shared/container";
 import { itemVariants } from "@/constants/variants";
 import { cn } from "@/lib/utils";
@@ -132,7 +134,7 @@ export const AddReview = () => {
       url: "",
       rating: 4.5,
       content: "",
-      website: "",
+      consentToDisplay: false,
     },
   });
 
@@ -301,7 +303,9 @@ export const AddReview = () => {
                                     aria-invalid={!!errors.name}
                                   />
                                 </InputGroup>
-                                <FieldError>{errors.name?.message}</FieldError>
+                                <FieldError className="px-1.5">
+                                  {errors.name?.message}
+                                </FieldError>
                               </Field>
                             )}
                           />
@@ -325,7 +329,9 @@ export const AddReview = () => {
                                     placeholder="sarah@example.com"
                                   />
                                 </InputGroup>
-                                <FieldError>{errors.email?.message}</FieldError>
+                                <FieldError className="px-1.5">
+                                  {errors.email?.message}
+                                </FieldError>
                               </Field>
                             )}
                           />
@@ -351,7 +357,9 @@ export const AddReview = () => {
                                     placeholder="Product Manager or Student"
                                   />
                                 </InputGroup>
-                                <FieldError>{errors.role?.message}</FieldError>
+                                <FieldError className="px-1.5">
+                                  {errors.role?.message}
+                                </FieldError>
                               </Field>
                             )}
                           />
@@ -375,7 +383,7 @@ export const AddReview = () => {
                                     placeholder="Vercel or Excel Academy"
                                   />
                                 </InputGroup>
-                                <FieldError>
+                                <FieldError className="px-1.5">
                                   {errors.company?.message}
                                 </FieldError>
                               </Field>
@@ -437,7 +445,7 @@ export const AddReview = () => {
                                       <InputGroupText>Rating</InputGroupText>
                                     </InputGroupAddon>
                                   </InputGroup>
-                                  <FieldError>
+                                  <FieldError className="px-1.5">
                                     {errors.rating?.message}
                                   </FieldError>
                                 </Field>
@@ -468,27 +476,28 @@ export const AddReview = () => {
                                     align="inline-end"
                                     className="-mr-1.5"
                                   >
-                                    <HoverCard>
-                                      <HoverCardTrigger>
-                                        <InputGroupButton size="icon-xs">
-                                          <CircleInfo />
-                                        </InputGroupButton>
-                                      </HoverCardTrigger>
-                                      <HoverCardContent
-                                        align="end"
-                                        className="w-64"
+                                    <Popover>
+                                      <PopoverTrigger
+                                        render={
+                                          <InputGroupButton size="icon-xs" />
+                                        }
                                       >
-                                        <div className="text-muted-foreground text-sm leading-relaxed">
-                                          Adding your portfolio, LinkedIn, or
-                                          social handle lets visitors confirm
-                                          authentic feedback or reach out to
-                                          collaborate with you.
+                                        <CircleInfo />
+                                      </PopoverTrigger>
+                                      <PopoverContent align="end">
+                                        <div className="text-[13px] leading-relaxed">
+                                          Adding your website or social handle
+                                          lets visitors confirm authentic
+                                          feedback or reach out to collaborate
+                                          with you.
                                         </div>
-                                      </HoverCardContent>
-                                    </HoverCard>
+                                      </PopoverContent>
+                                    </Popover>
                                   </InputGroupAddon>
                                 </InputGroup>
-                                <FieldError>{errors.url?.message}</FieldError>
+                                <FieldError className="px-1.5">
+                                  {errors.url?.message}
+                                </FieldError>
                               </Field>
                             )}
                           />
@@ -516,16 +525,54 @@ export const AddReview = () => {
                                   />
                                   <InputGroupAddon align="block-end">
                                     <InputGroupText className="text-muted-foreground text-xs">
-                                      {field.value?.length || 0}/
+                                      {field.value?.length || 0} of{" "}
                                       {TESTIMONIAL_LIMITS.content.max}{" "}
                                       characters
                                     </InputGroupText>
                                   </InputGroupAddon>
                                 </InputGroup>
-                                <FieldError>
+                                <FieldError className="px-1.5">
                                   {errors.content?.message}
                                 </FieldError>
                               </Field>
+                            )}
+                          />
+
+                          {/* ========================================== */}
+                          {/* Consent Checkbox Added Below The Textarea  */}
+                          {/* ========================================== */}
+                          <Controller
+                            name="consentToDisplay"
+                            control={control}
+                            render={({ field }) => (
+                              <FieldLabel className="col-span-4 max-w-sm">
+                                <Field
+                                  orientation="horizontal"
+                                  data-invalid={!!errors.consentToDisplay}
+                                >
+                                  <Checkbox
+                                    disabled={isSending}
+                                    checked={!!field.value}
+                                    onCheckedChange={field.onChange}
+                                    aria-invalid={!!errors.consentToDisplay}
+                                  />
+                                  <FieldContent>
+                                    <FieldLabel required>
+                                      You may show this on the site.
+                                    </FieldLabel>
+                                    {errors.consentToDisplay?.message ? (
+                                      <FieldError>
+                                        {errors.consentToDisplay.message}
+                                      </FieldError>
+                                    ) : (
+                                      <FieldDescription>
+                                        With the name and role above, next to
+                                        the quote.
+                                      </FieldDescription>
+                                    )}
+                                  </FieldContent>
+                                </Field>
+                              </FieldLabel>
                             )}
                           />
                         </div>
@@ -556,6 +603,7 @@ export const AddReview = () => {
                             variant="inverse"
                             type="button"
                             disabled={isSending}
+                            onClick={() => form.reset()}
                           >
                             Cancel
                           </Button>

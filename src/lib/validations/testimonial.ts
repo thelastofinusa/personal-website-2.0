@@ -92,13 +92,14 @@ export const testimonialSchema = z.strictObject({
       return v;
     })
     .refine(
-      (v) =>
-        !v || (!v.startsWith("@") && z.string().url().safeParse(v).success),
+      (v) => !v || (!v.startsWith("@") && z.url().safeParse(v).success),
       "Enter a valid website URL (e.g. example.com)",
     ),
 
-  // Honeypot: hidden from humans. Bots tend to fill it in.
-  website: z.string().max(200).optional(),
+  // Inside your Zod schema definition:
+  consentToDisplay: z.boolean().refine((val) => val === true, {
+    message: "Turn on permission so we may show your card",
+  }),
 });
 
 export type TestimonialFormValues = z.infer<typeof testimonialSchema>;
