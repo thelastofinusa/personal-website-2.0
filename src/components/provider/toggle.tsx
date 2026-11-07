@@ -36,12 +36,12 @@ export function ToggleProvider({ children }: React.PropsWithChildren) {
     });
   }, []);
 
-  // Centralized scroll listener: closes active toggle if scrolled > 100px
+  // Centralized scroll listener: closes active toggle if scrolled > 500px
   React.useEffect(() => {
     if (!activeToggle) return;
 
     const handleScroll = () => {
-      if (Math.abs(window.scrollY - initialScrollY.current) > 100) {
+      if (Math.abs(window.scrollY - initialScrollY.current) > 500) {
         setActiveToggle(null);
       }
     };
