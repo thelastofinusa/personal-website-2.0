@@ -7,12 +7,13 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ElementType } from "react";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { AlarmClock, AtSign, User2 } from "reicon-react";
 import type { z } from "zod";
 import { sendContactMessage } from "@/actions/contact.action";
 import { useSoundFx } from "@/components/provider/sound-fx";
 import { Button } from "@/components/reusable/shadcn/button";
+import { Checkbox } from "@/components/reusable/shadcn/checkbox";
 import {
   Field,
   FieldDescription,
@@ -46,7 +47,6 @@ import {
   type ContactFormValues,
   contactSchema,
 } from "@/lib/validations/contact";
-import { Checkbox } from "../reusable/shadcn/checkbox";
 
 type StepId = ContactField;
 type Status = "idle" | "active" | "sending" | "sent";
@@ -198,7 +198,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
   const { play } = useSoundFx();
   const form = useForm<
     z.input<typeof contactSchema>,
-    any,
+    unknown,
     z.output<typeof contactSchema>
   >({
     resolver: zodResolver(contactSchema),
@@ -284,9 +284,10 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
   const current = STEPS[step];
   const isSending = status === "sending";
 
-  const watchedValues = form.watch();
-  const currentVal = watchedValues.message || "";
+  const nameValue = form.watch("name");
+  const messageValue = form.watch("message") ?? "";
   const currentError = form.formState.errors[current.id]?.message;
+  const firstName = nameValue?.trim().split(" ")[0];
 
   const handleStart = () => {
     setStatus("active");
@@ -366,13 +367,21 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
       className="w-full sm:max-w-xs"
       noValidate
     >
-      <input
-        type="text"
-        tabIndex={-1}
-        autoComplete="off"
-        aria-hidden="true"
-        className="absolute left-[-9999px] h-0 w-0 opacity-0"
-        {...form.register("website")}
+      {/* Honeypot: real visitors never see or fill this. */}
+      <Controller
+        control={form.control}
+        name="website"
+        render={({ field }) => (
+          <input
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="absolute left-[-9999px] h-0 w-0 opacity-0"
+            {...field}
+            value={field.value ?? ""}
+          />
+        )}
       />
 
       <AnimatePresence mode="popLayout">
@@ -410,13 +419,8 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
             <div className="group flex flex-col gap-3 rounded-lg border border-green-500 bg-green-500/5 px-4 py-3.5 text-green-600 transition-colors dark:bg-green-500/10">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-light">
-                  Thanks{" "}
-                  <strong>
-                    {watchedValues.name
-                      ? `, ${watchedValues.name.trim().split(" ")[0]}`
-                      : ""}
-                  </strong>{" "}
-                  — your message is on its way. I&apos;ll reply to your email
+                  Thanks{firstName ? <strong>, {firstName}</strong> : null} —
+                  your message is on its way. I&apos;ll reply to your email
                   soon.
                 </p>
               </div>
@@ -457,98 +461,130 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
                       className="flex flex-col gap-2"
                     >
                       {current.id === "message" ? (
-                        <InputGroup
-                          aria-disabled={isSending}
-                          className="border-border bg-background"
-                        >
-                          <InputGroupTextarea
-                            id={current.id}
-                            {...form.register(current.id)}
-                            disabled={isSending}
-                            placeholder={current.placeholder}
-                            maxLength={maxLength}
-                            aria-invalid={!!currentError}
-                            className="min-h-16"
-                          />
-                          <InputGroupAddon
-                            align="block-end"
-                            aria-disabled={isSending}
-                          >
-                            <InputGroupText className="mt-auto text-xs">
-                              {currentVal.length} of {maxLength} characters
-                            </InputGroupText>
-                            <InputGroupButton
-                              type="submit"
-                              variant="secondary"
-                              className="ml-auto"
-                              isLoading={isSending}
+                        <Controller
+                          control={form.control}
+                          name="message"
+                          render={({ field, fieldState }) => (
+                            <InputGroup
+                              aria-disabled={isSending}
+                              className="border-border bg-background"
                             >
-                              <span className="text-[11px] font-medium">
-                                Send
-                              </span>
-                            </InputGroupButton>
-                          </InputGroupAddon>
-                        </InputGroup>
-                      ) : current.id === "urgent" ? (
-                        <label htmlFor="urgent-checkbox">
-                          <InputGroup className="border-border bg-background">
-                            <div className="flex flex-1 cursor-pointer items-center gap-2">
-                              <InputGroupAddon>
-                                <Checkbox
-                                  id="urgent-checkbox"
-                                  {...form.register("urgent")}
-                                  disabled={isSending}
-                                />
-                              </InputGroupAddon>
-                              <InputGroupText className="text-foreground font-light">
-                                <span>Mark as urgent</span>
-                              </InputGroupText>
-                            </div>
-                            <InputGroupAddon align="inline-end">
-                              <InputGroupButton
-                                type="button"
-                                variant="secondary"
+                              <InputGroupTextarea
+                                {...field}
+                                id={current.id}
                                 disabled={isSending}
-                                onClick={goNext}
+                                placeholder={current.placeholder}
+                                maxLength={maxLength}
+                                aria-invalid={fieldState.invalid}
+                                className="min-h-16"
+                              />
+                              <InputGroupAddon
+                                align="block-end"
+                                aria-disabled={isSending}
                               >
-                                <span className="font-medium">Next</span>
-                              </InputGroupButton>
-                            </InputGroupAddon>
-                          </InputGroup>
-                        </label>
+                                <InputGroupText className="mt-auto text-xs">
+                                  {messageValue.length} of {maxLength}{" "}
+                                  characters
+                                </InputGroupText>
+                                <InputGroupButton
+                                  type="submit"
+                                  variant="secondary"
+                                  className="ml-auto"
+                                  isLoading={isSending}
+                                >
+                                  <span className="text-[11px] font-medium">
+                                    Send
+                                  </span>
+                                </InputGroupButton>
+                              </InputGroupAddon>
+                            </InputGroup>
+                          )}
+                        />
+                      ) : current.id === "urgent" ? (
+                        <Controller
+                          control={form.control}
+                          name="urgent"
+                          render={({ field }) => (
+                            <label htmlFor="urgent-checkbox">
+                              <InputGroup className="border-border bg-background">
+                                <div className="flex flex-1 cursor-pointer items-center gap-2">
+                                  <InputGroupAddon>
+                                    {/*
+                                      Base UI's Checkbox doesn't emit a native
+                                      change event, so it is driven through
+                                      checked / onCheckedChange instead of
+                                      register(). That is what lets the value
+                                      reach the server as true.
+                                    */}
+                                    <Checkbox
+                                      id="urgent-checkbox"
+                                      name={field.name}
+                                      ref={field.ref}
+                                      checked={field.value ?? false}
+                                      onCheckedChange={(checked) =>
+                                        field.onChange(checked === true)
+                                      }
+                                      onBlur={field.onBlur}
+                                      disabled={isSending}
+                                    />
+                                  </InputGroupAddon>
+                                  <InputGroupText className="text-foreground font-light">
+                                    <span>Mark as urgent</span>
+                                  </InputGroupText>
+                                </div>
+                                <InputGroupAddon align="inline-end">
+                                  <InputGroupButton
+                                    type="button"
+                                    variant="secondary"
+                                    disabled={isSending}
+                                    onClick={goNext}
+                                  >
+                                    <span className="font-medium">Next</span>
+                                  </InputGroupButton>
+                                </InputGroupAddon>
+                              </InputGroup>
+                            </label>
+                          )}
+                        />
                       ) : (
-                        <InputGroup className="border-border bg-background">
-                          <InputGroupAddon
-                            className="pl-2.5"
-                            aria-disabled={isSending}
-                          >
-                            {current.id === "name" ? <User2 /> : <AtSign />}
-                          </InputGroupAddon>
-                          <InputGroupInput
-                            id={current.id}
-                            {...form.register(current.id)}
-                            type={current.id === "email" ? "email" : "text"}
-                            autoComplete="off"
-                            disabled={isSending}
-                            placeholder={current.placeholder}
-                            aria-invalid={!!currentError}
-                            onKeyDown={handleKeyDown}
-                          />
+                        <Controller
+                          control={form.control}
+                          name={current.id}
+                          render={({ field, fieldState }) => (
+                            <InputGroup className="border-border bg-background">
+                              <InputGroupAddon
+                                className="pl-2.5"
+                                aria-disabled={isSending}
+                              >
+                                {current.id === "name" ? <User2 /> : <AtSign />}
+                              </InputGroupAddon>
+                              <InputGroupInput
+                                {...field}
+                                id={current.id}
+                                type={current.id === "email" ? "email" : "text"}
+                                autoComplete="off"
+                                disabled={isSending}
+                                placeholder={current.placeholder}
+                                aria-invalid={fieldState.invalid}
+                                onKeyDown={handleKeyDown}
+                              />
 
-                          <InputGroupAddon
-                            align="inline-end"
-                            aria-disabled={isSending}
-                          >
-                            <InputGroupButton
-                              type="button"
-                              variant="secondary"
-                              disabled={isSending}
-                              onClick={goNext}
-                            >
-                              <span className="font-medium">Next</span>
-                            </InputGroupButton>
-                          </InputGroupAddon>
-                        </InputGroup>
+                              <InputGroupAddon
+                                align="inline-end"
+                                aria-disabled={isSending}
+                              >
+                                <InputGroupButton
+                                  type="button"
+                                  variant="secondary"
+                                  disabled={isSending}
+                                  onClick={goNext}
+                                >
+                                  <span className="font-medium">Next</span>
+                                </InputGroupButton>
+                              </InputGroupAddon>
+                            </InputGroup>
+                          )}
+                        />
                       )}
                     </motion.div>
                   </AnimatePresence>
