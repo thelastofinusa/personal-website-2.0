@@ -49,13 +49,22 @@ export async function submitTestimonial(
 
   if (!parsed.success) {
     const fieldErrors: Partial<
-      Record<"name" | "email" | "role" | "content" | "rating", string>
+      Record<
+        "name" | "email" | "role" | "content" | "rating" | "consentToDisplay",
+        string
+      >
     > = {};
 
     for (const issue of parsed.error.issues) {
       const key = issue.path[0];
       if (typeof key === "string" && FIELDS.includes(key)) {
-        const field = key as "name" | "email" | "role" | "content" | "rating";
+        const field = key as
+          | "name"
+          | "email"
+          | "role"
+          | "content"
+          | "rating"
+          | "consentToDisplay";
         fieldErrors[field] ??= issue.message;
       }
     }
@@ -68,7 +77,8 @@ export async function submitTestimonial(
     };
   }
 
-  const { name, email, role, company, content, rating, url } = parsed.data;
+  const { name, email, role, company, content, rating, url, consentToDisplay } =
+    parsed.data;
 
   const ip = await getClientIp();
   const limit = await checkContactRateLimit(ip);
@@ -98,6 +108,7 @@ export async function submitTestimonial(
       rating,
       approve: false,
       content,
+      consentToDisplay,
       ...(url ? { url } : {}),
     });
     createdId = doc._id;

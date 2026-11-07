@@ -86,7 +86,6 @@ const renderBtn = (
   </motion.div>
 );
 
-// Isolated preview wrapper so typing doesn't re-render the parent form
 const LiveTestimonialPreview = React.memo(({ control }: { control: any }) => {
   const company = useWatch({ control, name: "company" });
   const content = useWatch({ control, name: "content" });
@@ -119,7 +118,7 @@ export const AddReview = () => {
   const { isOpen: open, toggle: setOpen, close } = useToggle("testimonial");
   const [status, setStatus] = React.useState<Status>("idle");
   const [serverError, setServerError] = React.useState<string | null>(null);
-  const [isSending, startTransition] = React.useTransition();
+  const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
 
   const form = useForm<
     z.input<typeof testimonialSchema>,
@@ -159,41 +158,42 @@ export const AddReview = () => {
     return () => clearTimeout(timer);
   }, [status, reset, close]);
 
-  function onSubmit(values: TestimonialFormValues) {
+  async function onSubmit(values: TestimonialFormValues) {
     setServerError(null);
     const task = play("processing");
+    setIsSubmitting(true);
 
-    startTransition(async () => {
-      try {
-        const result = await submitTestimonial(values);
-        task?.stop();
+    try {
+      const result = await submitTestimonial(values);
+      task?.stop();
+      setIsSubmitting(false);
 
-        if (result.ok) {
-          setStatus("sent");
-          play("success");
-          return;
-        }
-
-        setStatus("active");
-
-        if (result.error === "invalid" && result.fieldErrors) {
-          Object.entries(result.fieldErrors).forEach(([field, message]) => {
-            if (message) {
-              setError(field as keyof TestimonialFormValues, {
-                type: "server",
-                message,
-              });
-            }
-          });
-        }
-
-        setServerError(result.message);
-      } catch {
-        task?.stop();
-        setStatus("active");
-        setServerError("Something went wrong. Please try again.");
+      if (result.ok) {
+        setStatus("sent");
+        play("success");
+        return;
       }
-    });
+
+      setStatus("active");
+
+      if (result.error === "invalid" && result.fieldErrors) {
+        Object.entries(result.fieldErrors).forEach(([field, message]) => {
+          if (message) {
+            setError(field as keyof TestimonialFormValues, {
+              type: "server",
+              message,
+            });
+          }
+        });
+      }
+
+      setServerError(result.message);
+    } catch {
+      task?.stop();
+      setIsSubmitting(false);
+      setStatus("active");
+      setServerError("Something went wrong. Please try again.");
+    }
   }
 
   return (
@@ -299,7 +299,7 @@ export const AddReview = () => {
                                   <InputGroupInput
                                     type="text"
                                     {...field}
-                                    disabled={isSending}
+                                    disabled={isSubmitting}
                                     placeholder="Sarah Jenkins"
                                     aria-invalid={!!errors.name}
                                   />
@@ -325,7 +325,7 @@ export const AddReview = () => {
                                   <InputGroupInput
                                     type="email"
                                     {...field}
-                                    disabled={isSending}
+                                    disabled={isSubmitting}
                                     aria-invalid={!!errors.email}
                                     placeholder="sarah@example.com"
                                   />
@@ -353,7 +353,7 @@ export const AddReview = () => {
                                   <InputGroupInput
                                     type="text"
                                     {...field}
-                                    disabled={isSending}
+                                    disabled={isSubmitting}
                                     aria-invalid={!!errors.role}
                                     placeholder="Product Manager or Student"
                                   />
@@ -379,7 +379,7 @@ export const AddReview = () => {
                                   <InputGroupInput
                                     type="text"
                                     {...field}
-                                    disabled={isSending}
+                                    disabled={isSubmitting}
                                     aria-invalid={!!errors.company}
                                     placeholder="Vercel or Excel Academy"
                                   />
@@ -428,7 +428,7 @@ export const AddReview = () => {
                                     <InputGroupInput
                                       type="number"
                                       {...field}
-                                      disabled={isSending}
+                                      disabled={isSubmitting}
                                       onChange={(e) =>
                                         field.onChange(
                                           e.target.value === ""
@@ -438,8 +438,6 @@ export const AddReview = () => {
                                       }
                                       placeholder="4.5"
                                       aria-invalid={!!errors.rating}
-                                      // min={0.5}
-                                      // max={5}
                                       step={0.5}
                                     />
                                     <InputGroupAddon align="inline-end">
@@ -469,7 +467,7 @@ export const AddReview = () => {
                                   <InputGroupInput
                                     type="text"
                                     {...field}
-                                    disabled={isSending}
+                                    disabled={isSubmitting}
                                     aria-invalid={!!errors.url}
                                     placeholder="https://example.com"
                                   />
@@ -518,7 +516,7 @@ export const AddReview = () => {
                                 <InputGroup className="bg-card">
                                   <InputGroupTextarea
                                     {...field}
-                                    disabled={isSending}
+                                    disabled={isSubmitting}
                                     aria-invalid={!!errors.content}
                                     maxLength={TESTIMONIAL_LIMITS.content.max}
                                     placeholder="Share your experience working or learning together.."
@@ -539,9 +537,6 @@ export const AddReview = () => {
                             )}
                           />
 
-                          {/* ========================================== */}
-                          {/* Consent Checkbox Added Below The Textarea  */}
-                          {/* ========================================== */}
                           <Controller
                             name="consentToDisplay"
                             control={control}
@@ -552,7 +547,7 @@ export const AddReview = () => {
                                   data-invalid={!!errors.consentToDisplay}
                                 >
                                   <Checkbox
-                                    disabled={isSending}
+                                    disabled={isSubmitting}
                                     checked={!!field.value}
                                     onCheckedChange={field.onChange}
                                     aria-invalid={!!errors.consentToDisplay}
@@ -589,8 +584,8 @@ export const AddReview = () => {
                         size="default"
                         variant="inverse"
                         type="submit"
-                        isLoading={isSending}
-                        disabled={isSending}
+                        isLoading={isSubmitting}
+                        disabled={isSubmitting}
                         loadingTxt="Please wait.."
                         className="flex-1"
                       >
@@ -603,7 +598,7 @@ export const AddReview = () => {
                           <Button
                             variant="inverse"
                             type="button"
-                            disabled={isSending}
+                            disabled={isSubmitting}
                             onClick={() => form.reset()}
                           >
                             Cancel
