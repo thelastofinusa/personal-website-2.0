@@ -6,13 +6,17 @@ import React from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { VscStarEmpty, VscStarFull, VscStarHalf } from "react-icons/vsc";
 import { Add, CircleInfo, Send4 } from "reicon-react";
+import type { z } from "zod";
 import { submitTestimonial } from "@/actions/testimonial.action";
 import { useSoundFx } from "@/components/provider/sound-fx";
+import { useToggle } from "@/components/provider/toggle";
 import { Frame, FramePanel } from "@/components/reusable/reui/frame";
 import { Button } from "@/components/reusable/shadcn/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
+  DrawerFooter,
   DrawerTrigger,
 } from "@/components/reusable/shadcn/drawer";
 import {
@@ -109,12 +113,16 @@ LiveTestimonialPreview.displayName = "LiveTestimonialPreview";
 export const AddReview = () => {
   const { play } = useSoundFx();
 
-  const [open, setOpen] = React.useState<boolean>(false);
-  const [status, setStatus] = React.useState<Status>("idle");
+  const { isOpen: open, toggle: setOpen, close } = useToggle("testimonial");
+  const [status, setStatus] = React.useState<Status>("sent");
   const [serverError, setServerError] = React.useState<string | null>(null);
   const [isSending, startTransition] = React.useTransition();
 
-  const form = useForm<TestimonialFormValues>({
+  const form = useForm<
+    z.input<typeof testimonialSchema>,
+    any,
+    z.output<typeof testimonialSchema>
+  >({
     resolver: zodResolver(testimonialSchema),
     defaultValues: {
       name: "",
@@ -142,11 +150,11 @@ export const AddReview = () => {
     const timer = setTimeout(() => {
       reset();
       setStatus("idle");
-      setOpen(false);
+      close();
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, [status, reset]);
+  }, [status, reset, close]);
 
   function onSubmit(values: TestimonialFormValues) {
     setServerError(null);
@@ -187,13 +195,16 @@ export const AddReview = () => {
 
   return (
     <Drawer showSwipeHandle open={open} onOpenChange={setOpen}>
-      <DrawerTrigger render={renderBtn} />
+      <DrawerTrigger nativeButton={false} render={renderBtn} />
       <DrawerContent>
-        <Container size="md" className="pt-10 pb-20 md:pt-16 md:pb-20">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5 lg:gap-8 xl:grid-cols-7">
+        <Container
+          size="md"
+          className="flex-1 overflow-y-auto pt-10 pb-20 md:pt-16 md:pb-20"
+        >
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-5 lg:gap-8 xl:grid-cols-8">
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="lg:col-span-3 xl:col-span-4"
+              className="md:col-span-3 xl:col-span-5"
             >
               <Frame
                 className={cn(
@@ -206,7 +217,7 @@ export const AddReview = () => {
                     Share your thoughts
                   </h1>
                   <p className="text-muted-foreground text-sm">
-                    We appreciate your feedback and insights.
+                    I appreciate your feedback and insights.
                   </p>
                 </div>
 
@@ -269,22 +280,24 @@ export const AddReview = () => {
                           </div>
                         )}
 
-                        <div className="grid grid-cols-4 gap-3 md:grid-cols-1 lg:grid-cols-4">
+                        <div className="grid grid-cols-6 gap-3 sm:grid-cols-6">
                           <Controller
                             name="name"
                             control={control}
                             render={({ field }) => (
                               <Field
-                                className="col-span-2 gap-1.5"
+                                className="col-span-3 gap-1.5"
                                 data-invalid={!!errors.name}
                               >
-                                <FieldLabel>Full Name</FieldLabel>
+                                <FieldLabel className="px-1.5" required>
+                                  Full Name
+                                </FieldLabel>
                                 <InputGroup className="bg-card">
                                   <InputGroupInput
                                     type="text"
                                     {...field}
                                     disabled={isSending}
-                                    placeholder="e.g. Sarah Jenkins"
+                                    placeholder="Sarah Jenkins"
                                     aria-invalid={!!errors.name}
                                   />
                                 </InputGroup>
@@ -297,17 +310,19 @@ export const AddReview = () => {
                             control={control}
                             render={({ field }) => (
                               <Field
-                                className="col-span-2 gap-1.5"
+                                className="col-span-3 gap-1.5"
                                 data-invalid={!!errors.email}
                               >
-                                <FieldLabel>Email Address</FieldLabel>
+                                <FieldLabel className="px-1.5" required>
+                                  Email Address
+                                </FieldLabel>
                                 <InputGroup className="bg-card">
                                   <InputGroupInput
                                     type="email"
                                     {...field}
                                     disabled={isSending}
                                     aria-invalid={!!errors.email}
-                                    placeholder="e.g. sarah@example.com"
+                                    placeholder="sarah@example.com"
                                   />
                                 </InputGroup>
                                 <FieldError>{errors.email?.message}</FieldError>
@@ -315,23 +330,25 @@ export const AddReview = () => {
                             )}
                           />
                         </div>
-                        <div className="grid grid-cols-4 gap-3 md:grid-cols-1 lg:grid-cols-4">
+                        <div className="grid grid-cols-6 gap-3 sm:grid-cols-6">
                           <Controller
                             name="role"
                             control={control}
                             render={({ field }) => (
                               <Field
-                                className="col-span-2 gap-1.5"
+                                className="col-span-3 gap-1.5"
                                 data-invalid={!!errors.role}
                               >
-                                <FieldLabel>Role or Title</FieldLabel>
+                                <FieldLabel className="px-1.5" required>
+                                  Role or Title
+                                </FieldLabel>
                                 <InputGroup className="bg-card">
                                   <InputGroupInput
                                     type="text"
                                     {...field}
                                     disabled={isSending}
                                     aria-invalid={!!errors.role}
-                                    placeholder="e.g. Student, Teacher, Product Manager"
+                                    placeholder="Product Manager or Student"
                                   />
                                 </InputGroup>
                                 <FieldError>{errors.role?.message}</FieldError>
@@ -343,17 +360,19 @@ export const AddReview = () => {
                             control={control}
                             render={({ field }) => (
                               <Field
-                                className="col-span-2 gap-1.5"
+                                className="col-span-3 gap-1.5"
                                 data-invalid={!!errors.company}
                               >
-                                <FieldLabel>Organization or School</FieldLabel>
+                                <FieldLabel className="px-1.5">
+                                  Organization or School
+                                </FieldLabel>
                                 <InputGroup className="bg-card">
                                   <InputGroupInput
                                     type="text"
                                     {...field}
                                     disabled={isSending}
                                     aria-invalid={!!errors.company}
-                                    placeholder="e.g. Pinecrest Academy, Vercel"
+                                    placeholder="Vercel or Excel Academy"
                                   />
                                 </InputGroup>
                                 <FieldError>
@@ -363,7 +382,7 @@ export const AddReview = () => {
                             )}
                           />
                         </div>
-                        <div className="grid grid-cols-4 gap-3 md:grid-cols-1 lg:grid-cols-4">
+                        <div className="grid grid-cols-6 gap-3 sm:grid-cols-6">
                           <Controller
                             name="rating"
                             control={control}
@@ -380,10 +399,12 @@ export const AddReview = () => {
 
                               return (
                                 <Field
-                                  className="col-span-2 gap-1.5 sm:col-span-1 md:col-span-2 lg:col-span-1"
+                                  className="col-span-3 gap-1.5 sm:col-span-2"
                                   data-invalid={!!errors.rating}
                                 >
-                                  <FieldLabel>Rating</FieldLabel>
+                                  <FieldLabel className="px-1.5" required>
+                                    Rating
+                                  </FieldLabel>
                                   <InputGroup className="bg-card">
                                     <InputGroupAddon className="transition-colors">
                                       {isEmpty ? (
@@ -406,12 +427,15 @@ export const AddReview = () => {
                                             : Number(e.target.value),
                                         )
                                       }
-                                      placeholder="5"
+                                      placeholder="4.5"
                                       aria-invalid={!!errors.rating}
-                                      min={0.5}
-                                      max={5}
+                                      // min={0.5}
+                                      // max={5}
                                       step={0.5}
                                     />
+                                    <InputGroupAddon align="inline-end">
+                                      <InputGroupText>Rating</InputGroupText>
+                                    </InputGroupAddon>
                                   </InputGroup>
                                   <FieldError>
                                     {errors.rating?.message}
@@ -426,17 +450,19 @@ export const AddReview = () => {
                             control={control}
                             render={({ field }) => (
                               <Field
-                                className="col-span-2 gap-1.5 sm:col-span-3 md:col-span-2 lg:col-span-3"
+                                className="col-span-3 gap-1.5 sm:col-span-4"
                                 data-invalid={!!errors.url}
                               >
-                                <FieldLabel>Website or Social Link</FieldLabel>
+                                <FieldLabel className="px-1.5">
+                                  Website or Handle
+                                </FieldLabel>
                                 <InputGroup className="bg-card">
                                   <InputGroupInput
                                     type="text"
                                     {...field}
                                     disabled={isSending}
                                     aria-invalid={!!errors.url}
-                                    placeholder="e.g. https://example.com or @handle"
+                                    placeholder="https://example.com"
                                   />
                                   <InputGroupAddon
                                     align="inline-end"
@@ -476,15 +502,17 @@ export const AddReview = () => {
                                 className="col-span-4 gap-1.5"
                                 data-invalid={!!errors.content}
                               >
-                                <FieldLabel>Your Testimonial</FieldLabel>
+                                <FieldLabel className="px-1.5" required>
+                                  Your Testimonial
+                                </FieldLabel>
                                 <InputGroup className="bg-card">
                                   <InputGroupTextarea
                                     {...field}
                                     disabled={isSending}
                                     aria-invalid={!!errors.content}
                                     maxLength={TESTIMONIAL_LIMITS.content.max}
-                                    placeholder="Share your experience working or learning together..."
-                                    className="min-h-16"
+                                    placeholder="Share your experience working or learning together.."
+                                    className="min-h-16 pb-16"
                                   />
                                   <InputGroupAddon align="block-end">
                                     <InputGroupText className="text-muted-foreground text-xs">
@@ -507,8 +535,8 @@ export const AddReview = () => {
                 </FramePanel>
 
                 {status !== "sent" && (
-                  <div className="flex flex-col gap-0.5 px-4 py-3">
-                    <div className="wrapper mx-auto flex w-max items-center gap-1.5 sm:ml-0">
+                  <DrawerFooter className="px-4 py-3">
+                    <div className="wrapper mx-auto flex flex-1 items-center gap-1.5 sm:ml-0">
                       <Button
                         size="default"
                         variant="inverse"
@@ -516,24 +544,30 @@ export const AddReview = () => {
                         isLoading={isSending}
                         disabled={isSending}
                         loadingTxt="Please wait.."
-                      >
-                        <span>Submit Testimonial</span>
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="inverse"
-                        type="submit"
-                        disabled={isSending}
+                        className="flex-1"
                       >
                         <Send4 />
+                        <span>Submit Testimonial</span>
                       </Button>
+
+                      <DrawerClose
+                        render={
+                          <Button
+                            variant="inverse"
+                            type="button"
+                            disabled={isSending}
+                          >
+                            Cancel
+                          </Button>
+                        }
+                      />
                     </div>
-                  </div>
+                  </DrawerFooter>
                 )}
               </Frame>
             </form>
 
-            <div className="hidden sm:block lg:col-span-2 xl:col-span-3">
+            <div className="hidden md:col-span-2 md:block xl:col-span-3">
               <LiveTestimonialPreview control={control} />
             </div>
           </div>

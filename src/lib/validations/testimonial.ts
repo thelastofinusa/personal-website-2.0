@@ -81,10 +81,20 @@ export const testimonialSchema = z.strictObject({
     .string()
     .trim()
     .optional()
+    .transform((v) => {
+      if (!v) return undefined;
+      // If it starts with @, keep it so it triggers the validation error below
+      if (v.startsWith("@")) return v;
+      // Automatically prepend https:// if protocol is missing
+      if (!/^https?:\/\//i.test(v)) {
+        return `https://${v}`;
+      }
+      return v;
+    })
     .refine(
       (v) =>
-        !v || z.url().safeParse(v).success || /^@[a-zA-Z0-9_.-]{1,30}$/.test(v),
-      "Enter a valid URL or a handle like @yourname",
+        !v || (!v.startsWith("@") && z.string().url().safeParse(v).success),
+      "Enter a valid website URL (e.g. example.com)",
     ),
 
   // Honeypot: hidden from humans. Bots tend to fill it in.

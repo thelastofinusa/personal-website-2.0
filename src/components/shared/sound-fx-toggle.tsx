@@ -169,30 +169,14 @@ export const SoundFXToggle: React.FC<
     }
   }, [enabled]);
 
+  // Reset volume slider and pagination page when menu closes
   React.useEffect(() => {
     if (!openMenu) {
       setShowVolumeSlider(false);
-      // Reset page when menu closes
       const timer = setTimeout(() => setPage(0), 300);
       return () => clearTimeout(timer);
     }
-
-    const handleScroll = (event: Event) => {
-      if (containerRef.current?.contains(event.target as Node)) {
-        return;
-      }
-      closeMenu();
-    };
-
-    window.addEventListener("scroll", handleScroll, {
-      capture: true,
-      passive: true,
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll, { capture: true });
-    };
-  }, [openMenu, closeMenu]);
+  }, [openMenu]);
 
   const handleSelectPack = (selectedPack: PackName) => {
     setPack(selectedPack);

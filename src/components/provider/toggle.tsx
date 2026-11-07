@@ -2,7 +2,7 @@
 
 import React from "react";
 
-type ToggleId = "menu" | "soundfx" | "theme";
+type ToggleId = "menu" | "soundfx" | "theme" | "testimonial";
 
 type ToggleContextValue = {
   activeToggle: ToggleId | null;
@@ -15,8 +15,10 @@ const ToggleContext = React.createContext<ToggleContextValue | null>(null);
 
 export function ToggleProvider({ children }: React.PropsWithChildren) {
   const [activeToggle, setActiveToggle] = React.useState<ToggleId | null>(null);
+  const initialScrollY = React.useRef<number>(0);
 
   const open = React.useCallback((id: ToggleId) => {
+    initialScrollY.current = window.scrollY;
     setActiveToggle(id);
   }, []);
 
@@ -25,8 +27,30 @@ export function ToggleProvider({ children }: React.PropsWithChildren) {
   }, []);
 
   const toggle = React.useCallback((id: ToggleId) => {
-    setActiveToggle((current) => (current === id ? null : id));
+    setActiveToggle((current) => {
+      if (current === id) {
+        return null;
+      }
+      initialScrollY.current = window.scrollY;
+      return id;
+    });
   }, []);
+
+  // Centralized scroll listener: closes active toggle if scrolled > 100px
+  React.useEffect(() => {
+    if (!activeToggle) return;
+
+    const handleScroll = () => {
+      if (Math.abs(window.scrollY - initialScrollY.current) > 100) {
+        setActiveToggle(null);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [activeToggle]);
 
   const value = React.useMemo(
     () => ({ activeToggle, open, close, toggle }),

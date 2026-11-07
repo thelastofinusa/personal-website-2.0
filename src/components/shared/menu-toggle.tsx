@@ -52,22 +52,6 @@ export const MenuToggle: React.FC<
     setMounted(true);
   }, []);
 
-  React.useEffect(() => {
-    if (!openMenu) return;
-
-    const handleScroll = () => {
-      closeMenu();
-    };
-
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [openMenu, closeMenu]);
-
   const isRouteActive = React.useCallback(
     (to: string) => {
       if (to === "/") {

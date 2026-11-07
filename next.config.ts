@@ -38,6 +38,8 @@ const nextConfig: NextConfig = {
     typedEnv: true,
   },
 
+  allowedDevOrigins: ["192.168.18.7"],
+
   headers: async () => [
     {
       source: "/(.*)",
