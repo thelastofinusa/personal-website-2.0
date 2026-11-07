@@ -22,6 +22,7 @@ export type Testimonial = {
   _updatedAt: string;
   _rev: string;
   name?: string;
+  email?: string;
   role?: string;
   company?: string;
   rating?: number;
@@ -897,7 +898,7 @@ export type TestimonialsListQueryResult = Array<{
 
 // Source: src/sanity/queries/testimonial.query.ts
 // Variable: latestTestimonialsQuery
-// Query: *[_type == "testimonial" && approve == true] | order(_createdAt desc)[0...6] {      _id,  name,  role,  company,  rating,  approve,  content,  url  }
+// Query: *[_type == "testimonial" && approve == true] | order(_createdAt desc)[0...5] {      _id,  name,  role,  company,  rating,  approve,  content,  url  }
 export type LatestTestimonialsQueryResult = Array<{
   _id: string;
   name: string | null;
@@ -1067,7 +1068,7 @@ declare module "@sanity/client" {
     '\n*[_type == "projectFilter"] | order(_createdAt asc) {\n  \n_id,\nname,\n"slug": value.current,\ndescription,\nicon,\n\n}': ProjectFiltersListQueryResult;
     '\n  *[_type == "snapshot" && _id == "aboutPageSnapshots"][0] {\n    _id,\n    "images": images[] {\n      "url": asset->url,\n      "width": asset->metadata.dimensions.width,\n      "height": asset->metadata.dimensions.height\n    }\n  }\n': SnapshotQueryResult;
     '\n  *[_type == "testimonial" && approve == true] | order(_createdAt desc) {\n    \n  _id,\n  name,\n  role,\n  company,\n  rating,\n  approve,\n  content,\n  url\n\n  }\n': TestimonialsListQueryResult;
-    '\n  *[_type == "testimonial" && approve == true] | order(_createdAt desc)[0...6] {\n    \n  _id,\n  name,\n  role,\n  company,\n  rating,\n  approve,\n  content,\n  url\n\n  }\n': LatestTestimonialsQueryResult;
+    '\n  *[_type == "testimonial" && approve == true] | order(_createdAt desc)[0...5] {\n    \n  _id,\n  name,\n  role,\n  company,\n  rating,\n  approve,\n  content,\n  url\n\n  }\n': LatestTestimonialsQueryResult;
     '\n *[_type == "timeline"] {\n  \n_id,\ncategory,\norganization,\n\n"logo": select(\n  logo.type == "url" => { "type": "url", "value": logo.url },\n  logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },\n  logo.type == "icon" => { "type": "icon", "value": logo.icon }\n),\n\nwebsite,\nisCurrent,\nfeatured,\n\nitems[] {\n  _key,\n  title,\n  period {\n    start,\n    end\n  },\n  "images": images[]{\n    "url": asset->url,\n    "width": asset->metadata.dimensions.width,\n    "height": asset->metadata.dimensions.height,\n    "alt": coalesce(asset->altText, "")\n  },\n  type,\n  icon,\n  description,\n  skills,\n  isExpanded\n},\n\n"timelineStart": items[0].period.start,\n"timelineEnd": items[0].period.end\n\n } | order(timelineStart desc, timelineEnd desc)\n': TimelineListQueryResult;
     '\n *[_type == "timeline" && featured == true] {\n  \n_id,\ncategory,\norganization,\n\n"logo": select(\n  logo.type == "url" => { "type": "url", "value": logo.url },\n  logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },\n  logo.type == "icon" => { "type": "icon", "value": logo.icon }\n),\n\nwebsite,\nisCurrent,\nfeatured,\n\nitems[] {\n  _key,\n  title,\n  period {\n    start,\n    end\n  },\n  "images": images[]{\n    "url": asset->url,\n    "width": asset->metadata.dimensions.width,\n    "height": asset->metadata.dimensions.height,\n    "alt": coalesce(asset->altText, "")\n  },\n  type,\n  icon,\n  description,\n  skills,\n  isExpanded\n},\n\n"timelineStart": items[0].period.start,\n"timelineEnd": items[0].period.end\n\n } | order(timelineStart desc, timelineEnd desc)[0...4]\n': LatestTimelinesQueryResult;
   }

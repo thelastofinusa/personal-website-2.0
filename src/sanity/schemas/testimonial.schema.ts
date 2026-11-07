@@ -14,6 +14,13 @@ export const testimonialSchema = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "email",
+      title: "Email",
+      type: "string",
+      description: "Client email address.",
+      validation: (Rule) => Rule.required().email(),
+    }),
+    defineField({
       name: "role",
       title: "Role",
       type: "string",
@@ -67,6 +74,7 @@ export const testimonialSchema = defineType({
       company: "company",
       rating: "rating",
       approve: "approve",
+      email: "email",
     },
     prepare({ title, subtitle, company, rating, approve }) {
       return {

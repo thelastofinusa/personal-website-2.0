@@ -163,8 +163,9 @@ export const Testimonial: React.FC<{
 
             <p
               className={cn(
-                "group-hover:text-primary text-sm font-medium transition-colors duration-150",
+                "text-sm font-medium transition-colors duration-150",
                 preview && "text-[15px]",
+                testimonial.url && "group-hover:text-primary",
               )}
             >
               <span>{testimonial.name}</span>

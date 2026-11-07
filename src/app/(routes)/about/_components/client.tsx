@@ -274,51 +274,6 @@ export const AboutPageClient: React.FC<{
           </Container>
         </motion.div>
 
-        {testimonials.length > 0 && (
-          <motion.div
-            variants={parentVariants}
-            initial="hidden"
-            whileInView="visible"
-            className="flex flex-col gap-6 md:gap-8"
-          >
-            <Container size="md">
-              <div className="flex flex-col gap-8 md:gap-12">
-                <div className="columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3">
-                  {testimonials.map((item) => (
-                    <Testimonial key={item._id} testimonial={item} />
-                  ))}
-
-                  <AddReview />
-                </div>
-
-                <AnimatePresence mode="popLayout">
-                  <motion.div
-                    variants={workItemVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    exit="exit"
-                    layout
-                    className="relative"
-                  >
-                    <Link
-                      href={testimonialsRoute?.href as Route}
-                      onClick={() => play("forward")}
-                      className="wrapper mx-auto flex w-max items-center"
-                    >
-                      <Button variant="inverse" className="flex-1">
-                        <span>{testimonialsRoute?.action}</span>
-                      </Button>
-                      <Button variant="inverse" size="icon">
-                        {testimonialsRoute?.icon && <testimonialsRoute.icon />}
-                      </Button>
-                    </Link>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </Container>
-          </motion.div>
-        )}
-
         {/* Articles Section */}
         {articles.length > 0 && (
           <motion.div
@@ -360,6 +315,52 @@ export const AboutPageClient: React.FC<{
             </Container>
           </motion.div>
         )}
+
+        {/* Testimonial section */}
+        <motion.div
+          variants={parentVariants}
+          initial="hidden"
+          whileInView="visible"
+          className="flex flex-col gap-6 md:gap-8"
+        >
+          <Container size="md">
+            <div className="flex flex-col gap-8 md:gap-12">
+              <div className="columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3">
+                {testimonials.map((item) => (
+                  <Testimonial key={item._id} testimonial={item} />
+                ))}
+
+                <AddReview />
+              </div>
+
+              {testimonials.length > 5 && (
+                <AnimatePresence mode="popLayout">
+                  <motion.div
+                    variants={workItemVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    exit="exit"
+                    layout
+                    className="relative"
+                  >
+                    <Link
+                      href={testimonialsRoute?.href as Route}
+                      onClick={() => play("forward")}
+                      className="wrapper mx-auto flex w-max items-center"
+                    >
+                      <Button variant="inverse" className="flex-1">
+                        <span>{testimonialsRoute?.action}</span>
+                      </Button>
+                      <Button variant="inverse" size="icon">
+                        {testimonialsRoute?.icon && <testimonialsRoute.icon />}
+                      </Button>
+                    </Link>
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </div>
+          </Container>
+        </motion.div>
 
         {/* Lightbox (portals to document.body so transforms above can't break `fixed`) */}
         <AnimatePresence>

@@ -7,9 +7,11 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import { siteConfig } from "@/config/site.config";
 import ParentEmail from "./parent";
 
 export interface TestimonialEmailProps {
+  _id: string;
   name: string;
   email: string;
   role: string;
@@ -21,6 +23,7 @@ export interface TestimonialEmailProps {
 }
 
 export default function TestimonialEmail({
+  _id,
   name,
   email,
   role,
@@ -38,6 +41,8 @@ export default function TestimonialEmail({
     timeStyle: "short",
   }).format(receivedAt);
 
+  const studioUrl = `${siteConfig.url}/studio/structure/testimonial;${_id}`;
+
   return (
     <ParentEmail
       preview={`New testimonial from ${firstName} awaiting your approval`}
@@ -54,10 +59,16 @@ export default function TestimonialEmail({
           {content}
         </Text>
 
+        <Button className="em-btn" href={studioUrl} style={styles.button}>
+          Approve in Sanity
+        </Button>
+
         {url ? (
-          <Button className="em-btn" href={url} style={styles.button}>
-            Visit {name}&apos;s site
-          </Button>
+          <Text style={styles.subLinkWrapper}>
+            <Link className="em-link" href={url} style={styles.subLink}>
+              Visit {name}&apos;s site →
+            </Link>
+          </Text>
         ) : null}
 
         <Hr className="em-rule" style={styles.hr} />
@@ -129,6 +140,7 @@ export default function TestimonialEmail({
 }
 
 TestimonialEmail.PreviewProps = {
+  _id: "AZy6BeWaA4r6kdvrkhoxpe",
   name: "Amara Okafor",
   email: "amara@example.com",
   role: "Fashion Designer",
@@ -177,6 +189,15 @@ const styles = {
     textAlign: "center",
     textDecoration: "none",
     borderRadius: "8px",
+  },
+  subLinkWrapper: {
+    margin: "10px 0 0",
+    textAlign: "right" as const,
+  },
+  subLink: {
+    fontSize: "12px",
+    color: "#09679C",
+    textDecoration: "none",
   },
   hr: {
     border: "none",

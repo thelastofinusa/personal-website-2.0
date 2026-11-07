@@ -52,8 +52,6 @@ export const metadata: Metadata = {
 export default async function TestimonialsPage() {
   const testimonials = await fetchAllTestimonials();
 
-  if (!testimonials.length) redirect("/about");
-
   return (
     <div className="flex-1 overflow-x-clip">
       <CurveThingy hideHash>
