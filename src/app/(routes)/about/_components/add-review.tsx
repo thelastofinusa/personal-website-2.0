@@ -134,7 +134,7 @@ export const AddReview = () => {
       url: "",
       rating: 4.5,
       content: "",
-      consentToDisplay: false,
+      consentToDisplay: true,
     },
   });
 
