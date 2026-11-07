@@ -9,6 +9,7 @@ import type { ElementType } from "react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { AlarmClock, AtSign, User2 } from "reicon-react";
+import type { z } from "zod";
 import { sendContactMessage } from "@/actions/contact.action";
 import { useSoundFx } from "@/components/provider/sound-fx";
 import { Button } from "@/components/reusable/shadcn/button";
@@ -45,6 +46,7 @@ import {
   type ContactFormValues,
   contactSchema,
 } from "@/lib/validations/contact";
+import { Checkbox } from "../reusable/shadcn/checkbox";
 
 type StepId = ContactField;
 type Status = "idle" | "active" | "sending" | "sent";
@@ -61,6 +63,10 @@ const STEPS = [
     placeholder: "name@example.com",
   },
   {
+    id: "urgent",
+    label: "Is this urgent?",
+  },
+  {
     id: "message",
     label: "What's on your mind?",
     placeholder: "Tell me a little about your project..",
@@ -68,7 +74,7 @@ const STEPS = [
 ] as const satisfies readonly {
   id: StepId;
   label: string;
-  placeholder: string;
+  placeholder?: string;
 }[];
 
 const shouldInclude = ["twitter", "linkedin", "telegram", "whatsapp"];
@@ -88,7 +94,6 @@ const ContactRow = ({ label, href, external, icon: Icon }: ContactRowProps) => {
   const content = (
     <>
       {Icon && <Icon className="motion-safe:animate-bell-ring size-4.5" />}
-
       <span className={external ? "capitalize" : undefined}>{label}</span>
     </>
   );
@@ -155,7 +160,6 @@ export const ContactComp: React.FC<{ from?: string }> = (props) => {
         size="xs"
         className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-6"
       >
-        {/* Left column — socials + email */}
         <motion.div
           variants={parentVariants}
           initial="hidden"
@@ -167,8 +171,6 @@ export const ContactComp: React.FC<{ from?: string }> = (props) => {
             <ContactRow key={item.id} {...item} />
           ))}
         </motion.div>
-
-        {/* Right column — location + time, plus room for your new component */}
 
         <motion.div
           variants={parentVariants}
@@ -194,13 +196,18 @@ export const ContactComp: React.FC<{ from?: string }> = (props) => {
 
 const ContactForm: React.FC<{ from?: string }> = (props) => {
   const { play } = useSoundFx();
-  const form = useForm<ContactFormValues>({
+  const form = useForm<
+    z.input<typeof contactSchema>,
+    any,
+    z.output<typeof contactSchema>
+  >({
     resolver: zodResolver(contactSchema),
     defaultValues: {
       name: "",
       email: "",
+      urgent: false,
       message: "",
-      website: "", // honeypot
+      website: "",
       from: props.from ? `the ${props.from} page` : undefined,
     },
   });
@@ -278,7 +285,7 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
   const isSending = status === "sending";
 
   const watchedValues = form.watch();
-  const currentVal = watchedValues[current.id] || "";
+  const currentVal = watchedValues.message || "";
   const currentError = form.formState.errors[current.id]?.message;
 
   const handleStart = () => {
@@ -328,7 +335,6 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
       setStatus("active");
 
       if (result.error === "invalid") {
-        // Surface the server's field errors and jump to the first bad step
         let firstBadStep = -1;
 
         STEPS.forEach((item, index) => {
@@ -360,7 +366,6 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
       className="w-full sm:max-w-xs"
       noValidate
     >
-      {/* Honeypot: invisible to people, tempting to bots */}
       <input
         type="text"
         tabIndex={-1}
@@ -390,7 +395,6 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
                   <span>Have something on your mind?</span>
                   <span>Leave a message</span>
                 </p>
-
                 <ChevronRightIcon className="size-4 transition-transform group-hover:translate-x-1" />
               </div>
             </div>
@@ -428,13 +432,15 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
           >
             <FieldSet>
               <FieldGroup>
-                <Field>
-                  <FieldLabel className="flex items-center justify-between px-2 text-[13px] font-normal">
-                    <span>{current.label}</span>
+                <Field className="gap-1.5">
+                  <div className="flex items-center justify-between px-2 text-[13px] font-normal">
+                    <FieldLabel required={current.id !== "urgent"}>
+                      {current.label}
+                    </FieldLabel>
                     <span>
-                      Steps {step + 1} / {STEPS.length}
+                      Steps {step + 1} of {STEPS.length}
                     </span>
-                  </FieldLabel>
+                  </div>
 
                   <AnimatePresence
                     mode="wait"
@@ -468,8 +474,8 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
                             align="block-end"
                             aria-disabled={isSending}
                           >
-                            <InputGroupText className="text-muted-foreground text-xs">
-                              {currentVal.length}/{maxLength} characters
+                            <InputGroupText className="mt-auto text-xs">
+                              {currentVal.length} of {maxLength} characters
                             </InputGroupText>
                             <InputGroupButton
                               type="submit"
@@ -477,12 +483,39 @@ const ContactForm: React.FC<{ from?: string }> = (props) => {
                               className="ml-auto"
                               isLoading={isSending}
                             >
-                              <span className="text-xs font-medium">
-                                Submit
+                              <span className="text-[11px] font-medium">
+                                Send
                               </span>
                             </InputGroupButton>
                           </InputGroupAddon>
                         </InputGroup>
+                      ) : current.id === "urgent" ? (
+                        <label htmlFor="urgent-checkbox">
+                          <InputGroup className="border-border bg-background">
+                            <div className="flex flex-1 cursor-pointer items-center gap-2">
+                              <InputGroupAddon>
+                                <Checkbox
+                                  id="urgent-checkbox"
+                                  {...form.register("urgent")}
+                                  disabled={isSending}
+                                />
+                              </InputGroupAddon>
+                              <InputGroupText className="text-foreground font-light">
+                                <span>Mark as urgent</span>
+                              </InputGroupText>
+                            </div>
+                            <InputGroupAddon align="inline-end">
+                              <InputGroupButton
+                                type="button"
+                                variant="secondary"
+                                disabled={isSending}
+                                onClick={goNext}
+                              >
+                                <span className="font-medium">Next</span>
+                              </InputGroupButton>
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </label>
                       ) : (
                         <InputGroup className="border-border bg-background">
                           <InputGroupAddon

@@ -11,30 +11,17 @@ import {
   contactSchema,
 } from "@/lib/validations/contact";
 
-const FIELDS: readonly string[] = ["name", "email", "message"];
+const FIELDS: readonly string[] = ["name", "email", "urgent", "message"];
 
 async function getClientIp(): Promise<string> {
   const h = await headers();
-  // On Vercel these are set by the platform, not by the client.
   const forwarded = h.get("x-forwarded-for")?.split(",")[0]?.trim();
   return h.get("x-real-ip") ?? forwarded ?? "unknown";
 }
 
-/**
- * Server actions are public POST endpoints. Anyone can call this with any
- * payload, so the input type is `unknown` and nothing is trusted until
- * it has passed the zod schema.
- *
- * Order matters:
- *   1. validate  (cheap, no network)
- *   2. honeypot  (bots get a fake success, so they don't adapt)
- *   3. rate limit
- *   4. send
- */
 export async function sendContactMessage(
   input: unknown,
 ): Promise<ContactActionResult> {
-  // 1. Strict validation
   const parsed = contactSchema.safeParse(input);
 
   if (!parsed.success) {
@@ -56,12 +43,10 @@ export async function sendContactMessage(
     };
   }
 
-  const { name, email, message, from, website } = parsed.data;
+  const { name, email, urgent, message, from, website } = parsed.data;
 
-  // 2. Honeypot: pretend it worked, send nothing
   if (website) return { ok: true };
 
-  // 3. Rate limit
   const ip = await getClientIp();
   const limit = await checkContactRateLimit(ip);
 
@@ -78,7 +63,6 @@ export async function sendContactMessage(
     };
   }
 
-  // 4. Send: the notification to you comes first
   const to = process.env.CONTACT_TO_EMAIL;
 
   if (!to) {
@@ -93,12 +77,13 @@ export async function sendContactMessage(
   const sent = await sendMail({
     to,
     replyTo: email,
-    subject: `New message from ${name}`,
+    subject: `${urgent ? "[URGENT] " : ""}New message from ${name}`,
     react: (
       <ContactEmail
         name={name}
         email={email}
         message={message}
+        urgent={urgent}
         from={from}
         receivedAt={new Date()}
       />
@@ -114,16 +99,12 @@ export async function sendContactMessage(
     };
   }
 
-  // Confirmation to the visitor. Best effort: your inbox already has the
-  // message, so a failure here must never show the visitor an error.
-  //
-  // Deliberately does NOT echo their message back. This endpoint can be
-  // pointed at any address, so it should never relay visitor-written text.
   if (canEmailVisitors()) {
     const props = {
       variant: "contact-received",
       name,
       senderName: process.env.CONTACT_SENDER_NAME ?? "Osilama",
+      urgent,
     } as const;
 
     const reply = await sendMail({

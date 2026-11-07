@@ -4,26 +4,18 @@ import * as z from "zod";
  * Single source of truth for contact form validation.
  * Imported by the client form (instant feedback) AND the server action
  * (the only validation that actually counts).
- *
- * No "server-only" import here on purpose: the client needs it too.
  */
 
 export const CONTACT_LIMITS = {
   name: { min: 5, max: 32 },
-  email: { min: 5, max: 254 }, // 254 is the practical max length of an email address
+  email: { min: 5, max: 254 },
   message: { min: 10, max: 200 },
   from: { max: 80 },
   maxLinksInMessage: 2,
 } as const;
 
-// Letters (any language), combining marks, space, apostrophes, dots, hyphens.
 const NAME_REGEX = /^[\p{L}\p{M}][\p{L}\p{M} '’.-]*$/u;
 
-/**
- * Rejects ASCII control characters. Checked via char codes (not a regex)
- * so linters don't flag control characters in a pattern.
- * Newlines are only allowed where `allowNewlines` is true.
- */
 const hasControlChars = (value: string, allowNewlines = false) => {
   for (let i = 0; i < value.length; i++) {
     const code = value.charCodeAt(i);
@@ -46,12 +38,13 @@ export const contactSchema = z.strictObject({
     .regex(NAME_REGEX, "Use letters, spaces, hyphens and apostrophes only."),
 
   email: z
-    .string()
+    .email("That email doesn't look right.")
     .trim()
     .toLowerCase()
     .min(CONTACT_LIMITS.email.min, "Email must be at least 5 chars.")
-    .max(CONTACT_LIMITS.email.max, "That email is too long.")
-    .email("That email doesn't look right."),
+    .max(CONTACT_LIMITS.email.max, "That email is too long."),
+
+  urgent: z.boolean().default(false),
 
   message: z
     .string()
@@ -64,7 +57,6 @@ export const contactSchema = z.strictObject({
       "Please include at most two links.",
     ),
 
-  // Page the visitor came from (set by the form, never typed by the user)
   from: z
     .string()
     .trim()
@@ -72,12 +64,11 @@ export const contactSchema = z.strictObject({
     .refine((v) => !hasControlChars(v), "Invalid value.")
     .optional(),
 
-  // Honeypot: hidden from humans. Bots tend to fill it in.
   website: z.string().max(200).optional(),
 });
 
 export type ContactFormValues = z.infer<typeof contactSchema>;
-export type ContactField = "name" | "email" | "message";
+export type ContactField = "name" | "email" | "urgent" | "message";
 
 export type ContactActionResult =
   | { ok: true }
@@ -91,6 +82,6 @@ export type ContactActionResult =
       ok: false;
       error: "rate_limited";
       message: string;
-      retryAfter: number; // seconds
+      retryAfter: number;
     }
   | { ok: false; error: "send_failed"; message: string };

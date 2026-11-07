@@ -4,7 +4,7 @@ import ParentEmail from "./parent";
 /**
  * The one template every visitor-facing email uses.
  *
- *   contact-received      contact form submitted
+ *   contact-received      contact form submitted (supports urgent flag)
  *   testimonial-received  testimonial submitted (copy depends on consent)
  *   testimonial-approved  you approved it in Sanity (copy depends on consent)
  *
@@ -15,6 +15,7 @@ export type AutoReplyEmailProps =
       variant: "contact-received";
       name: string;
       senderName: string;
+      urgent?: boolean;
     }
   | {
       variant: "testimonial-received";
@@ -45,16 +46,28 @@ function getCopy(props: AutoReplyEmailProps): Copy {
 
   switch (props.variant) {
     case "contact-received":
-      return {
-        subject: "Thanks for reaching out",
-        preview: "Thanks for reaching out. I’ll reply within 48 hours.",
-        title: `Thanks for reaching out, ${firstName}`,
-        paragraphs: [
-          "Your message has landed in my inbox. I read every one personally and will get back to you within 48 hours.",
-          "If it’s urgent or you forgot to mention something, just reply to this email and it will come straight to me.",
-        ],
-        note: "This is an automatic confirmation that your message was received.",
-      };
+      return props.urgent
+        ? {
+            subject: "Thanks for reaching out (Urgent)",
+            preview:
+              "I've received your urgent message and will get back to you shortly.",
+            title: `Thanks for reaching out, ${firstName}`,
+            paragraphs: [
+              "Your urgent message has landed directly at the top of my inbox. I’ll review it and get back to you as soon as possible.",
+              "If you need to add anything else, just reply directly to this email.",
+            ],
+            note: "This is an automatic confirmation that your urgent message was received.",
+          }
+        : {
+            subject: "Thanks for reaching out",
+            preview: "Thanks for reaching out. I’ll reply within 48 hours.",
+            title: `Thanks for reaching out, ${firstName}`,
+            paragraphs: [
+              "Your message has landed in my inbox. I read every one personally and will get back to you within 48 hours.",
+              "If it’s urgent or you forgot to mention something, just reply to this email and it will come straight to me.",
+            ],
+            note: "This is an automatic confirmation that your message was received.",
+          };
 
     case "testimonial-received":
       return props.consentToDisplay
@@ -156,6 +169,13 @@ export const autoReplyPreviews = {
     variant: "contact-received",
     name: "Amara Okafor",
     senderName: "Osilama",
+    urgent: false,
+  },
+  "contact-received-urgent": {
+    variant: "contact-received",
+    name: "Amara Okafor",
+    senderName: "Osilama",
+    urgent: true,
   },
   "testimonial-received-public": {
     variant: "testimonial-received",

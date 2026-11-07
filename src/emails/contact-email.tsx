@@ -13,6 +13,7 @@ export interface ContactEmailProps {
   name: string;
   email: string;
   message: string;
+  urgent?: boolean;
   from?: string;
   receivedAt: Date;
 }
@@ -21,6 +22,7 @@ export default function ContactEmail({
   name,
   email,
   message,
+  urgent,
   from,
   receivedAt,
 }: ContactEmailProps) {
@@ -37,13 +39,15 @@ export default function ContactEmail({
   )}`;
 
   return (
-    <ParentEmail preview={`${firstName}: ${message}`}>
+    <ParentEmail
+      preview={`${urgent ? "[URGENT] " : ""}${firstName}: ${message}`}
+    >
       <Section>
         <Text className="em-muted" style={styles.eyebrow}>
-          Portfolio contact form
+          Portfolio contact form {urgent ? "• Urgent" : ""}
         </Text>
         <Text className="em-text" style={styles.title}>
-          {firstName} sent you a message
+          {firstName} sent you a message {urgent ? "⚠️" : ""}
         </Text>
 
         <Text className="em-text em-quote" style={styles.message}>
@@ -78,6 +82,16 @@ export default function ContactEmail({
             </Link>
           </Column>
         </Row>
+        {urgent ? (
+          <Row style={styles.row}>
+            <Column className="em-muted" style={styles.label}>
+              Priority
+            </Column>
+            <Column className="em-text" style={styles.value}>
+              <span style={{ color: "#dc2626", fontWeight: 600 }}>Urgent</span>
+            </Column>
+          </Row>
+        ) : null}
         {from ? (
           <Row style={styles.row}>
             <Column className="em-muted" style={styles.label}>
@@ -110,6 +124,7 @@ ContactEmail.PreviewProps = {
   email: "amara@example.com",
   message:
     "Hi! I run a small fashion label in Lagos and need a portfolio site. Are you free to chat this week?",
+  urgent: true,
   from: 'from "projects" page',
   receivedAt: new Date("2026-11-01T14:32:00Z"),
 } satisfies ContactEmailProps;
