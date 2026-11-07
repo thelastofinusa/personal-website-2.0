@@ -19,7 +19,8 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://maps.googleapis.com https://vercel.live",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: blob: https://cdn.sanity.io https://*.googleapis.com https://*.gstatic.com https://i.ytimg.com https://*.ytimg.com https://api.microlink.io https://placehold.co",
+      // Added https://vercel.live and https://*.vercel.live here:
+      "img-src 'self' data: blob: https://cdn.sanity.io https://*.googleapis.com https://*.gstatic.com https://i.ytimg.com https://*.ytimg.com https://api.microlink.io https://placehold.co https://vercel.live https://*.vercel.live",
       "font-src 'self' https://fonts.gstatic.com",
       "connect-src 'self' https://cdn.sanity.io https://*.stripe.com https://*.sanity.io wss://*.sanity.io https://*.googleapis.com https://vercel.live https://www.youtube.com https://www.youtube-nocookie.com",
       "frame-src 'self' https:",
@@ -37,8 +38,6 @@ const nextConfig: NextConfig = {
   experimental: {
     typedEnv: true,
   },
-
-  allowedDevOrigins: ["192.168.18.7"],
 
   headers: async () => [
     {
