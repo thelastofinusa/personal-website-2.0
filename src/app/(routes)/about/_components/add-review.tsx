@@ -217,7 +217,7 @@ export const AddReview = () => {
                   "shadow-[0_5px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]",
                 )}
               >
-                <div className="flex flex-col gap-0.5 px-4 py-3">
+                <div className="hidden sm:flex flex-col gap-0.5 px-4 py-3">
                   <h1 className="font-serif text-lg lowercase md:text-xl">
                     Share your thoughts
                   </h1>
