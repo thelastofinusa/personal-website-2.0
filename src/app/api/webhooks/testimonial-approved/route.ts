@@ -7,15 +7,16 @@ import { canEmailVisitors, sendMail } from "@/lib/mailer";
 import { writeClient } from "@/sanity/lib/client";
 
 /**
- * Called by a Sanity webhook when a testimonial is published with
- * approve = true. Emails the author once, using the same template as the
- * other visitor emails.
+ * Called by a Sanity webhook when you click "Send approval email" on a
+ * testimonial in Studio (that button sets approvalEmailRequestedAt).
+ * Emails the author using the same template as the other visitor emails.
+ * Clicking again later resends it.
  *
  * Sanity setup (sanity.io/manage -> your project -> API -> Webhooks):
  *   URL:        https://<your-site>/api/webhooks/testimonial-approved
  *   Dataset:    production
  *   Trigger on: Update only
- *   Filter:     _type == "testimonial" && approve == true && !defined(approvalEmailSentAt)
+ *   Filter:     _type == "testimonial" && approve == true && defined(approvalEmailRequestedAt) && delta::changedAny(approvalEmailRequestedAt)
  *   Projection: {_id}
  *   Method:     POST
  *   Drafts:     off
@@ -30,6 +31,7 @@ type TestimonialDoc = {
   email: string;
   approve: boolean;
   consentToDisplay?: boolean;
+  approvalEmailRequestedAt?: string;
   approvalEmailSentAt?: string;
 };
 
@@ -54,7 +56,8 @@ export async function POST(req: NextRequest) {
   // document, so a stale or replayed payload can't trigger a wrong email.
   const doc = await writeClient.fetch<TestimonialDoc | null>(
     `*[_type == "testimonial" && _id == $id][0]{
-      _id, name, email, approve, consentToDisplay, approvalEmailSentAt
+      _id, name, email, approve, consentToDisplay,
+      approvalEmailRequestedAt, approvalEmailSentAt
     }`,
     { id },
     { cache: "no-store" },
@@ -64,9 +67,14 @@ export async function POST(req: NextRequest) {
   if (!doc.approve)
     return NextResponse.json({ ok: true, skipped: "not approved" });
 
-  // Idempotency: Sanity retries failed deliveries and you may toggle approve
-  // more than once. One email per testimonial.
-  if (doc.approvalEmailSentAt) {
+  // Idempotency: Sanity retries failed deliveries. Send only when the latest
+  // request is newer than the last send. A fresh button click is newer, so it
+  // resends; a retry of an already-handled request is not.
+  const requestedAt = doc.approvalEmailRequestedAt;
+  if (!requestedAt) {
+    return NextResponse.json({ ok: true, skipped: "not requested" });
+  }
+  if (doc.approvalEmailSentAt && doc.approvalEmailSentAt >= requestedAt) {
     return NextResponse.json({ ok: true, skipped: "already sent" });
   }
 
@@ -78,7 +86,7 @@ export async function POST(req: NextRequest) {
   const props = {
     variant: "testimonial-approved",
     name: doc.name,
-    senderName: process.env.CONTACT_SENDER_NAME ?? "Osilama",
+    senderName: process.env.CONTACT_SENDER_NAME ?? "Holiday",
     // Missing means false: never claim it is public without consent
     consentToDisplay: doc.consentToDisplay === true,
     testimonialsUrl: `${siteConfig.url}/about/testimonials`,
@@ -98,8 +106,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false }, { status: 500 });
   }
 
-  // Mark as sent. The webhook filter excludes docs with this field, and this
-  // patch doesn't change `approve`, so it can't trigger the webhook again.
+  // Mark as sent. This patch doesn't change approvalEmailRequestedAt, so the
+  // webhook filter (delta::changedAny) won't fire again.
   try {
     await writeClient
       .patch(doc._id)

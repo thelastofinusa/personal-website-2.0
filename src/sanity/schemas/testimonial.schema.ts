@@ -82,6 +82,14 @@ export const testimonialSchema = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "approvalEmailRequestedAt",
+      title: "Approval email requested at",
+      type: "datetime",
+      description:
+        'Set by the "Send approval email" button in Studio. Changing it triggers the email.',
+      readOnly: true,
+    }),
+    defineField({
       name: "approvalEmailSentAt",
       title: "Approval email sent at",
       type: "datetime",

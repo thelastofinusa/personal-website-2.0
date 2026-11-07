@@ -11,6 +11,7 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { media } from "sanity-plugin-media";
 import { schema } from "./src/sanity";
+import { sendApprovalEmailAction } from "./src/sanity/actions/send-approval-email";
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
 import { apiVersion, dataset, projectId } from "./src/sanity/env";
 import { structure } from "./src/sanity/structure";
@@ -20,6 +21,12 @@ export default defineConfig({
   projectId,
   dataset,
   schema,
+  document: {
+    actions: (prev, context) =>
+      context.schemaType === "testimonial"
+        ? [...prev, sendApprovalEmailAction]
+        : prev,
+  },
   plugins: [
     structureTool({ structure }),
     codeInput(),
