@@ -30,17 +30,12 @@ import { ContactComp } from "@/components/shared/contact";
 import { Container } from "@/components/shared/container";
 import { CurveThingy } from "@/components/shared/curve-thingy";
 import { Eyebrow } from "@/components/shared/eyebrow";
-import { CustomImage } from "@/components/shared/image";
 import { ImageLightbox } from "@/components/shared/lightbox";
 import { QuickHero } from "@/components/shared/quick-hero";
 import { TextContent } from "@/components/shared/text-content";
 import { siteConfig } from "@/config/site.config";
 import { navLinksData } from "@/constants/navigation";
-import {
-  parentVariants,
-  snapshotImageVariants,
-  workItemVariants,
-} from "@/constants/variants";
+import { parentVariants, workItemVariants } from "@/constants/variants";
 import type { IImagePreviewPortalProps } from "@/types";
 import type {
   ArticlesListQueryResult,
@@ -51,6 +46,7 @@ import type {
 } from "~/sanity.types";
 import { AddReview } from "./add-review";
 import { DailyApps } from "./dailyApps";
+import { SnapshotsGallery } from "./snapshots";
 import { Testimonial } from "./testimonial";
 
 const introduction = `Hey, I’m **${siteConfig.author.name}**—though most people just call me **${siteConfig.author.nickname}** [🔊](pronunciation) or **${siteConfig.author.nicknameShorten}**.
@@ -86,13 +82,6 @@ export const AboutPageClient: React.FC<{
 }) => {
   const { play } = useSoundFx();
   const pathname = usePathname();
-  const imageHeights = [
-    "h-24 md:h-32",
-    "h-28 md:h-38",
-    "h-32 md:h-44",
-    "h-28 md:h-38",
-    "h-24 md:h-32",
-  ];
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
@@ -100,11 +89,13 @@ export const AboutPageClient: React.FC<{
   const timelineRoute = navLinksData("/about/timeline");
   const testimonialsRoute = navLinksData("/about/testimonials");
 
-  const openLightbox = (e: React.MouseEvent, idx: number) => {
-    e.stopPropagation();
-    play("expand");
-    setActiveIndex(idx);
-  };
+  const openLightbox = useCallback(
+    (idx: number) => {
+      play("expand");
+      setActiveIndex(idx);
+    },
+    [play],
+  );
 
   const closeLightbox = useCallback(() => {
     play("collapse");
@@ -158,45 +149,15 @@ export const AboutPageClient: React.FC<{
           variants={parentVariants}
           initial="hidden"
           whileInView="visible"
-          className="flex flex-col gap-16 pt-20 sm:pt-30 md:pt-36"
+          className="flex flex-col gap-6 pt-20 sm:pt-30 md:gap-8 md:pt-36 lg:gap-16"
         >
           {snapshots?.images && snapshots.images.length > 0 && (
             <Container size="md">
-              <div className="flex items-end justify-center">
-                {snapshots.images.map((image, idx) => (
-                  <motion.button
-                    type="button"
-                    onClick={(e) => openLightbox(e, idx)}
-                    key={`images${idx}`}
-                    variants={snapshotImageVariants}
-                    initial="hidden"
-                    animate="visible"
-                    custom={idx} // Passes index dynamically into the variant function
-                    style={{
-                      zIndex: idx === 2 ? 10 : idx === 1 || idx === 3 ? 5 : 0,
-                    }}
-                    whileHover={{
-                      scale: 1.2,
-                      rotate: 0,
-                      zIndex: 20,
-                    }}
-                    whileTap={{
-                      scale: 1.1,
-                      rotate: 0,
-                      zIndex: 20,
-                    }}
-                    className="bg-card -mr-4 shrink-0 overflow-hidden rounded-[12px] border p-0.5 md:p-1"
-                  >
-                    <CustomImage
-                      src={image.url as string}
-                      alt={`${siteConfig.author.nickname}'s ${idx + 1}`}
-                      width={500}
-                      height={500}
-                      className={`w-24 md:w-40 ${imageHeights[idx % imageHeights.length]} shrink-0 rounded-[9px] object-cover`}
-                    />
-                  </motion.button>
-                ))}
-              </div>
+              <SnapshotsGallery
+                images={snapshots.images}
+                altPrefix={`${siteConfig.author.nickname}'s photo`}
+                onOpen={openLightbox}
+              />
             </Container>
           )}
           <Container size="xs">
@@ -263,17 +224,6 @@ export const AboutPageClient: React.FC<{
           </motion.div>
         )}
 
-        <motion.div
-          variants={parentVariants}
-          initial="hidden"
-          whileInView="visible"
-          className="flex flex-col gap-6"
-        >
-          <Container size="xs">
-            <TextContent content={moreContent} />
-          </Container>
-        </motion.div>
-
         {/* Articles Section */}
         {articles.length > 0 && (
           <motion.div
@@ -315,6 +265,17 @@ export const AboutPageClient: React.FC<{
             </Container>
           </motion.div>
         )}
+
+        <motion.div
+          variants={parentVariants}
+          initial="hidden"
+          whileInView="visible"
+          className="flex flex-col gap-6"
+        >
+          <Container size="xs">
+            <TextContent content={moreContent} />
+          </Container>
+        </motion.div>
 
         {/* Testimonial section */}
         <motion.div

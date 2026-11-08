@@ -134,9 +134,9 @@ export const Testimonial: React.FC<{
               {renderStars(testimonial.rating as number)}
             </div>
 
-            <p className="font-heading text-sm font-normal">
+            <p className="font-heading text-xs font-normal">
               {testimonial.rating?.toFixed(1)}{" "}
-              <span className="text-muted-foreground">Rating</span>
+              <span className="text-muted-foreground">Star Rating</span>
             </p>
           </div>
 
