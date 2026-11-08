@@ -1,19 +1,13 @@
-import {
-  Button,
-  Column,
-  Hr,
-  Link,
-  Row,
-  Section,
-  Text,
-} from "@react-email/components";
+import { Link, Text } from "@react-email/components";
 import ParentEmail from "./parent";
+import { emailStyles as s } from "./theme";
 
 export interface ContactEmailProps {
   name: string;
   email: string;
   message: string;
   urgent?: boolean;
+  /** Reads naturally after "from", e.g. "the projects page". */
   from?: string;
   receivedAt: Date;
 }
@@ -34,169 +28,60 @@ export default function ContactEmail({
     timeStyle: "short",
   }).format(receivedAt);
 
-  const replyHref = `mailto:${email}?subject=${encodeURIComponent(
-    "Re: your message",
-  )}`;
-
   return (
     <ParentEmail
       preview={`${urgent ? "[URGENT] " : ""}${firstName}: ${message}`}
     >
-      <Section>
-        <Text className="em-muted" style={styles.eyebrow}>
-          Portfolio contact form {urgent ? "• Urgent" : ""}
-        </Text>
-        <Text className="em-text" style={styles.title}>
-          {firstName} sent you a message {urgent ? "⚠️" : ""}
-        </Text>
+      {urgent ? <Text style={s.urgent}>Marked as urgent</Text> : null}
 
-        <Text className="em-text em-quote" style={styles.message}>
-          {message}
-        </Text>
+      <Text className="em-text" style={s.p}>
+        <strong>{name}</strong> (
+        <Link className="em-link" href={`mailto:${email}`} style={s.link}>
+          {email}
+        </Link>
+        ) sent you a message{from ? ` from ${from}` : ""}:
+      </Text>
 
-        <Button className="em-btn" href={replyHref} style={styles.button}>
-          Reply to {firstName}
-        </Button>
+      <Text className="em-text" style={s.message}>
+        {message}
+      </Text>
 
-        <Hr className="em-rule" style={styles.hr} />
+      <Text className="em-text" style={s.p}>
+        Just reply to this email to answer {firstName}.
+      </Text>
 
-        <Row style={styles.row}>
-          <Column className="em-muted" style={styles.label}>
-            Name
-          </Column>
-          <Column className="em-text" style={styles.value}>
-            {name}
-          </Column>
-        </Row>
-        <Row style={styles.row}>
-          <Column className="em-muted" style={styles.label}>
-            Email
-          </Column>
-          <Column className="em-text" style={styles.value}>
-            <Link
-              className="em-link"
-              href={`mailto:${email}`}
-              style={styles.link}
-            >
-              {email}
-            </Link>
-          </Column>
-        </Row>
-        {urgent ? (
-          <Row style={styles.row}>
-            <Column className="em-muted" style={styles.label}>
-              Priority
-            </Column>
-            <Column className="em-text" style={styles.value}>
-              <span style={{ color: "#dc2626", fontWeight: 600 }}>Urgent</span>
-            </Column>
-          </Row>
-        ) : null}
-        {from ? (
-          <Row style={styles.row}>
-            <Column className="em-muted" style={styles.label}>
-              Sent from
-            </Column>
-            <Column className="em-text" style={styles.value}>
-              {from}
-            </Column>
-          </Row>
-        ) : null}
-        <Row style={styles.row}>
-          <Column className="em-muted" style={styles.label}>
-            Received
-          </Column>
-          <Column className="em-text" style={styles.value}>
-            {received} (WAT)
-          </Column>
-        </Row>
-      </Section>
-
-      <Text className="em-muted" style={styles.footer}>
-        Replying to this email also goes straight to {email}.
+      <Text className="em-muted" style={s.footnote}>
+        Received {received} (WAT)
+        {urgent ? " · Priority: urgent" : ""}
       </Text>
     </ParentEmail>
   );
 }
 
-ContactEmail.PreviewProps = {
-  name: "Amara Okafor",
-  email: "amara@example.com",
-  message:
-    "Hi! I run a small fashion label in Lagos and need a portfolio site. Are you free to chat this week?",
-  urgent: true,
-  from: 'from "projects" page',
-  receivedAt: new Date("2026-11-01T14:32:00Z"),
-} satisfies ContactEmailProps;
+export const contactEmailPreviews = {
+  contact: {
+    name: "Amara Okafor",
+    email: "amara@example.com",
+    message:
+      "Hi! I run a small fashion label in Lagos and need a portfolio site. Are you free to chat this week?",
+    urgent: false,
+    from: "the projects page",
+    receivedAt: new Date("2026-11-01T14:32:00Z"),
+  },
+  "contact-urgent": {
+    name: "Amara Okafor",
+    email: "amara@example.com",
+    message:
+      "Hi! My launch is on Friday and my current site just went down. Can we talk today?",
+    urgent: true,
+    from: "the projects page",
+    receivedAt: new Date("2026-11-01T14:32:00Z"),
+  },
+} satisfies Record<string, ContactEmailProps>;
 
-const styles = {
-  eyebrow: {
-    margin: "0 0 2px",
-    fontSize: "13px",
-    lineHeight: "20px",
-    color: "#6b7280",
-  },
-  title: {
-    margin: "0 0 16px",
-    fontSize: "20px",
-    lineHeight: "28px",
-    fontWeight: 600,
-    color: "#111827",
-  },
-  message: {
-    margin: 0,
-    padding: "2px 0 2px 14px",
-    borderLeft: "3px solid #09679C",
-    fontSize: "16px",
-    color: "#111827",
-    whiteSpace: "pre-wrap",
-    wordBreak: "break-word",
-  },
-  button: {
-    display: "block",
-    boxSizing: "border-box",
-    width: "100%",
-    marginTop: "20px",
-    padding: "12px 18px",
-    backgroundColor: "#09679C",
-    color: "#ffffff",
-    fontSize: "14px",
-    fontWeight: 500,
-    lineHeight: "20px",
-    textAlign: "center",
-    textDecoration: "none",
-    borderRadius: "8px",
-  },
-  hr: {
-    border: "none",
-    borderTop: "1px solid #e5e7eb",
-    margin: "24px 0 16px",
-  },
-  row: {
-    marginBottom: "6px",
-  },
-  label: {
-    width: "76px",
-    verticalAlign: "top",
-    fontSize: "13px",
-    lineHeight: "20px",
-    color: "#6b7280",
-  },
-  value: {
-    verticalAlign: "top",
-    fontSize: "14px",
-    lineHeight: "20px",
-    color: "#111827",
-    wordBreak: "break-word",
-  },
-  link: {
-    color: "#09679C",
-    textDecoration: "underline",
-  },
-  footer: {
-    margin: "20px 0 0",
-    fontSize: "12px",
-    lineHeight: "18px",
-    color: "#9ca3af",
-  },
-} as const;
+export type ContactEmailPreviewId = keyof typeof contactEmailPreviews;
+
+// Shown by `bun email:dev`
+ContactEmail.PreviewProps = contactEmailPreviews[
+  "contact-urgent"
+] satisfies ContactEmailProps;

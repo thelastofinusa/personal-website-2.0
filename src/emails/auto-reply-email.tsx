@@ -1,5 +1,6 @@
-import { Button, Hr, Section, Text } from "@react-email/components";
+import { Link, Text } from "@react-email/components";
 import ParentEmail from "./parent";
+import { emailStyles as s } from "./theme";
 
 /**
  * The one template every visitor-facing email uses.
@@ -8,7 +9,8 @@ import ParentEmail from "./parent";
  *   testimonial-received  testimonial submitted (copy depends on consent)
  *   testimonial-approved  you approved it in Sanity (copy depends on consent)
  *
- * Only the words change. Layout, styling and sign-off stay identical.
+ * Only the words change. It always reads like a short personal email:
+ * greeting, a few paragraphs, a sign-off and one small note.
  */
 export type AutoReplyEmailProps =
   | {
@@ -28,22 +30,19 @@ export type AutoReplyEmailProps =
       name: string;
       senderName: string;
       consentToDisplay: boolean;
-      /** Where the "see it live" button points. */
+      /** Where the "see it live" link points. */
       testimonialsUrl: string;
     };
 
 type Copy = {
   subject: string;
   preview: string;
-  title: string;
   paragraphs: string[];
-  cta?: { label: string; href: string };
+  link?: { label: string; href: string };
   note: string;
 };
 
 function getCopy(props: AutoReplyEmailProps): Copy {
-  const firstName = props.name.trim().split(" ")[0];
-
   switch (props.variant) {
     case "contact-received":
       return props.urgent
@@ -51,9 +50,8 @@ function getCopy(props: AutoReplyEmailProps): Copy {
             subject: "Thanks for reaching out (Urgent)",
             preview:
               "I've received your urgent message and will get back to you shortly.",
-            title: `Thanks for reaching out, ${firstName}`,
             paragraphs: [
-              "Your urgent message has landed directly at the top of my inbox. I’ll review it and get back to you as soon as possible.",
+              "Thanks for reaching out. Your urgent message has landed directly at the top of my inbox, and I’ll review it and get back to you as soon as possible.",
               "If you need to add anything else, just reply directly to this email.",
             ],
             note: "This is an automatic confirmation that your urgent message was received.",
@@ -61,9 +59,8 @@ function getCopy(props: AutoReplyEmailProps): Copy {
         : {
             subject: "Thanks for reaching out",
             preview: "Thanks for reaching out. I’ll reply within 48 hours.",
-            title: `Thanks for reaching out, ${firstName}`,
             paragraphs: [
-              "Your message has landed in my inbox. I read every one personally and will get back to you within 48 hours.",
+              "Thanks for reaching out. Your message has landed in my inbox. I read every one personally and will get back to you within 48 hours.",
               "If it’s urgent or you forgot to mention something, just reply to this email and it will come straight to me.",
             ],
             note: "This is an automatic confirmation that your message was received.",
@@ -74,9 +71,8 @@ function getCopy(props: AutoReplyEmailProps): Copy {
         ? {
             subject: "Thanks for your testimonial",
             preview: "I’ve got your testimonial and will review it soon.",
-            title: `Thank you, ${firstName}`,
             paragraphs: [
-              "Your testimonial has been submitted. I review each one personally before it goes live.",
+              "Thank you for your testimonial. I review each one personally before it goes live.",
               "Since you’re happy for it to be shown, it will appear on my site with your name and role once I approve it. I’ll send you another email the moment it’s up.",
             ],
             note: "This is an automatic confirmation that your testimonial was received.",
@@ -84,9 +80,8 @@ function getCopy(props: AutoReplyEmailProps): Copy {
         : {
             subject: "Thanks for your testimonial",
             preview: "I’ve got your testimonial and it will stay private.",
-            title: `Thank you, ${firstName}`,
             paragraphs: [
-              "Your testimonial has been submitted, and it means a lot.",
+              "Thank you for your testimonial, it means a lot.",
               "You chose not to have it shown publicly, so it will stay private. I’ll read it, but it won’t appear on my site.",
               "Changed your mind? Just reply to this email and I’ll sort it out.",
             ],
@@ -99,18 +94,16 @@ function getCopy(props: AutoReplyEmailProps): Copy {
             subject: "Your testimonial is live",
             preview:
               "Your testimonial has been approved and is now on my site.",
-            title: `It’s live, ${firstName}`,
             paragraphs: [
-              "I’ve approved your testimonial and it’s now on my site, shown with your name and role.",
+              "Good news: I’ve approved your testimonial and it’s now live on my site, shown with your name and role.",
               "Thank you for taking the time to write it.",
             ],
-            cta: { label: "See it on the site", href: props.testimonialsUrl },
+            link: { label: "See it on the site", href: props.testimonialsUrl },
             note: "This is an automatic notification that your testimonial was approved.",
           }
         : {
             subject: "Your testimonial was approved",
             preview: "Your testimonial was approved and will stay private.",
-            title: `Approved, ${firstName}`,
             paragraphs: [
               "I’ve read and approved your testimonial. Thank you for writing it.",
               "As you asked, it won’t be shown on my site. It stays private with me.",
@@ -127,38 +120,37 @@ export function getAutoReplySubject(props: AutoReplyEmailProps): string {
 
 export default function AutoReplyEmail(props: AutoReplyEmailProps) {
   const copy = getCopy(props);
+  const firstName = props.name.trim().split(" ")[0];
 
   return (
     <ParentEmail preview={copy.preview}>
-      <Section>
-        <Text className="em-text" style={styles.title}>
-          {copy.title}
+      <Text className="em-text" style={s.p}>
+        Hi {firstName},
+      </Text>
+
+      {copy.paragraphs.map((paragraph) => (
+        <Text key={paragraph} className="em-text" style={s.p}>
+          {paragraph}
         </Text>
+      ))}
 
-        {copy.paragraphs.map((paragraph) => (
-          <Text key={paragraph} className="em-text" style={styles.text}>
-            {paragraph}
-          </Text>
-        ))}
-
-        {copy.cta ? (
-          <Button className="em-btn" href={copy.cta.href} style={styles.button}>
-            {copy.cta.label}
-          </Button>
-        ) : null}
-
-        <Text className="em-text" style={styles.signoff}>
-          Talk soon,
-          <br />
-          {props.senderName}
+      {copy.link ? (
+        <Text className="em-text" style={s.p}>
+          <Link className="em-link" href={copy.link.href} style={s.link}>
+            {copy.link.label}
+          </Link>
         </Text>
+      ) : null}
 
-        <Hr className="em-rule" style={styles.hr} />
+      <Text className="em-text" style={s.signoff}>
+        Best,
+        <br />
+        {props.senderName}
+      </Text>
 
-        <Text className="em-muted" style={styles.note}>
-          {copy.note}
-        </Text>
-      </Section>
+      <Text className="em-muted" style={s.footnote}>
+        {copy.note}
+      </Text>
     </ParentEmail>
   );
 }
@@ -211,51 +203,3 @@ export type AutoReplyPreviewId = keyof typeof autoReplyPreviews;
 AutoReplyEmail.PreviewProps = autoReplyPreviews[
   "testimonial-received-public"
 ] satisfies AutoReplyEmailProps;
-
-const styles = {
-  title: {
-    margin: "0 0 16px",
-    fontSize: "20px",
-    lineHeight: "28px",
-    fontWeight: 600,
-    color: "#111827",
-  },
-  text: {
-    margin: "0 0 14px",
-    fontSize: "16px",
-    lineHeight: "25px",
-    color: "#111827",
-  },
-  button: {
-    display: "block",
-    boxSizing: "border-box",
-    width: "100%",
-    marginTop: "20px",
-    padding: "12px 18px",
-    backgroundColor: "#09679C",
-    color: "#ffffff",
-    fontSize: "14px",
-    fontWeight: 500,
-    lineHeight: "20px",
-    textAlign: "center",
-    textDecoration: "none",
-    borderRadius: "8px",
-  },
-  signoff: {
-    margin: "20px 0 0",
-    fontSize: "16px",
-    lineHeight: "25px",
-    color: "#111827",
-  },
-  hr: {
-    border: "none",
-    borderTop: "1px solid #e5e7eb",
-    margin: "24px 0 16px",
-  },
-  note: {
-    margin: 0,
-    fontSize: "12px",
-    lineHeight: "18px",
-    color: "#9ca3af",
-  },
-} as const;

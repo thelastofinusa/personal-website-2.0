@@ -7,24 +7,25 @@ const fontFamily =
 /**
  * Shared shell for every email.
  *
- * No background or card on purpose: mail apps add their own padding and
- * background, especially on mobile.
+ * It's laid out like a normal personal email: left aligned, plain text on
+ * the mail app's own background, no cards, banners or full-width buttons.
+ * Mail apps add their own padding, so there is none here.
  *
  * Because there is no background, text colors must flip in dark mode.
  * Inline styles are the light defaults; these classes swap them when the mail
  * app reports a dark color scheme (Apple Mail, iOS Mail and Outlook.com honour
  * it; Gmail's app does its own color inversion instead).
  *
- * Classes: em-text, em-muted, em-link, em-rule, em-quote, em-btn
+ * Classes: em-text, em-muted, em-link
+ *
+ * Keep exactly one prefers-color-scheme query in this file: the /preview page
+ * swaps it to force light or dark.
  */
 const darkCss = `
 @media (prefers-color-scheme: dark) {
   .em-text { color: #f3f4f6 !important; }
   .em-muted { color: #9ca3af !important; }
   .em-link { color: #f3f4f6 !important; }
-  .em-rule { border-color: #374151 !important; }
-  .em-quote { border-left-color: #09679C !important; }
-  .em-btn { background-color: #09679C !important; color: #ffffff !important; }
 }
 `;
 
@@ -54,7 +55,7 @@ const styles = {
     fontFamily,
   },
   container: {
-    maxWidth: "520px",
-    margin: "0 auto",
+    maxWidth: "560px",
+    margin: 0,
   },
 } as const;

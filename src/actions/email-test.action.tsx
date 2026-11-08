@@ -1,18 +1,9 @@
 "use server";
 
-import type { ReactElement } from "react";
-import AutoReplyEmail, {
-  type AutoReplyPreviewId,
-  autoReplyPreviews,
-  getAutoReplySubject,
-} from "@/emails/auto-reply-email";
-import ContactEmail from "@/emails/contact-email";
-import TestimonialEmail from "@/emails/testimonial-email";
+import { getEmailTemplate } from "@/emails/registry";
 import { getMailProvider, sendMail } from "@/lib/mailer";
 
 type TestResult = { ok: boolean; message: string };
-
-const STATIC_TEMPLATES = ["contact", "testimonial"] as const;
 
 /**
  * Development helper for the /preview page.
@@ -20,20 +11,16 @@ const STATIC_TEMPLATES = ["contact", "testimonial"] as const;
  * - Disabled in production builds.
  * - Always sends to CONTACT_TO_EMAIL, never to an address from the client.
  * - Returns the real provider error so you can see why a send fails.
+ * - Knows every template through the registry, so new emails show up here
+ *   automatically.
  */
 export async function sendTestEmail(template: unknown): Promise<TestResult> {
   if (process.env.NODE_ENV === "production") {
     return { ok: false, message: "Test emails are disabled in production." };
   }
 
-  const isStatic = STATIC_TEMPLATES.includes(
-    template as (typeof STATIC_TEMPLATES)[number],
-  );
-  const isVariant =
-    typeof template === "string" && template in autoReplyPreviews;
-
-  if (!isStatic && !isVariant)
-    return { ok: false, message: "Unknown template." };
+  const entry = getEmailTemplate(template);
+  if (!entry) return { ok: false, message: "Unknown template." };
 
   const to = process.env.CONTACT_TO_EMAIL;
   const provider = getMailProvider();
@@ -46,22 +33,11 @@ export async function sendTestEmail(template: unknown): Promise<TestResult> {
     };
   }
 
-  let subject: string;
-  let react: ReactElement;
-
-  if (template === "contact") {
-    subject = "[Test] New message from Amara";
-    react = <ContactEmail {...ContactEmail.PreviewProps} />;
-  } else if (template === "testimonial") {
-    subject = "[Test] New testimonial from Amara (needs approval)";
-    react = <TestimonialEmail {...TestimonialEmail.PreviewProps} />;
-  } else {
-    const props = autoReplyPreviews[template as AutoReplyPreviewId];
-    subject = `[Test] ${getAutoReplySubject(props)}`;
-    react = <AutoReplyEmail {...props} />;
-  }
-
-  const result = await sendMail({ to, subject, react });
+  const result = await sendMail({
+    to,
+    subject: `[Test] ${entry.subject}`,
+    react: entry.render(),
+  });
 
   if (!result.ok) return { ok: false, message: result.error };
 
