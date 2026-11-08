@@ -1,7 +1,7 @@
 "use client";
 
-import type confetti from "canvas-confetti";
 import { motion, useScroll, useTransform } from "motion/react";
+import { useState } from "react";
 import { useSoundFx } from "@/components/provider/sound-fx";
 import { Highlighter } from "@/components/reusable/magicui/highlighter";
 import {
@@ -9,13 +9,17 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/reusable/shadcn/avatar";
+import { AnimatedWord, smilePose } from "@/components/shared/animated-word";
 import { siteConfig } from "@/config/site.config";
 import { itemVariants, parentVariants } from "@/constants/variants";
+import { fireConfetti } from "@/lib/fire-confetti";
 import { getInitials } from "@/lib/utils";
 
 export const HomeHero = () => {
   const { play } = useSoundFx();
   const { scrollYProgress } = useScroll();
+  // Bumped on every click so "click." plays its burst animation.
+  const [clickBurst, setClickBurst] = useState(0);
 
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
@@ -61,30 +65,44 @@ export const HomeHero = () => {
           deserve{" "}
           <i>
             <Highlighter action="circle" color="var(--primary)">
-              websites
+              <AnimatedWord
+                word="websites"
+                from="below"
+                hopRotate={-6}
+                delay={0.9}
+                interval={6}
+              />
             </Highlighter>
           </i>{" "}
           that make people{" "}
-          <Highlighter action="underline" color="var(--primary)">
-            smile and{" "}
+          {/* Extra padding keeps the underline below the dipping smile. */}
+          <Highlighter action="underline" color="var(--primary)" padding={8}>
+            <AnimatedWord
+              word="smile"
+              from="above"
+              pose={smilePose}
+              idle="grin"
+              delay={1.3}
+              interval={5}
+            />{" "}
+            and{" "}
             <button
               type="button"
-              className="motion-safe:animate-bell-ring"
-              onClick={async () => {
+              className="cursor-pointer"
+              onClick={(event) => {
                 play("streak");
-                const { default: confettiFn }: { default: typeof confetti } =
-                  await import("canvas-confetti");
-                confettiFn({
-                  zIndex: 9999,
-                  particleCount: 500,
-                  spread: 9000,
-                  decay: 0.93,
-                  disableForReducedMotion: true,
-                  angle: 0,
-                });
+                setClickBurst((count) => count + 1);
+                fireConfetti(event.currentTarget);
               }}
             >
-              click.
+              <AnimatedWord
+                word="click."
+                from="below"
+                idle="press"
+                burst={clickBurst}
+                delay={1.7}
+                interval={4}
+              />
             </button>
           </Highlighter>
         </motion.h1>
