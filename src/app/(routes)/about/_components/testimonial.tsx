@@ -151,7 +151,7 @@ export const Testimonial: React.FC<{
           href={testimonial.url as string}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex flex-col gap-0.5 px-4 py-3"
+          className="flex flex-col gap-0.5 px-4 py-2"
         >
           <div className="flex items-center gap-1.5">
             <Avatar size="xs">

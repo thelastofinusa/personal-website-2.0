@@ -212,7 +212,7 @@ export const AboutPageClient: React.FC<{
             variants={parentVariants}
             initial="hidden"
             whileInView="visible"
-            className="flex flex-col gap-6"
+            className="flex flex-col gap-6 md:gap-8"
           >
             <Container size="sm">
               <Eyebrow label="My Little Rectangle Friends" icon={Router3} />
@@ -232,6 +232,13 @@ export const AboutPageClient: React.FC<{
             animate="visible"
             className="flex flex-col gap-6 md:gap-8"
           >
+            <Container size="sm">
+              <Eyebrow
+                label={articleRoute?.title ?? "Articles & Writings"}
+                icon={articleRoute?.icon}
+              />
+            </Container>
+
             <Container size="md">
               <div className="flex flex-col gap-8 md:gap-12">
                 <ImagePreviewProvider images={articleImages}>
@@ -284,6 +291,13 @@ export const AboutPageClient: React.FC<{
           whileInView="visible"
           className="flex flex-col gap-6 md:gap-8"
         >
+          <Container size="sm">
+            <Eyebrow
+              label={testimonialsRoute?.title ?? "Kind Words"}
+              icon={testimonialsRoute?.icon}
+            />
+          </Container>
+
           <Container size="md">
             <div className="flex flex-col gap-8 md:gap-12">
               <div className="columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3">

@@ -1,9 +1,9 @@
 import type { Route } from "next";
 import {
+  ChatRoundLine,
   Designtools,
   History2,
   type IconComponent,
-  MsgBubbleUser,
   PenWriting,
   Story,
   UserLaptop,
@@ -63,7 +63,7 @@ export const navLinks: NavLink[] = [
     title: "Street Cred",
     description: "Proof that real people actually like working with me.",
     action: "See the claims",
-    icon: MsgBubbleUser,
+    icon: ChatRoundLine,
     href: "/about/testimonials",
     show: false,
   },

@@ -96,7 +96,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
     <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-6">
       <div className="lg:min-h-105">
         <Frame className="h-max! rounded-[28px]">
-          <div className="relative flex min-h-44 w-full shrink-0 flex-col overflow-hidden rounded-3xl border bg-card lg:w-85">
+          <div className="bg-card relative flex min-h-44 w-full shrink-0 flex-col overflow-hidden rounded-3xl border lg:w-85">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeApp._id}
@@ -104,7 +104,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="flex h-full flex-col rounded-[20px] bg-background/40 p-6"
+                className="bg-background/40 flex h-full flex-col rounded-[20px] p-6"
               >
                 <div className="flex items-start justify-between gap-4">
                   {/* Large Spotlight Icon */}
@@ -119,7 +119,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                 </div>
 
                 <div className="mt-4 flex flex-col gap-1 px-2">
-                  <h3 className="font-semibold text-foreground text-xl tracking-tight">
+                  <h3 className="text-foreground text-xl font-semibold tracking-tight">
                     {activeApp.name}
                   </h3>
                   <p className="text-muted-foreground text-sm">
@@ -208,7 +208,7 @@ export const DailyApps: React.FC<{ apps: DailyAppListQueryResult }> = ({
                 {isActive && (
                   <motion.div
                     layoutId="app-drawer-focus"
-                    className="absolute inset-0 rounded-xl border-2 border-primary bg-primary/15 shadow-xs sm:rounded-2xl md:rounded-[20px]"
+                    className="border-primary bg-primary/15 absolute inset-0 rounded-xl border-2 shadow-xs sm:rounded-2xl md:rounded-[20px]"
                     style={{
                       backgroundColor: `color-mix(in srgb, ${
                         activeApp.button?.backgroundColor ?? "var(--primary)"

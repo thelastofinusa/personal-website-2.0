@@ -109,7 +109,7 @@ export const HomeHero = () => {
 
         <motion.p
           variants={itemVariants}
-          className="text-muted-foreground mt-4 max-w-md text-sm font-normal md:text-center md:text-base"
+          className="text-muted-foreground mt-4 max-w-md text-[15px] font-normal md:text-center md:text-[17px]"
         >
           Equal parts{" "}
           <span className="text-foreground font-normal">design</span> and{" "}
