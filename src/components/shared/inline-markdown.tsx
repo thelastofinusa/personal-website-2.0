@@ -7,7 +7,7 @@ import remarkGfm from "remark-gfm";
 const components: Components = {
   p: ({ children }) => <>{children}</>,
   strong: ({ children }) => (
-    <strong className="font-medium text-foreground">{children}</strong>
+    <strong className="text-foreground font-medium">{children}</strong>
   ),
   em: ({ children }) => <em>{children}</em>,
   a: ({ children, href }) => (
@@ -15,7 +15,7 @@ const components: Components = {
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="underline underline-offset-4 transition-colors hover:text-primary"
+      className="hover:text-primary underline underline-offset-4 transition-colors"
       // These sit inside a clickable project card, so don't trigger it.
       onClick={(event) => event.stopPropagation()}
     >

@@ -13,7 +13,7 @@ type SnapshotsGalleryProps = {
   /** Used to build alt text: "<altPrefix> 1", "<altPrefix> 2", ... */
   altPrefix: string;
   /** Called with the image's index when it is opened full screen. */
-  onOpen: (index: number) => void;
+  action: (index: number) => void;
 };
 
 const stripVariants: Variants = {
@@ -45,7 +45,7 @@ const pad = (value: number) => String(value).padStart(2, "0");
 export const SnapshotsGallery: React.FC<SnapshotsGalleryProps> = ({
   images,
   altPrefix,
-  onOpen,
+  action,
 }) => {
   const center = Math.floor((images.length - 1) / 2);
   const [active, setActive] = React.useState(center);
@@ -82,11 +82,11 @@ export const SnapshotsGallery: React.FC<SnapshotsGalleryProps> = ({
             }}
             onClick={(e) => {
               e.stopPropagation();
-              if (isActive) onOpen(index);
+              if (isActive) action(index);
               else setActive(index);
             }}
             className={cn(
-              "group bg-card relative min-w-0 basis-0 cursor-pointer overflow-hidden rounded-xl border p-0",
+              "group bg-background relative min-w-0 basis-0 cursor-pointer overflow-hidden rounded-xl border p-0",
               "transition-[flex-grow,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
               "focus-visible:ring-ring outline-none focus-visible:ring-2",
               isActive ? "border-primary grow-5 md:grow-7" : "grow",

@@ -40,7 +40,7 @@ export function PronounceMyName({
         className,
       )}
     >
-      <span className="absolute pointer-fine:hidden size-12" aria-hidden />
+      <span className="absolute size-12 pointer-fine:hidden" aria-hidden />
       <VolumeIcon
         ref={volumeIconRef}
         isPlaying={isPlaying}

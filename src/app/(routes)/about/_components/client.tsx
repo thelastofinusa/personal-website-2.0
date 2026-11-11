@@ -156,7 +156,7 @@ export const AboutPageClient: React.FC<{
               <SnapshotsGallery
                 images={snapshots.images}
                 altPrefix={`${siteConfig.author.nickname}'s photo`}
-                onOpen={openLightbox}
+                action={openLightbox}
               />
             </Container>
           )}

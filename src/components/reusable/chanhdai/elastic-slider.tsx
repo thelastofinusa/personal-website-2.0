@@ -544,7 +544,7 @@ export function ElasticSlider({
           ref={labelRef}
           data-slot="elastic-slider-label"
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 left-3 inline-flex -translate-y-1/2 items-center font-medium text-(--elastic-slider-label) text-sm/none transition-colors"
+          className="text-sm/none pointer-events-none absolute top-1/2 left-3 inline-flex -translate-y-1/2 items-center font-medium text-(--elastic-slider-label) transition-colors"
         >
           {label}
         </span>

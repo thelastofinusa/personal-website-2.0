@@ -134,7 +134,7 @@ export function ImageLightbox({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       onClick={onClose}
-      className="fixed inset-0 z-100 flex flex-col bg-background/80 backdrop-blur-xl"
+      className="bg-background/80 fixed inset-0 z-100 flex flex-col backdrop-blur-xl"
     >
       {/* Top bar */}
       <div className="flex items-center justify-end p-4 sm:p-6">
@@ -204,7 +204,7 @@ export function ImageLightbox({
                 draggable={false}
                 preload
                 quality={100}
-                className="max-h-[75vh] w-max max-w-full select-none object-contain"
+                className="max-h-[75vh] w-max max-w-full object-contain select-none"
               />
             </motion.div>
           </AnimatePresence>
@@ -233,13 +233,13 @@ export function ImageLightbox({
         onClick={(e) => e.stopPropagation()}
       >
         {current.alt && (
-          <p className="max-w-[60ch] truncate text-muted-foreground text-sm">
+          <p className="text-muted-foreground max-w-[60ch] truncate text-sm">
             {current.alt}
           </p>
         )}
         {hasMany && (
           <span
-            className="shrink-0 font-mono text-muted-foreground text-xs tabular-nums"
+            className="text-muted-foreground shrink-0 font-mono text-xs tabular-nums"
             aria-live="polite"
           >
             {index + 1} / {count}

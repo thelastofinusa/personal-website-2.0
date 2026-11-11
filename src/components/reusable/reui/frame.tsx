@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
  */
 const frameVariants = cva(
   [
-    "relative flex flex-col gap-(--frame-gap) rounded-(--radius) bg-muted/60 px-(--frame-px) py-(--frame-py)",
+    "bg-muted/60 relative flex flex-col gap-(--frame-gap) rounded-(--radius) px-(--frame-px) py-(--frame-py)",
     "(--radius-xl)] [--frame-radius:var(--radius-xl)]",
     "(--radius-none)] (--radius-2xl)] (--radius-lg)] (--radius-none)]",
     "[--frame-gap:--spacing(0.75)] [--frame-panel-footer-gap:--spacing(1)] [--frame-panel-header-gap:0rem] [--frame-px:--spacing(0.75)] [--frame-py:--spacing(0.75)]",
@@ -31,7 +31,7 @@ const frameVariants = cva(
       variant: {
         default: "border border-[var(--frame-border-color)] bg-clip-padding",
         inverse:
-          "border border-[var(--frame-border-color)] bg-background bg-clip-padding [--frame-panel-bg:color-mix(in_oklch,var(--color-muted)_40%,transparent)]",
+          "bg-background border border-[var(--frame-border-color)] bg-clip-padding [--frame-panel-bg:color-mix(in_oklch,var(--color-muted)_40%,transparent)]",
         ghost: "",
       },
       spacing: {
@@ -56,7 +56,7 @@ const frameVariants = cva(
       },
       dense: {
         // Positional rules must stay as parent selectors — cannot be expressed via CSS vars
-        true: "gap-0 border-[var(--frame-border-color)] p-0 [&:not(:has([data-slot=frame-panel-header]))_[data-slot=frame-panel]:is(:first-child)]:-mt-px [&_[data-slot=frame-panel]:last-child]:-mb-px [&_[data-slot=frame-panel]]:-mx-px [&_[data-slot=frame-panel]]:before:hidden",
+        true: "gap-0 border-[var(--frame-border-color)] p-0 [&_[data-slot=frame-panel]]:-mx-px [&_[data-slot=frame-panel]]:before:hidden [&_[data-slot=frame-panel]:last-child]:-mb-px [&:not(:has([data-slot=frame-panel-header]))_[data-slot=frame-panel]:is(:first-child)]:-mt-px",
         false: "",
       },
     },

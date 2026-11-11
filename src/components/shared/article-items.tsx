@@ -142,7 +142,7 @@ function ArticleItem({
           {article.isAiGenerated && (
             <Badge
               variant="secondary"
-              className="bg-muted/80 pl-1.5 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
+              className="bg-muted/80 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary pl-1.5"
             >
               <WandSparkle className="size-3.5!" />
               <span>AI Assisted</span>
@@ -151,7 +151,7 @@ function ArticleItem({
           {article.pinned && (
             <Badge
               variant="secondary"
-              className="bg-muted/80 pl-1.5 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
+              className="bg-muted/80 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary pl-1.5"
             >
               <Thumbtack className="size-3.5!" />
               <span>Featured</span>
@@ -161,7 +161,7 @@ function ArticleItem({
 
         <Badge
           variant="ghost"
-          className="px-0 text-muted-foreground hover:bg-transparent"
+          className="text-muted-foreground px-0 hover:bg-transparent"
         >
           <Clock className="size-3.5!" />
           <span className="font-light tracking-wider">
@@ -173,14 +173,14 @@ function ArticleItem({
       {/* Right Column (Desktop): Main Content */}
       <div className="flex flex-col gap-1 md:col-span-8">
         <div className="flex items-center gap-4">
-          <h2 className="line-clamp-1 flex-1 font-medium font-sans text-base text-foreground tracking-tight transition-colors duration-300 group-hover:text-primary md:text-lg">
+          <h2 className="text-foreground group-hover:text-primary line-clamp-1 flex-1 font-sans text-base font-medium tracking-tight transition-colors duration-300 md:text-lg">
             {article.title}
           </h2>
 
-          <SquareTopDown className="size-4 shrink-0 transition-colors duration-300 group-hover:text-primary" />
+          <SquareTopDown className="group-hover:text-primary size-4 shrink-0 transition-colors duration-300" />
         </div>
 
-        <p className="line-clamp-2 pr-8 font-light text-muted-foreground/80 text-sm leading-relaxed">
+        <p className="text-muted-foreground/80 line-clamp-2 pr-8 text-sm leading-relaxed font-light">
           {article.description}
         </p>
       </div>

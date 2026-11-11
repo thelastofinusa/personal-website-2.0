@@ -248,9 +248,9 @@ function CodeBlock({
 
   return (
     <Frame className="my-8 rounded-[20px]!">
-      <div className="relative w-full overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="border-border bg-card relative w-full overflow-hidden rounded-2xl border">
         {/* Header */}
-        <div className="flex min-h-10 items-center justify-between gap-4 border-border border-b px-4 py-2">
+        <div className="border-border flex min-h-10 items-center justify-between gap-4 border-b px-4 py-2">
           {filename ? (
             <div className="flex min-w-0 items-center gap-2">
               <span className="flex size-5 shrink-0 items-center justify-center">
@@ -261,12 +261,12 @@ function CodeBlock({
                 />
               </span>
 
-              <span className="truncate font-mono text-muted-foreground text-xs">
+              <span className="text-muted-foreground truncate font-mono text-xs">
                 {filename}
               </span>
             </div>
           ) : (
-            <span className="font-mono text-muted-foreground text-xs">
+            <span className="text-muted-foreground font-mono text-xs">
               {language}
             </span>
           )}
@@ -317,7 +317,7 @@ function CodeBlock({
             type="button"
             variant="ghost"
             size="sm"
-            className="z-10 h-12 w-full rounded-t-none rounded-b-2xl hover:bg-background!"
+            className="hover:bg-background! z-10 h-12 w-full rounded-t-none rounded-b-2xl"
             onClick={() => setExpanded((previous) => !previous)}
             aria-expanded={expanded}
           >
@@ -353,31 +353,31 @@ export const PortableText = ({ value, className }: Props) => {
       ),
 
       h1: ({ children }) => (
-        <h1 className="my-4 font-bold text-2xl first:mt-0 last:mb-0 md:text-3xl">
+        <h1 className="my-4 text-2xl font-bold first:mt-0 last:mb-0 md:text-3xl">
           {children}
         </h1>
       ),
 
       h2: ({ children }) => (
-        <h2 className="my-4 font-bold text-xl first:mt-0 last:mb-0 md:text-2xl">
+        <h2 className="my-4 text-xl font-bold first:mt-0 last:mb-0 md:text-2xl">
           {children}
         </h2>
       ),
 
       h3: ({ children }) => (
-        <h3 className="my-4 font-semibold text-lg first:mt-0 last:mb-0 md:text-xl">
+        <h3 className="my-4 text-lg font-semibold first:mt-0 last:mb-0 md:text-xl">
           {children}
         </h3>
       ),
 
       h4: ({ children }) => (
-        <h4 className="my-3 font-semibold text-[17px] first:mt-0 last:mb-0 md:text-lg">
+        <h4 className="my-3 text-[17px] font-semibold first:mt-0 last:mb-0 md:text-lg">
           {children}
         </h4>
       ),
 
       blockquote: ({ children }) => (
-        <blockquote className="my-4 border-primary border-l-3 bg-muted/60 py-1 pl-3 italic first:mt-0 last:mb-0">
+        <blockquote className="border-primary bg-muted/60 my-4 border-l-3 py-1 pl-3 italic first:mt-0 last:mb-0">
           {children}
         </blockquote>
       ),
@@ -399,13 +399,13 @@ export const PortableText = ({ value, className }: Props) => {
 
     listItem: {
       bullet: ({ children }) => (
-        <li className="pl-1 text-foreground/90 text-sm leading-6 md:text-[15px]">
+        <li className="text-foreground/90 pl-1 text-sm leading-6 md:text-[15px]">
           {children}
         </li>
       ),
 
       number: ({ children }) => (
-        <li className="pl-1 text-foreground/90 text-sm leading-6 md:text-[15px]">
+        <li className="text-foreground/90 pl-1 text-sm leading-6 md:text-[15px]">
           {children}
         </li>
       ),
@@ -415,7 +415,7 @@ export const PortableText = ({ value, className }: Props) => {
       // Bold
 
       strong: ({ children }) => (
-        <strong className="font-semibold text-foreground">{children}</strong>
+        <strong className="text-foreground font-semibold">{children}</strong>
       ),
 
       // Italic
@@ -439,7 +439,7 @@ export const PortableText = ({ value, className }: Props) => {
       ),
 
       code: ({ children }) => (
-        <code className="rounded-md border border-border bg-muted/60 px-1.5 py-0.5 font-mono text-foreground text-sm md:text-[15px]">
+        <code className="border-border bg-muted/60 text-foreground rounded-md border px-1.5 py-0.5 font-mono text-sm md:text-[15px]">
           {children}
         </code>
       ),
@@ -457,7 +457,7 @@ export const PortableText = ({ value, className }: Props) => {
               target="_blank"
               href={href}
               rel="noopener noreferrer"
-              className="link-underline transition-colors hover:text-primary!"
+              className="link-underline hover:text-primary! transition-colors"
             >
               {children}
             </LinkPreview>
@@ -467,7 +467,7 @@ export const PortableText = ({ value, className }: Props) => {
         return (
           <Link
             href={href}
-            className="link-underline transition-colors hover:text-primary!"
+            className="link-underline hover:text-primary! transition-colors"
           >
             {children}
           </Link>
@@ -486,7 +486,7 @@ export const PortableText = ({ value, className }: Props) => {
         return (
           <Frame className="my-10 rounded-[20px]!">
             <figure className="w-full">
-              <div className="overflow-hidden rounded-2xl border border-border bg-card">
+              <div className="border-border bg-card overflow-hidden rounded-2xl border">
                 <Image
                   src={value.asset.url}
                   alt={value.alt || ""}
@@ -497,7 +497,7 @@ export const PortableText = ({ value, className }: Props) => {
               </div>
 
               {value.caption && (
-                <figcaption className="px-4 py-2.5 text-center text-muted-foreground text-sm">
+                <figcaption className="text-muted-foreground px-4 py-2.5 text-center text-sm">
                   {value.caption}
                 </figcaption>
               )}
@@ -538,7 +538,7 @@ export const PortableText = ({ value, className }: Props) => {
         return (
           <Frame className="my-10 rounded-[20px]!">
             <figure className="w-full">
-              <div className="aspect-video overflow-hidden rounded-2xl border border-border bg-card">
+              <div className="border-border bg-card aspect-video overflow-hidden rounded-2xl border">
                 <iframe
                   src={`https://www.youtube.com/embed/${videoId}?controls=1&rel=0`}
                   title={value.caption || "YouTube video"}
@@ -550,7 +550,7 @@ export const PortableText = ({ value, className }: Props) => {
               </div>
 
               {value.caption && (
-                <figcaption className="px-4 py-2.5 text-center text-muted-foreground text-sm">
+                <figcaption className="text-muted-foreground px-4 py-2.5 text-center text-sm">
                   {value.caption}
                 </figcaption>
               )}

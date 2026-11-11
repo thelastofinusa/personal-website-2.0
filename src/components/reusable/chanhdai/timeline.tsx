@@ -84,7 +84,7 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
           {group.logo?.type === "icon" ? (
             <Reicon
               name={group.logo.value}
-              className="size-4.5 text-muted-foreground"
+              className="text-muted-foreground size-4.5"
             />
           ) : group.logo?.value ? (
             <CustomImage
@@ -97,14 +97,14 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
               aria-hidden
             />
           ) : (
-            <Blend className="size-4.5 text-muted-foreground" />
+            <Blend className="text-muted-foreground size-4.5" />
           )}
-          <h3 className="font-normal text-foreground text-sm leading-snug">
+          <h3 className="text-foreground text-sm leading-snug font-normal">
             {group.website ? (
               <LinkPreview
                 target="_blank"
                 href={group.website}
-                className="link-underline transition-colors hover:text-primary"
+                className="link-underline hover:text-primary transition-colors"
               >
                 {group.organization}
               </LinkPreview>
@@ -114,8 +114,8 @@ export function TimelineGroup({ group }: TimelineGroupProps) {
           </h3>
           {group.isCurrent && (
             <span className="relative ml-2 flex size-2.5 items-center justify-center">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
-              <span className="relative flex size-2 rounded-full bg-primary" />
+              <span className="bg-primary absolute inline-flex size-full animate-ping rounded-full opacity-60" />
+              <span className="bg-primary relative flex size-2 rounded-full" />
             </span>
           )}
         </div>
@@ -213,7 +213,7 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
             />
 
             {/* Default Thread Line */}
-            <span className="absolute top-5 -bottom-4.75 left-[-12.5px] w-px bg-border md:left-[-18.5px]" />
+            <span className="bg-border absolute top-5 -bottom-4.75 left-[-12.5px] w-px md:left-[-18.5px]" />
 
             {/* Animated Connection Line */}
             <motion.span
@@ -253,7 +253,7 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
                   </h3>
                 </div>
 
-                <dl className="flex flex-wrap items-center gap-2 font-normal text-muted-foreground text-xs sm:text-sm">
+                <dl className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs font-normal sm:text-sm">
                   {start && (
                     <div>
                       <dt className="sr-only">Period</dt>
@@ -269,7 +269,7 @@ export function TimelineItem({ item, isEdu }: TimelineItemProps) {
 
                             {isOngoing ? (
                               <Infinite
-                                className="size-4 text-primary"
+                                className="text-primary size-4"
                                 aria-label="Present"
                               />
                             ) : (
@@ -414,7 +414,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
       <button
         type="button"
         onClick={handleToggle}
-        className="group/deck flex w-max cursor-pointer select-none items-center gap-4 border-0 p-0 outline-0"
+        className="group/deck flex w-max cursor-pointer items-center gap-4 border-0 p-0 outline-0 select-none"
       >
         {/* Deck Container stays permanently mounted */}
         <div className="relative ml-2 h-5 w-7 shrink-0">
@@ -440,7 +440,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                 <motion.div
                   layoutId={`gallery-img-${img.url ?? idx}`}
                   transition={{ type: "spring", stiffness: 350, damping: 28 }}
-                  className="size-full overflow-hidden rounded-[3px] bg-card"
+                  className="bg-card size-full overflow-hidden rounded-[3px]"
                 >
                   <CustomImage
                     src={img.url as string}
@@ -455,7 +455,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
           ))}
         </div>
 
-        <span className="font-mono text-muted-foreground text-xs transition-colors group-hover/deck:text-foreground">
+        <span className="text-muted-foreground group-hover/deck:text-foreground font-mono text-xs transition-colors">
           {isExpanded ? "$ cd .." : `$ cd gallery (${images.length})`}
         </span>
       </button>
@@ -489,10 +489,10 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                       className="relative flex-1"
                     >
                       <Frame
-                        className="rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/5"
+                        className="hover:shadow-primary/5 rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg"
                         variant="inverse"
                       >
-                        <div className="relative aspect-[1.4] overflow-hidden rounded-sm border bg-card">
+                        <div className="bg-card relative aspect-[1.4] overflow-hidden rounded-sm border">
                           <CustomImage
                             src={img.url as string}
                             alt={img.alt ?? ""}
@@ -506,7 +506,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                               img.alt ? `: ${img.alt}` : ""
                             }`}
                             onClick={(e) => openLightbox(e, idx)}
-                            className="absolute inset-0 z-10 cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                            className="focus-visible:ring-ring absolute inset-0 z-10 cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-inset"
                           />
                         </div>
                       </Frame>
@@ -529,10 +529,10 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                         className="relative flex-1"
                       >
                         <Frame
-                          className="rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/5"
+                          className="hover:shadow-primary/5 rounded-lg p-0.5 transition-shadow duration-300 hover:shadow-lg"
                           variant="inverse"
                         >
-                          <div className="relative aspect-[1.4] overflow-hidden rounded-sm border bg-card">
+                          <div className="bg-card relative aspect-[1.4] overflow-hidden rounded-sm border">
                             <CustomImage
                               src={img.url as string}
                               alt={img.alt ?? ""}
@@ -546,7 +546,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
 
                             {isOverflowCard && (
                               <div className="absolute inset-0 top-0 left-0 z-10 flex size-full items-center justify-center bg-black/40">
-                                <span className="font-mono font-semibold text-3xl text-white shadow-xs">
+                                <span className="font-mono text-3xl font-semibold text-white shadow-xs">
                                   +{remainingCount}
                                 </span>
                               </div>
@@ -562,7 +562,7 @@ export function TimelineItemImages({ images }: TimelineItemImagesProps) {
                                     }`
                               }
                               onClick={(e) => openLightbox(e, idx)}
-                              className="absolute inset-0 z-20 cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                              className="focus-visible:ring-ring absolute inset-0 z-20 cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-inset"
                             />
                           </div>
                         </Frame>
