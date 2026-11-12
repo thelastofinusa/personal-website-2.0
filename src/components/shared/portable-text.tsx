@@ -5,11 +5,11 @@ import type { PortableTextComponents } from "@portabletext/react";
 import { PortableText as PortableTextComponent } from "@portabletext/react";
 import { FileIcon } from "@react-symbols/icons/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { CopyButton } from "@/components/reusable/chanhdai/copy-button";
+import { CustomImage } from "@/components/shared/image";
 import { cn } from "@/lib/utils";
 import { LinkPreview } from "../reusable/aceternity/link-preview";
 import { Frame } from "../reusable/reui/frame";
@@ -487,7 +487,7 @@ export const PortableText = ({ value, className }: Props) => {
           <Frame className="my-10 rounded-[20px]!">
             <figure className="w-full">
               <div className="border-border bg-card overflow-hidden rounded-2xl border">
-                <Image
+                <CustomImage
                   src={value.asset.url}
                   alt={value.alt || ""}
                   className="h-auto w-full object-cover"

@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "cn";
-import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
 import { ArrowLeft5, ArrowRight5 } from "reicon-react";
@@ -11,6 +10,7 @@ import { Frame } from "@/components/reusable/reui/frame";
 import { Container } from "@/components/shared/container";
 import { CurveThingy } from "@/components/shared/curve-thingy";
 import { Eyebrow } from "@/components/shared/eyebrow";
+import { CustomImage } from "@/components/shared/image";
 import { PortableText } from "@/components/shared/portable-text";
 import { QuickHero } from "@/components/shared/quick-hero";
 import type { ArticleBySlugQueryResult } from "~/sanity.types";
@@ -38,7 +38,7 @@ export const ArticleDetailsClient: React.FC<{
                 content: (
                   <Frame className="rounded-[20px]!">
                     <div className="overflow-hidden rounded-2xl border">
-                      <Image
+                      <CustomImage
                         src={article?.mainImage.image as string}
                         alt={article?.title as string}
                         className="aspect-video h-full w-full object-cover"

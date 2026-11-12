@@ -10,7 +10,6 @@ import {
   useMotionValue,
 } from "motion/react";
 import type { Route } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import React, {
   createContext,
@@ -32,6 +31,7 @@ import {
   SquareTopDown,
   Xmark,
 } from "reicon-react";
+import { CustomImage } from "@/components/shared/image";
 import { siteConfig } from "@/config/site.config";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
@@ -379,25 +379,25 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                       </div>
 
                       {/* Active Tab */}
-                      <div className="relative flex h-7 max-w-48 flex-1 cursor-default items-center gap-1.5 rounded-t-lg bg-background px-2.5 shadow-sm">
-                        <Image
+                      <div className="bg-background relative flex h-7 max-w-48 flex-1 cursor-default items-center gap-1.5 rounded-t-lg px-2.5 shadow-sm">
+                        <CustomImage
                           src={siteConfig.author.avatar}
                           alt={siteConfig.author.name}
                           className="size-2.5 rounded-sm"
                           width={10}
                           height={10}
                         />
-                        <span className="truncate font-medium text-[11px] text-foreground">
+                        <span className="text-foreground truncate text-[11px] font-medium">
                           {project.name}
                         </span>
                         <button
                           type="button"
                           onClick={closePreview}
-                          className="ml-auto flex size-4 cursor-pointer items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                          className="text-muted-foreground hover:bg-muted hover:text-foreground ml-auto flex size-4 cursor-pointer items-center justify-center rounded-full"
                         >
                           <Xmark className="size-2.5" />
                         </button>
-                        <span className="absolute -bottom-1 left-0 h-2 w-full bg-background" />
+                        <span className="bg-background absolute -bottom-1 left-0 h-2 w-full" />
                       </div>
 
                       <button
@@ -405,7 +405,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                         onClick={() =>
                           window.open(project.url as string, "_blank")
                         }
-                        className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/60 hover:text-foreground"
+                        className="text-muted-foreground hover:bg-background/60 hover:text-foreground flex size-6 items-center justify-center rounded-md transition-colors"
                         title="Open in new tab"
                       >
                         <Plus className="size-3.5" />
@@ -413,15 +413,15 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                     </div>
 
                     {/* Address Toolbar */}
-                    <div className="flex h-8 cursor-default items-center gap-1.5 border-border/40 border-t bg-background px-2.5 py-1">
-                      <div className="flex items-center gap-1 text-muted-foreground">
+                    <div className="border-border/40 bg-background flex h-8 cursor-default items-center gap-1.5 border-t px-2.5 py-1">
+                      <div className="text-muted-foreground flex items-center gap-1">
                         <button
                           type="button"
                           onClick={handlePrev}
                           disabled={!hasPrev}
                           aria-label="Previous project"
                           title={hasPrev ? "Previous project" : "First project"}
-                          className="flex size-5 items-center justify-center rounded transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+                          className="hover:bg-muted hover:text-foreground flex size-5 items-center justify-center rounded transition-colors disabled:pointer-events-none disabled:opacity-30"
                         >
                           <ChevronLeft className="size-3" />
                         </button>
@@ -432,7 +432,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                           disabled={!hasNext}
                           aria-label="Next project"
                           title={hasNext ? "Next project" : "Last project"}
-                          className="flex size-5 items-center justify-center rounded transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+                          className="hover:bg-muted hover:text-foreground flex size-5 items-center justify-center rounded transition-colors disabled:pointer-events-none disabled:opacity-30"
                         >
                           <ChevronRight className="size-3" />
                         </button>
@@ -441,7 +441,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                           type="button"
                           onClick={handleReload}
                           title="Reload frame"
-                          className="flex size-5 items-center justify-center rounded transition-colors hover:bg-muted hover:text-foreground"
+                          className="hover:bg-muted hover:text-foreground flex size-5 items-center justify-center rounded transition-colors"
                         >
                           <ArrowRotate
                             className={cn(
@@ -454,9 +454,9 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                         </button>
                       </div>
 
-                      <div className="flex h-6 min-w-0 flex-1 items-center gap-1.5 rounded-md bg-muted/60 px-2.5 text-xs">
-                        <Lock className="size-2.5 shrink-0 text-muted-foreground" />
-                        <span className="truncate text-[11px] text-muted-foreground">
+                      <div className="bg-muted/60 flex h-6 min-w-0 flex-1 items-center gap-1.5 rounded-md px-2.5 text-xs">
+                        <Lock className="text-muted-foreground size-2.5 shrink-0" />
+                        <span className="text-muted-foreground truncate text-[11px]">
                           {project.url}
                         </span>
                       </div>
@@ -467,7 +467,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                         rel="noreferrer"
                         onClick={closePreview}
                         title="Open in new window"
-                        className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        className="text-muted-foreground hover:bg-muted hover:text-foreground flex size-6 shrink-0 items-center justify-center rounded-md transition-colors"
                       >
                         <SquareTopDown className="size-3.5" />
                       </a>
@@ -475,14 +475,14 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                   </div>
 
                   {/* Browser Viewport */}
-                  <div className="relative flex-1 bg-card">
+                  <div className="bg-card relative flex-1">
                     {project.embeddable === false ? (
-                      <div className="relative flex size-full flex-col items-center justify-center overflow-hidden bg-background p-6">
+                      <div className="bg-background relative flex size-full flex-col items-center justify-center overflow-hidden p-6">
                         {/* Glowing Background Blob */}
-                        <div className="pointer-events-none absolute size-96 animate-pulse rounded-full bg-primary/15 blur-3xl" />
+                        <div className="bg-primary/15 pointer-events-none absolute size-96 animate-pulse rounded-full blur-3xl" />
 
                         {/* Fine-line architectural frame */}
-                        <div className="relative flex w-full max-w-md flex-col items-start bg-background p-8 md:p-10">
+                        <div className="bg-background relative flex w-full max-w-md flex-col items-start p-8 md:p-10">
                           {/* Corner Crosshairs */}
                           <FadeLine
                             orientation="horizontal"
@@ -502,37 +502,37 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                           />
 
                           {/* Header Status */}
-                          <div className="flex w-full items-center justify-between font-mono text-[10px] text-muted-foreground/60 uppercase tracking-widest">
+                          <div className="text-muted-foreground/60 flex w-full items-center justify-between font-mono text-[10px] tracking-widest uppercase">
                             <span>01 / FRAME_RESTRICTED</span>
-                            <span className="size-1.5 rounded-full bg-primary/60" />
+                            <span className="bg-primary/60 size-1.5 rounded-full" />
                           </div>
 
                           {/* Content */}
-                          <h3 className="mt-8 font-light font-serif text-3xl text-foreground tracking-tight md:text-4xl">
+                          <h3 className="text-foreground mt-8 font-serif text-3xl font-light tracking-tight md:text-4xl">
                             {project.name}
                           </h3>
 
-                          <p className="mt-3 font-light text-muted-foreground/80 text-xs leading-relaxed">
+                          <p className="text-muted-foreground/80 mt-3 text-xs leading-relaxed font-light">
                             Direct preview blocked by host header policy. Launch
                             the project directly in a primary window.
                           </p>
 
                           {/* Footer Action */}
-                          <div className="mt-8 flex w-full items-center justify-between border-border/40 border-t pt-6">
+                          <div className="border-border/40 mt-8 flex w-full items-center justify-between border-t pt-6">
                             <Link
                               href={project.url as Route}
                               target="_blank"
                               rel="noreferrer"
                               onClick={closePreview}
-                              className="group inline-flex items-center gap-3 font-mono text-foreground text-xs tracking-wider transition-colors hover:text-primary"
+                              className="group text-foreground hover:text-primary inline-flex items-center gap-3 font-mono text-xs tracking-wider transition-colors"
                             >
-                              <span className="relative py-0.5 after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all after:duration-300 group-hover:after:w-full">
+                              <span className="after:bg-primary relative py-0.5 after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:transition-all after:duration-300 group-hover:after:w-full">
                                 LAUNCH PROJECT
                               </span>
-                              <SquareTopDown className="size-3.5 text-muted-foreground transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
+                              <SquareTopDown className="text-muted-foreground group-hover:text-primary size-3.5 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                             </Link>
 
-                            <span className="font-mono text-[10px] text-muted-foreground/40">
+                            <span className="text-muted-foreground/40 font-mono text-[10px]">
                               SEC_403
                             </span>
                           </div>
@@ -545,7 +545,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                           <motion.div
                             initial={{ opacity: 1 }}
                             animate={{ opacity: 1 }}
-                            className="absolute inset-0 z-10 overflow-hidden bg-background"
+                            className="bg-background absolute inset-0 z-10 overflow-hidden"
                           >
                             {/* Fake page */}
                             <div className="mx-auto w-full max-w-5xl px-6 py-10 sm:px-10">
@@ -558,7 +558,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                                     repeat: Number.POSITIVE_INFINITY,
                                     ease: "easeInOut",
                                   }}
-                                  className="h-7 w-7 rounded-md bg-muted"
+                                  className="bg-muted h-7 w-7 rounded-md"
                                 />
 
                                 <div className="flex items-center gap-2">
@@ -573,7 +573,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                                         repeat: Number.POSITIVE_INFINITY,
                                         ease: "easeInOut",
                                       }}
-                                      className="h-2 rounded-full bg-muted"
+                                      className="bg-muted h-2 rounded-full"
                                       style={{ width }}
                                     />
                                   ))}
@@ -589,7 +589,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                                     repeat: Number.POSITIVE_INFINITY,
                                     ease: "easeInOut",
                                   }}
-                                  className="h-3 rounded-full bg-muted"
+                                  className="bg-muted h-3 rounded-full"
                                 />
 
                                 <div className="mt-5 space-y-3">
@@ -603,7 +603,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                                         repeat: Number.POSITIVE_INFINITY,
                                         ease: "easeInOut",
                                       }}
-                                      className="h-2 rounded-full bg-muted"
+                                      className="bg-muted h-2 rounded-full"
                                       style={{ width: `${width}%` }}
                                     />
                                   ))}
@@ -618,7 +618,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                                       repeat: Number.POSITIVE_INFINITY,
                                       ease: "easeInOut",
                                     }}
-                                    className="h-9 w-24 rounded-md bg-muted"
+                                    className="bg-muted h-9 w-24 rounded-md"
                                   />
 
                                   <motion.div
@@ -629,7 +629,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                                       repeat: Number.POSITIVE_INFINITY,
                                       ease: "easeInOut",
                                     }}
-                                    className="h-9 w-20 rounded-md border border-border"
+                                    className="border-border h-9 w-20 rounded-md border"
                                   />
                                 </div>
                               </div>
@@ -646,14 +646,14 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                                       repeat: Number.POSITIVE_INFINITY,
                                       ease: "easeInOut",
                                     }}
-                                    className="overflow-hidden rounded-xl border border-border/60"
+                                    className="border-border/60 overflow-hidden rounded-xl border"
                                   >
-                                    <div className="aspect-video bg-muted/60" />
+                                    <div className="bg-muted/60 aspect-video" />
 
                                     <div className="space-y-3 p-4">
-                                      <div className="h-2.5 w-2/3 rounded-full bg-muted" />
-                                      <div className="h-2 w-full rounded-full bg-muted/70" />
-                                      <div className="h-2 w-4/5 rounded-full bg-muted/70" />
+                                      <div className="bg-muted h-2.5 w-2/3 rounded-full" />
+                                      <div className="bg-muted/70 h-2 w-full rounded-full" />
+                                      <div className="bg-muted/70 h-2 w-4/5 rounded-full" />
                                     </div>
                                   </motion.div>
                                 ))}
@@ -670,7 +670,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                                     repeat: Number.POSITIVE_INFINITY,
                                     ease: "easeInOut",
                                   }}
-                                  className="flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-[11px] text-muted-foreground shadow-sm backdrop-blur"
+                                  className="border-border/60 bg-background/80 text-muted-foreground flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] shadow-sm backdrop-blur"
                                 >
                                   <span className="size-1.5 rounded-full bg-current" />
                                   Preparing {project.name}
@@ -681,7 +681,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                         )}
 
                         {iframeSlow && !iframeLoaded && (
-                          <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-between gap-3 border-border/60 border-t bg-background/95 px-3 py-2 text-muted-foreground text-xs">
+                          <div className="border-border/60 bg-background/95 text-muted-foreground absolute inset-x-0 bottom-0 z-20 flex items-center justify-between gap-3 border-t px-3 py-2 text-xs">
                             <span>
                               This site may not allow being previewed here.
                             </span>
@@ -690,7 +690,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                               target="_blank"
                               rel="noreferrer"
                               onClick={closePreview}
-                              className="shrink-0 font-medium text-primary underline underline-offset-2"
+                              className="text-primary shrink-0 font-medium underline underline-offset-2"
                             >
                               Open in new tab
                             </a>
@@ -742,7 +742,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                           <span className="absolute inset-0 animate-ping rounded-full bg-white opacity-75" />
                           <span className="relative size-2 rounded-full bg-white" />
                         </span>
-                        <span className="font-medium text-xs">
+                        <span className="text-xs font-medium">
                           {project.name}
                         </span>
                       </Button>

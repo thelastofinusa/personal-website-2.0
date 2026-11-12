@@ -101,9 +101,7 @@ export async function GET(request: NextRequest) {
       },
       {
         headers: {
-          "Cache-Control": image
-            ? "public, s-maxage=3600, stale-while-revalidate=86400"
-            : "public, s-maxage=60, stale-while-revalidate=300",
+          "Cache-Control": image ? "public, max-age=31536000, immutable" : "public, max-age=3600, stale-while-revalidate=3600",
         },
       },
     );
