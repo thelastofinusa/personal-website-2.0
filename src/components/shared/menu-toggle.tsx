@@ -9,7 +9,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Discover2, ForwardRight2, Menu4, Xmark } from "reicon-react";
+import { Menu4, Xmark } from "reicon-react";
 import { siteConfig } from "@/config/site.config";
 import { NAVIGATION_KEY } from "@/constants/keys";
 import { navLinks } from "@/constants/navigation";
@@ -130,7 +130,7 @@ export const MenuToggle: React.FC<
                         >
                           <div
                             className={cn(
-                              "relative flex items-center justify-between rounded-lg px-3 py-2 transition-all duration-200",
+                              "relative flex items-center gap-4 justify-between rounded-lg px-3 py-2 transition-all duration-200",
                               "hover:bg-muted/60",
                               isActive
                                 ? "bg-muted font-medium text-foreground"
@@ -166,17 +166,6 @@ export const MenuToggle: React.FC<
                                 {route.description}
                               </span>
                             </div>
-
-                            {isActive ? (
-                              <Discover2 className="text-primary motion-safe:animate-bell-ring size-4 shrink-0" />
-                            ) : (
-                              <ForwardRight2
-                                className={cn(
-                                  "size-4 shrink-0 -translate-x-2 opacity-0 transition-all duration-200",
-                                  "group-hover:translate-x-0 group-hover:opacity-100",
-                                )}
-                              />
-                            )}
                           </div>
                         </Link>
                       </motion.div>

@@ -14,7 +14,7 @@ export const siteConfig = {
     email: "dGhlbGFzdG9maW51c2FAZ21haWwuY29t",
     phone: "KzIzNDgxMjgxNTc1MTA=",
     avatar:
-      "https://cdn.sanity.io/images/l1eyjyqo/production/aaa2385fe8d7ad23d24946379c705abff4018e85-868x904.jpg",
+      "https://cdn.sanity.io/images/l1eyjyqo/production/8ffea40c28f50c75fc2a04099b7a3e326d15ee68-1722x1717.jpg",
   },
   url:
     process.env.NODE_ENV === "production"

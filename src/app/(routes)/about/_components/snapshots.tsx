@@ -3,6 +3,7 @@
 import { Maximize2Icon } from "lucide-react";
 import { motion } from "motion/react";
 import React from "react";
+import { useSoundFx } from "@/components/provider/sound-fx";
 import { Frame, FramePanel } from "@/components/reusable/reui/frame";
 import { CustomImage } from "@/components/shared/image";
 import { cn } from "@/lib/utils";
@@ -22,17 +23,68 @@ export const SnapshotsGallery: React.FC<SnapshotsGalleryProps> = ({
   altPrefix,
   action,
 }) => {
+  const { play } = useSoundFx();
+
   const validImages = images.filter((img): img is { url: string } =>
     Boolean(img.url),
   );
   const centerIndex = Math.max(0, Math.floor((validImages.length - 1) / 2));
   const [active, setActive] = React.useState<number>(centerIndex);
+  const mobileTrackRef = React.useRef<HTMLDivElement | null>(null);
+  const mobileItemRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
+  const hasUserInteractedMobile = React.useRef(false);
 
   React.useEffect(() => {
+    hasUserInteractedMobile.current = false;
     setActive(centerIndex);
   }, [centerIndex]);
 
+  const alignMobileItem = React.useCallback(
+    (index: number, behavior: ScrollBehavior) => {
+      const track = mobileTrackRef.current;
+      const item = mobileItemRefs.current[index];
+      if (!track || !item) return;
+
+      const targetLeft =
+        item.offsetLeft - (track.clientWidth - item.clientWidth) / 2;
+      track.scrollTo({
+        left: Math.max(0, targetLeft),
+        behavior,
+      });
+    },
+    [],
+  );
+
+  React.useLayoutEffect(() => {
+    if (!validImages.length) return;
+    alignMobileItem(centerIndex, "instant" as ScrollBehavior);
+  }, [centerIndex, validImages.length, alignMobileItem]);
+
+  React.useEffect(() => {
+    const track = mobileTrackRef.current;
+    if (!track || typeof ResizeObserver === "undefined") return;
+
+    const observer = new ResizeObserver(() => {
+      if (!hasUserInteractedMobile.current) {
+        alignMobileItem(centerIndex, "instant" as ScrollBehavior);
+      }
+    });
+
+    observer.observe(track);
+    return () => observer.disconnect();
+  }, [centerIndex, alignMobileItem]);
+
   if (!validImages.length) return null;
+
+  const selectMobileSnapshot = (index: number) => {
+    hasUserInteractedMobile.current = true;
+    if (index === active) {
+      action(index);
+      return;
+    }
+    setActive(index);
+    alignMobileItem(index, "smooth");
+  };
 
   return (
     <div className="relative mx-auto flex w-full max-w-5xl flex-col items-center py-6">
@@ -41,12 +93,103 @@ export const SnapshotsGallery: React.FC<SnapshotsGalleryProps> = ({
         <div className="bg-primary/40 h-64 w-full rounded-full transition-all duration-700" />
       </div>
 
+      {/* Mobile: Horizontal Snap Strip starting at the center snapshot */}
+      <Frame
+        ref={mobileTrackRef}
+        variant="inverse"
+        className="bg-background dark:bg-card relative flex w-full snap-x snap-mandatory flex-row gap-2 overflow-x-auto rounded-3xl p-2 shadow-[0_5px_20px_rgba(0,0,0,0.05)] sm:hidden dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]"
+      >
+        {validImages.map((image, index) => {
+          const isCurrent = index === active;
+
+          return (
+            <button
+              // biome-ignore lint/suspicious/noArrayIndexKey: images never reorder
+              key={`mobile-snap-${index}`}
+              ref={(el) => {
+                mobileItemRefs.current[index] = el;
+              }}
+              type="button"
+              aria-label={`Photo ${index + 1} of ${validImages.length}${isCurrent ? ", open full screen" : ", focus snapshot"}`}
+              aria-current={isCurrent ? "true" : undefined}
+              onClick={() => selectMobileSnapshot(index)}
+              onMouseEnter={() => play("hover")}
+              className="group focus-visible:ring-primary relative h-72 w-[78vw] max-w-xs shrink-0 cursor-pointer snap-center rounded-[20px] p-0 text-left outline-none focus-visible:ring-2"
+            >
+              <FramePanel
+                className={cn(
+                  "relative size-full overflow-hidden rounded-[20px] p-0 transition-opacity duration-300",
+                  isCurrent ? "opacity-100" : "opacity-80",
+                )}
+              >
+                <CustomImage
+                  src={image.url}
+                  alt={`${altPrefix} ${index + 1}`}
+                  width={800}
+                  height={1000}
+                  onLoad={() => {
+                    if (
+                      !hasUserInteractedMobile.current &&
+                      index === centerIndex
+                    ) {
+                      alignMobileItem(centerIndex, "instant" as ScrollBehavior);
+                    }
+                  }}
+                  className="size-full object-cover object-[50%_30%] transition-transform duration-500 group-active:scale-[0.98]"
+                />
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/75 via-transparent to-black/15"
+                />
+
+                <div
+                  aria-hidden="true"
+                  className="bg-foreground/55 dark:bg-background/55 pointer-events-none absolute top-3 left-3 flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs text-white backdrop-blur-md"
+                >
+                  <span className="font-bold text-white">{pad(index + 1)}</span>
+                  <span className="text-white/40">/</span>
+                  <span className="text-white/70">
+                    {pad(validImages.length)}
+                  </span>
+                </div>
+
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "pointer-events-none absolute top-3 right-3 flex size-8 items-center justify-center rounded-lg border text-white/90 backdrop-blur-md transition-colors",
+                    isCurrent
+                      ? "bg-primary border-primary text-primary-foreground"
+                      : "bg-foreground/50 dark:bg-background/50 border-white/15",
+                  )}
+                >
+                  <Maximize2Icon className="size-3.5" />
+                </span>
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-3 bottom-3 flex items-center justify-between text-xs text-white/90"
+                >
+                  <span className="font-medium">
+                    {altPrefix} {index + 1}
+                  </span>
+                  <span className="bg-foreground/50 dark:bg-background/50 rounded-lg px-2.5 py-1 text-[11px] backdrop-blur-md">
+                    {isCurrent ? "Tap to expand" : "Double tap to expand"}
+                  </span>
+                </div>
+              </FramePanel>
+            </button>
+          );
+        })}
+      </Frame>
+
+      {/* Tablet & Desktop: Expanding Aperture Columns */}
       <Frame
         variant="inverse"
         onPointerLeave={(e) => {
           if (e.pointerType === "mouse") setActive(centerIndex);
         }}
-        className="bg-background dark:bg-card relative h-64 w-full flex-row gap-2 overflow-hidden rounded-3xl p-1.5 sm:h-80 md:h-96 lg:h-105"
+        className="bg-background dark:bg-card relative hidden h-80 w-full flex-row gap-2 overflow-hidden rounded-3xl p-2 shadow-[0_5px_20px_rgba(0,0,0,0.1)] sm:flex md:h-96 lg:h-105 dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]"
       >
         {validImages.map((image, index) => {
           const isActive = index === active;
@@ -69,6 +212,8 @@ export const SnapshotsGallery: React.FC<SnapshotsGalleryProps> = ({
                 if (isActive) action(index);
                 else setActive(index);
               }}
+              onMouseEnter={() => play("hover")}
+              initial={false}
               animate={{
                 flexGrow: isActive ? 6 : 1,
               }}
