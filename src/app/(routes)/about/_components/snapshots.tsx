@@ -1,8 +1,9 @@
 "use client";
 
 import { Maximize2Icon } from "lucide-react";
-import { motion, type Variants } from "motion/react";
+import { motion } from "motion/react";
 import React from "react";
+import { Frame, FramePanel } from "@/components/reusable/reui/frame";
 import { CustomImage } from "@/components/shared/image";
 import { cn } from "@/lib/utils";
 
@@ -10,144 +11,142 @@ type SnapshotImage = { url: string | null };
 
 type SnapshotsGalleryProps = {
   images: SnapshotImage[];
-  /** Used to build alt text: "<altPrefix> 1", "<altPrefix> 2", ... */
   altPrefix: string;
-  /** Called with the image's index when it is opened full screen. */
   action: (index: number) => void;
-};
-
-const stripVariants: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
-};
-
-const panelVariants: Variants = {
-  hidden: { opacity: 0, y: 36 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 220, damping: 24 },
-  },
 };
 
 const pad = (value: number) => String(value).padStart(2, "0");
 
-/**
- * An accordion of tall photo panels. One panel is open at a time: hover it
- * (mouse), focus it (keyboard) or tap it (touch) and it widens while the
- * others narrow and dim. Opening the already-open panel launches the
- * lightbox.
- *
- * Touch needs two taps on purpose: the first one opens the panel, the second
- * opens the lightbox. With a mouse, hovering already opens the panel, so a
- * single click opens the lightbox.
- */
 export const SnapshotsGallery: React.FC<SnapshotsGalleryProps> = ({
   images,
   altPrefix,
   action,
 }) => {
-  const center = Math.floor((images.length - 1) / 2);
-  const [active, setActive] = React.useState(center);
+  const validImages = images.filter((img): img is { url: string } =>
+    Boolean(img.url),
+  );
+  const centerIndex = Math.max(0, Math.floor((validImages.length - 1) / 2));
+  const [active, setActive] = React.useState<number>(centerIndex);
+
+  React.useEffect(() => {
+    setActive(centerIndex);
+  }, [centerIndex]);
+
+  if (!validImages.length) return null;
 
   return (
-    <motion.div
-      variants={stripVariants}
-      initial="hidden"
-      animate="visible"
-      onPointerLeave={(e) => {
-        if (e.pointerType === "mouse") setActive(center);
-      }}
-      className="flex h-52 gap-2 sm:h-72 md:h-80 md:gap-3 lg:h-104"
-    >
-      {images.map((image, index) => {
-        if (!image.url) return null;
-        const isActive = index === active;
+    <div className="relative mx-auto flex w-full max-w-5xl flex-col items-center py-6">
+      {/* Background ambient color wash */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-25 blur-3xl">
+        <div className="bg-primary/40 h-64 w-full rounded-full transition-all duration-700" />
+      </div>
 
-        return (
-          <motion.button
-            // biome-ignore lint/suspicious/noArrayIndexKey: images never reorder
-            key={`snapshot-${index}`}
-            type="button"
-            variants={panelVariants}
-            aria-label={`Photo ${index + 1} of ${images.length}${isActive ? ", open full screen" : ""}`}
-            aria-current={isActive ? "true" : undefined}
-            onPointerEnter={(e) => {
-              if (e.pointerType === "mouse") setActive(index);
-            }}
-            onFocus={(e) => {
-              // Only keyboard focus. A tap also focuses on some phones and
-              // would skip the "first tap opens the panel" step.
-              if (e.currentTarget.matches(":focus-visible")) setActive(index);
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (isActive) action(index);
-              else setActive(index);
-            }}
-            className={cn(
-              "group bg-background relative min-w-0 basis-0 cursor-pointer overflow-hidden rounded-xl border p-0",
-              "transition-[flex-grow,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-              "focus-visible:ring-ring outline-none focus-visible:ring-2",
-              isActive ? "border-primary grow-5 md:grow-7" : "grow",
-            )}
-          >
-            <CustomImage
-              src={image.url}
-              alt={`${altPrefix} ${index + 1}`}
-              width={800}
-              height={1000}
-              className={cn(
-                "absolute inset-0 size-full object-cover object-[50%_30%]",
-                "transition-[transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-                isActive
-                  ? "scale-100 brightness-100 saturate-100"
-                  : "scale-110 brightness-50 saturate-50",
-              )}
-            />
+      <Frame
+        variant="inverse"
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse") setActive(centerIndex);
+        }}
+        className="bg-background dark:bg-card relative h-64 w-full flex-row gap-2 overflow-hidden rounded-3xl p-1.5 sm:h-80 md:h-96 lg:h-105"
+      >
+        {validImages.map((image, index) => {
+          const isActive = index === active;
 
-            {/* Bottom shade so the labels stay readable on any photo. */}
-            <span
-              aria-hidden="true"
-              className={cn(
-                "pointer-events-none absolute inset-0 transition-opacity duration-500",
-                isActive ? "opacity-100" : "opacity-0",
-              )}
-              style={{
-                backgroundImage:
-                  "linear-gradient(to top, rgb(0 0 0 / 0.6), transparent 50%)",
+          return (
+            <motion.button
+              // biome-ignore lint/suspicious/noArrayIndexKey: images never reorder
+              key={`aperture-${index}`}
+              type="button"
+              aria-label={`Photo ${index + 1} of ${validImages.length}${isActive ? ", open full screen" : ""}`}
+              aria-current={isActive ? "true" : undefined}
+              onPointerEnter={(e) => {
+                if (e.pointerType === "mouse") setActive(index);
               }}
-            />
-
-            <span
-              aria-hidden="true"
-              className={cn(
-                "absolute bottom-3 left-3 flex items-baseline gap-1.5 text-white transition-all duration-500 md:bottom-4 md:left-4",
-                isActive
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-2 opacity-0",
-              )}
+              onFocus={(e) => {
+                if (e.currentTarget.matches(":focus-visible")) setActive(index);
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isActive) action(index);
+                else setActive(index);
+              }}
+              animate={{
+                flexGrow: isActive ? 6 : 1,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 240,
+                damping: 25,
+              }}
+              className="group relative h-full min-w-0 cursor-pointer overflow-hidden rounded-[20px] p-0 text-left outline-none"
             >
-              <span className="text-lg leading-none font-medium tabular-nums md:text-2xl">
-                {pad(index + 1)}
-              </span>
-              <span className="text-[11px] leading-none text-white/60 tabular-nums">
-                / {pad(images.length)}
-              </span>
-            </span>
+              <FramePanel className="relative h-full w-full rounded-[20px] p-0">
+                <CustomImage
+                  src={image.url}
+                  alt={`${altPrefix} ${index + 1}`}
+                  width={1000}
+                  height={1200}
+                  className={cn(
+                    "absolute inset-0 size-full object-cover object-[50%_30%] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                    isActive
+                      ? "scale-100 brightness-100 saturate-100"
+                      : "scale-110 brightness-40 saturate-50 group-hover:brightness-60",
+                  )}
+                />
 
-            <span
-              aria-hidden="true"
-              className={cn(
-                "absolute top-3 right-3 flex size-8 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-md transition-all duration-500 md:top-4 md:right-4",
-                isActive ? "scale-100 opacity-100" : "scale-75 opacity-0",
-              )}
-            >
-              <Maximize2Icon className="size-3.5" />
-            </span>
-          </motion.button>
-        );
-      })}
-    </motion.div>
+                {/* Shading gradient for text readability */}
+                <div
+                  aria-hidden="true"
+                  className={cn(
+                    "pointer-events-none absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-black/20 transition-opacity duration-500",
+                    isActive ? "opacity-80" : "opacity-0",
+                  )}
+                />
+
+                {/* Active Header/Counter */}
+                <div
+                  aria-hidden="true"
+                  className={cn(
+                    "pointer-events-none absolute top-4 left-4 flex items-center gap-2 rounded-xl bg-black/50 px-3 py-1.5 font-mono text-xs text-white backdrop-blur-md transition-all duration-500",
+                    isActive
+                      ? "translate-y-0 opacity-100"
+                      : "-translate-y-4 opacity-0",
+                  )}
+                >
+                  <span className="font-bold text-white">{pad(index + 1)}</span>
+                  <span className="text-white/40">/</span>
+                  <span className="text-white/70">
+                    {pad(validImages.length)}
+                  </span>
+                </div>
+
+                {/* Active Fullscreen Action Pill */}
+                <div
+                  aria-hidden="true"
+                  className={cn(
+                    "pointer-events-none absolute top-4 right-4 flex size-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition-all duration-500",
+                    isActive ? "scale-100 opacity-100" : "scale-75 opacity-0",
+                  )}
+                >
+                  <Maximize2Icon className="size-4" />
+                </div>
+
+                {/* Vertical Rotated Text for Inactive Slim Strips */}
+                <div
+                  aria-hidden="true"
+                  className={cn(
+                    "pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-300",
+                    isActive ? "opacity-0" : "opacity-100",
+                  )}
+                >
+                  <span className="font-mono text-sm font-semibold tracking-widest text-white/75 [writing-mode:vertical-lr] md:text-base">
+                    {pad(index + 1)}
+                  </span>
+                </div>
+              </FramePanel>
+            </motion.button>
+          );
+        })}
+      </Frame>
+    </div>
   );
 };

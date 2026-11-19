@@ -7,11 +7,12 @@ import { cn } from "cn";
 import { AnimatePresence, motion } from "motion/react";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { AiOutlineMoon } from "react-icons/ai";
 import { FaLinux, FaWindows } from "react-icons/fa";
 import { HiOutlineCheck } from "react-icons/hi";
 import { IoInvertModeOutline } from "react-icons/io5";
 import { MdLaptopMac } from "react-icons/md";
-import { PiMoon, PiSun } from "react-icons/pi";
+import { PiSun } from "react-icons/pi";
 import { RiComputerLine } from "react-icons/ri";
 import { THEME_KEY } from "@/constants/keys";
 import { menuItemVariants, menuVariants } from "@/constants/variants";
@@ -69,7 +70,7 @@ export const ThemeToggle: React.FC<
         id: "dark",
         label: "Dark",
         description: "Optimized for low-light",
-        icon: PiMoon,
+        icon: AiOutlineMoon,
       },
       {
         id: "system",
