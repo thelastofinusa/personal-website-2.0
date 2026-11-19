@@ -1,7 +1,6 @@
 import { defineQuery } from "next-sanity";
 import type { TimelineListQueryResult } from "~/sanity.types";
 import { sanityQuery } from "../lib/fetch";
-import { NO_STEGA, sanityFetch } from "../lib/live";
 
 const timelineList = `
 _id,

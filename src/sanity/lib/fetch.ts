@@ -1,39 +1,18 @@
 import { readClient } from "./client";
-import { NO_STEGA, sanityFetch } from "./live";
 
 type FetchOptions = {
   query: any;
   params?: Record<string, any>;
-  /** Time in seconds to revalidate cache in development (defaults to 3600s / 1 hour) */
+  /** Safety-net refresh in seconds. The webhook handles real updates. */
   revalidate?: number | false;
-  /** Optional Next.js cache tags */
-  tags?: string[];
 };
 
 export async function sanityQuery<T>({
   query,
   params,
-  revalidate = 3600,
-  tags,
+  revalidate = 86400,
 }: FetchOptions): Promise<T> {
-  const isDevelopment = process.env.NODE_ENV === "development";
-
-  if (isDevelopment) {
-    // Development: Use client.fetch and cache the data using Next.js fetch options
-    return await readClient.fetch<T>(query, params ?? {}, {
-      next: {
-        revalidate,
-        tags,
-      },
-    });
-  }
-
-  // Production: Use sanityFetch
-  const { data } = await sanityFetch({
-    query,
-    params,
-    ...NO_STEGA,
+  return readClient.fetch<T>(query, params ?? {}, {
+    next: { revalidate, tags: ["sanity"] },
   });
-
-  return data as T;
 }
