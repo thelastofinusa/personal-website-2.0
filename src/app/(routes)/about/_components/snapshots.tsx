@@ -157,7 +157,7 @@ export const SnapshotsGallery: React.FC<SnapshotsGalleryProps> = ({
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "pointer-events-none absolute top-3 right-3 flex size-8 items-center justify-center rounded-lg border text-white/90 backdrop-blur-md transition-colors",
+                    "pointer-events-none absolute top-3 right-3 flex size-8 items-center justify-center rounded-full border text-white/90 backdrop-blur-md transition-colors",
                     isCurrent
                       ? "bg-primary border-primary text-primary-foreground"
                       : "bg-foreground/50 dark:bg-background/50 border-white/15",
