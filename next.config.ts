@@ -47,6 +47,8 @@ const nextConfig: NextConfig = {
     },
   ],
 
+  allowedDevOrigins: ["192.168.18.5", "192.168.18.4"],
+
   images: {
     unoptimized: process.env.NODE_ENV === "development",
     dangerouslyAllowLocalIP: true,

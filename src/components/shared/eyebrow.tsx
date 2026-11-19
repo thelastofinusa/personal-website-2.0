@@ -52,6 +52,8 @@ export const Eyebrow: React.FC<{
   return (
     <motion.p
       variants={itemVariants}
+      initial="hidden"
+      animate="visible"
       className={cn(
         "flex w-max flex-row items-center gap-2 text-muted-foreground",
         reverse && "flex-row-reverse",

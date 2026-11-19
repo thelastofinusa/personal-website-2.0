@@ -4,7 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
 import React from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { VscStarEmpty, VscStarFull, VscStarHalf } from "react-icons/vsc";
+import {
+  MdOutlineStar,
+  MdOutlineStarBorder,
+  MdOutlineStarHalf,
+} from "react-icons/md";
 import { Add, CircleInfo, Send4 } from "reicon-react";
 import type { z } from "zod";
 import { submitTestimonial } from "@/actions/testimonial.action";
@@ -12,7 +16,6 @@ import { useSoundFx } from "@/components/provider/sound-fx";
 import { useToggle } from "@/components/provider/toggle";
 import { Frame, FramePanel } from "@/components/reusable/reui/frame";
 import { Button } from "@/components/reusable/shadcn/button";
-import { Checkbox } from "@/components/reusable/shadcn/checkbox";
 import {
   Drawer,
   DrawerClose,
@@ -23,11 +26,9 @@ import {
 import {
   Field,
   FieldContent,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldTitle,
 } from "@/components/reusable/shadcn/field";
 import {
   InputGroup,
@@ -42,7 +43,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/reusable/shadcn/popover";
+import { Switch } from "@/components/reusable/shadcn/switch";
 import { Container } from "@/components/shared/container";
+import { Eyebrow } from "@/components/shared/eyebrow";
+import { navLinksData } from "@/constants/navigation";
 import { itemVariants } from "@/constants/variants";
 import { cn } from "@/lib/utils";
 import {
@@ -86,6 +90,38 @@ const renderBtn = (
   </motion.div>
 );
 
+const VisibilityToggle = ({
+  isPublic,
+  disabled,
+  onToggle,
+}: {
+  isPublic: boolean;
+  disabled?: boolean;
+  onToggle: () => void;
+}) => (
+  <button
+    type="button"
+    role="switch"
+    aria-checked={isPublic}
+    disabled={disabled}
+    onClick={onToggle}
+    className="focus-visible:ring-primary flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-1 py-1.5 text-left outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
+  >
+    <div className="space-y-0.5">
+      <p className="text-foreground text-xs font-medium">
+        Show publicly on the site
+      </p>
+      <p className="text-muted-foreground text-[11px] leading-snug">
+        {isPublic
+          ? "Displayed next to the quote after review."
+          : "Kept private and hidden from the site."}
+      </p>
+    </div>
+
+    <Switch checked={isPublic} />
+  </button>
+);
+
 const LiveTestimonialPreview = React.memo(({ control }: { control: any }) => {
   const company = useWatch({ control, name: "company" });
   const content = useWatch({ control, name: "content" });
@@ -93,21 +129,40 @@ const LiveTestimonialPreview = React.memo(({ control }: { control: any }) => {
   const rating = useWatch({ control, name: "rating" });
   const role = useWatch({ control, name: "role" });
   const url = useWatch({ control, name: "url" });
+  const consent = useWatch({ control, name: "consentToDisplay" });
+
+  const trimmedRole = role?.trim() ?? "";
+  const trimmedCompany = company?.trim() ?? "";
+
+  const displayRole = !trimmedRole
+    ? trimmedCompany
+      ? `Your role at ${trimmedCompany}`
+      : "Your role at Organization or School"
+    : trimmedRole;
+
+  const isPublic = !!consent;
 
   return (
-    <Testimonial
-      preview
-      testimonial={{
-        _id: "preview-id",
-        approve: true,
-        company: company || "Organization or School",
-        content: content || "Your testimonial goes here",
-        name: name || "Your name",
-        rating: rating || 5,
-        role: role || "Your role",
-        url: url || null,
-      }}
-    />
+    <div
+      className={cn(
+        "transition-all duration-300",
+        !isPublic && "scale-[0.985] opacity-45 blur-[1.5px] select-none",
+      )}
+    >
+      <Testimonial
+        preview
+        testimonial={{
+          _id: "preview-id",
+          approve: true,
+          company: trimmedRole ? trimmedCompany : "",
+          content: content || "Your testimonial goes here",
+          name: name || "Your name",
+          rating: rating || 5,
+          role: displayRole,
+          url: url || null,
+        }}
+      />
+    </div>
   );
 });
 LiveTestimonialPreview.displayName = "LiveTestimonialPreview";
@@ -147,6 +202,10 @@ export const AddReview = () => {
   } = form;
 
   const consent = useWatch({ control, name: "consentToDisplay" });
+
+  const isPublic = !!consent;
+
+  const testimonialsRoute = navLinksData("/about/testimonials");
 
   React.useEffect(() => {
     if (status !== "sent") return;
@@ -206,7 +265,7 @@ export const AddReview = () => {
           size="md"
           className="flex-1 overflow-y-auto pt-10 pb-20 md:pt-16 md:pb-20"
         >
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-5 lg:gap-8 xl:grid-cols-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-5 md:gap-16 xl:grid-cols-8">
             <form
               onSubmit={handleSubmit(onSubmit)}
               className="md:col-span-3 xl:col-span-5"
@@ -217,13 +276,15 @@ export const AddReview = () => {
                   "shadow-[0_5px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]",
                 )}
               >
-                <div className="hidden flex-col gap-0.5 px-4 py-3 sm:flex">
-                  <h1 className="font-serif text-lg lowercase md:text-xl">
-                    Share your thoughts
-                  </h1>
-                  <p className="text-muted-foreground text-sm">
-                    I appreciate your feedback and insights.
-                  </p>
+                <div className="flex items-center justify-between gap-3 px-4 py-3">
+                  <div className="flex flex-col sm:gap-0.5">
+                    <h1 className="font-serif text-lg lowercase md:text-xl">
+                      Share your thoughts
+                    </h1>
+                    <p className="text-muted-foreground text-[13px] sm:text-sm">
+                      I appreciate your feedback and insights.
+                    </p>
+                  </div>
                 </div>
 
                 <FramePanel className="bg-background rounded-2xl">
@@ -271,7 +332,7 @@ export const AddReview = () => {
                           Testimonial Received!
                         </h3>
                         <p className="text-muted-foreground max-w-sm text-xs leading-relaxed md:text-sm">
-                          {consent
+                          {isPublic
                             ? "Thank you for your feedback. It’s pending quick review and will show up on the site soon."
                             : "Thank you for your feedback. It’s saved privately and won’t be shown on the site."}
                         </p>
@@ -340,7 +401,8 @@ export const AddReview = () => {
                             )}
                           />
                         </div>
-                        <div className="grid grid-cols-6 gap-3 sm:grid-cols-6">
+
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-6">
                           <Controller
                             name="role"
                             control={control}
@@ -394,7 +456,8 @@ export const AddReview = () => {
                             )}
                           />
                         </div>
-                        <div className="grid grid-cols-6 gap-3 sm:grid-cols-6">
+
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-6">
                           <Controller
                             name="rating"
                             control={control}
@@ -420,11 +483,11 @@ export const AddReview = () => {
                                   <InputGroup className="bg-card">
                                     <InputGroupAddon className="transition-colors">
                                       {isEmpty ? (
-                                        <VscStarEmpty className="text-muted-foreground/50 size-4" />
+                                        <MdOutlineStarBorder className="text-muted-foreground/50 size-4" />
                                       ) : isDecimal ? (
-                                        <VscStarHalf className="text-muted-foreground/50 size-4" />
+                                        <MdOutlineStarHalf className="text-muted-foreground/50 size-4" />
                                       ) : (
-                                        <VscStarFull className="text-muted-foreground/50 size-4" />
+                                        <MdOutlineStar className="text-muted-foreground/50 size-4" />
                                       )}
                                     </InputGroupAddon>
 
@@ -444,7 +507,7 @@ export const AddReview = () => {
                                       step={0.5}
                                     />
                                     <InputGroupAddon align="inline-end">
-                                      <InputGroupText>Rating</InputGroupText>
+                                      <InputGroupText>Stars</InputGroupText>
                                     </InputGroupAddon>
                                   </InputGroup>
                                   <FieldError className="px-1.5">
@@ -504,76 +567,59 @@ export const AddReview = () => {
                             )}
                           />
                         </div>
-                        <div className="grid grid-cols-4 gap-3 md:grid-cols-1 lg:grid-cols-4">
-                          <Controller
-                            name="content"
-                            control={control}
-                            render={({ field }) => (
-                              <Field
-                                className="col-span-4 gap-1.5"
-                                data-invalid={!!errors.content}
-                              >
-                                <FieldLabel className="px-1.5" required>
-                                  Your Testimonial
-                                </FieldLabel>
-                                <InputGroup className="bg-card">
-                                  <InputGroupTextarea
-                                    {...field}
-                                    disabled={isSubmitting}
-                                    aria-invalid={!!errors.content}
-                                    maxLength={TESTIMONIAL_LIMITS.content.max}
-                                    placeholder="Share your experience working or learning together.."
-                                    className="min-h-16 pb-16"
-                                  />
-                                  <InputGroupAddon align="block-end">
-                                    <InputGroupText className="text-muted-foreground text-xs">
-                                      {field.value?.length || 0} of{" "}
-                                      {TESTIMONIAL_LIMITS.content.max}{" "}
-                                      characters
-                                    </InputGroupText>
-                                  </InputGroupAddon>
-                                </InputGroup>
-                                <FieldError className="px-1.5">
-                                  {errors.content?.message}
-                                </FieldError>
-                              </Field>
-                            )}
-                          />
 
+                        <Controller
+                          name="content"
+                          control={control}
+                          render={({ field }) => (
+                            <Field
+                              className="gap-1.5"
+                              data-invalid={!!errors.content}
+                            >
+                              <FieldLabel className="px-1.5" required>
+                                Your Testimonial
+                              </FieldLabel>
+                              <InputGroup className="bg-card">
+                                <InputGroupTextarea
+                                  {...field}
+                                  disabled={isSubmitting}
+                                  aria-invalid={!!errors.content}
+                                  maxLength={TESTIMONIAL_LIMITS.content.max}
+                                  placeholder="Share your experience working or learning together.."
+                                  className="min-h-16 pb-16"
+                                />
+                                <InputGroupAddon align="block-end">
+                                  <InputGroupText className="text-muted-foreground text-xs">
+                                    {field.value?.length || 0} of{" "}
+                                    {TESTIMONIAL_LIMITS.content.max} characters
+                                  </InputGroupText>
+                                </InputGroupAddon>
+                              </InputGroup>
+                              <FieldError className="px-1.5">
+                                {errors.content?.message}
+                              </FieldError>
+                            </Field>
+                          )}
+                        />
+
+                        <div className="pt-0.5 md:hidden">
                           <Controller
                             name="consentToDisplay"
                             control={control}
                             render={({ field }) => (
-                              <FieldLabel className="col-span-4">
-                                <Field
-                                  orientation="horizontal"
-                                  data-invalid={!!errors.consentToDisplay}
-                                >
-                                  <Checkbox
-                                    disabled={isSubmitting}
-                                    checked={!!field.value}
-                                    onCheckedChange={field.onChange}
-                                    aria-invalid={!!errors.consentToDisplay}
-                                  />
-                                  <FieldContent>
-                                    <FieldTitle>
-                                      You may show this on the site.
-                                    </FieldTitle>
-                                    {errors.consentToDisplay?.message ? (
-                                      <FieldError>
-                                        {errors.consentToDisplay.message}
-                                      </FieldError>
-                                    ) : (
-                                      <FieldDescription>
-                                        With the name and role above, next to
-                                        the quote. Leave off to keep it private.
-                                      </FieldDescription>
-                                    )}
-                                  </FieldContent>
-                                </Field>
-                              </FieldLabel>
+                              <VisibilityToggle
+                                isPublic={isPublic}
+                                disabled={isSubmitting}
+                                onToggle={() => {
+                                  play("hover");
+                                  field.onChange(!field.value);
+                                }}
+                              />
                             )}
                           />
+                          <FieldError className="px-1.5">
+                            {errors.consentToDisplay?.message}
+                          </FieldError>
                         </div>
                       </FieldGroup>
                     </FieldContent>
@@ -581,7 +627,7 @@ export const AddReview = () => {
                 </FramePanel>
 
                 {status !== "sent" && (
-                  <DrawerFooter className="px-4 py-3">
+                  <DrawerFooter className="py-3">
                     <div className="wrapper mx-auto flex flex-1 items-center gap-1.5 sm:ml-0">
                       <Button
                         size="default"
@@ -592,8 +638,8 @@ export const AddReview = () => {
                         loadingTxt="Please wait.."
                         className="flex-1"
                       >
-                        <Send4 />
                         <span>Submit Testimonial</span>
+                        <Send4 />
                       </Button>
 
                       <DrawerClose
@@ -614,8 +660,32 @@ export const AddReview = () => {
               </Frame>
             </form>
 
-            <div className="hidden md:col-span-2 md:block xl:col-span-3">
+            <div className="relative hidden flex-col gap-4 md:col-span-2 md:flex xl:col-span-3">
+              <div className="px-4">
+                <Eyebrow label="Live Preview" icon={testimonialsRoute?.icon} />
+              </div>
+
               <LiveTestimonialPreview control={control} />
+
+              <div className="px-4">
+                <Controller
+                  name="consentToDisplay"
+                  control={control}
+                  render={({ field }) => (
+                    <VisibilityToggle
+                      isPublic={isPublic}
+                      disabled={isSubmitting}
+                      onToggle={() => {
+                        play("hover");
+                        field.onChange(!field.value);
+                      }}
+                    />
+                  )}
+                />
+                <FieldError className="px-1.5">
+                  {errors.consentToDisplay?.message}
+                </FieldError>
+              </div>
             </div>
           </div>
         </Container>

@@ -3,7 +3,11 @@
 
 import { motion } from "motion/react";
 import type React from "react";
-import { VscStarEmpty, VscStarFull, VscStarHalf } from "react-icons/vsc";
+import {
+  MdOutlineStar,
+  MdOutlineStarBorder,
+  MdOutlineStarHalf,
+} from "react-icons/md";
 import { Link4Newicons } from "reicon-react";
 import { Frame, FramePanel } from "@/components/reusable/reui/frame";
 import {
@@ -46,15 +50,15 @@ export const Testimonial: React.FC<{
           {preview ? (
             <span>
               {diff >= 1 ? (
-                <VscStarFull
+                <MdOutlineStar
                   className={cn("text-primary size-3.5", preview && "size-4")}
                 />
               ) : diff > 0 ? (
-                <VscStarHalf
+                <MdOutlineStarHalf
                   className={cn("text-primary size-3.5", preview && "size-4")}
                 />
               ) : (
-                <VscStarEmpty
+                <MdOutlineStarBorder
                   className={cn(
                     "text-muted-foreground size-3.5",
                     preview && "size-4",
@@ -67,18 +71,18 @@ export const Testimonial: React.FC<{
               {/* Mobile Default View (Shows real rating color immediately) */}
               <span className="md:hidden">
                 {diff >= 1 ? (
-                  <VscStarFull className="text-primary size-3.5" />
+                  <MdOutlineStar className="text-primary size-3.5" />
                 ) : diff > 0 ? (
-                  <VscStarHalf className="text-primary size-3.5" />
+                  <MdOutlineStarHalf className="text-primary size-3.5" />
                 ) : (
-                  <VscStarEmpty className="text-muted-foreground size-3.5" />
+                  <MdOutlineStarBorder className="text-muted-foreground size-3.5" />
                 )}
               </span>
 
               {/* Desktop View (Empty by default -> Fills on card hover based on rating) */}
               <span className="hidden md:inline-flex">
                 {/* Base Empty Star */}
-                <VscStarEmpty
+                <MdOutlineStarBorder
                   className={cn("text-muted-foreground size-3.5", delayClass)}
                 />
 
@@ -91,9 +95,9 @@ export const Testimonial: React.FC<{
                     )}
                   >
                     {diff >= 1 ? (
-                      <VscStarFull className="text-primary size-3.5" />
+                      <MdOutlineStar className="text-primary size-3.5" />
                     ) : (
-                      <VscStarHalf className="text-primary size-3.5" />
+                      <MdOutlineStarHalf className="text-primary size-3.5" />
                     )}
                   </span>
                 )}
@@ -115,8 +119,9 @@ export const Testimonial: React.FC<{
       variants={itemVariants}
       className={cn(
         "group inline-block w-full break-inside-avoid rounded-[20px]! shadow-2xs transition-all duration-300 ease-out",
-        !preview &&
-          "hover:shadow-[0_5px_20px_rgba(0,0,0,0.05)] hover:dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]",
+        preview
+          ? "shadow-[0_5px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]"
+          : "hover:shadow-[0_5px_20px_rgba(0,0,0,0.05)] hover:dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]",
         !preview && "hover:-translate-y-1.5 hover:scale-[102%]",
       )}
     >
