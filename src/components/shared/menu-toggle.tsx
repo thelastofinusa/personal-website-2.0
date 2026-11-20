@@ -133,7 +133,7 @@ export const MenuToggle: React.FC<
                               "relative flex items-center gap-4 justify-between rounded-lg px-3 py-2 transition-all duration-200",
                               "hover:bg-muted/60",
                               isActive
-                                ? "bg-muted font-medium text-primary"
+                                ? "bg-muted font-medium text-foreground"
                                 : "text-muted-foreground hover:text-foreground",
                             )}
                           >
