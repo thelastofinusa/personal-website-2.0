@@ -73,8 +73,8 @@ export const testimonialSchema = z.strictObject({
 
   rating: z
     .number()
-    .min(TESTIMONIAL_LIMITS.rating.min, "Rating must be between 0.5 and 5.")
-    .max(TESTIMONIAL_LIMITS.rating.max, "Rating must be between 0.5 and 5."),
+    .min(TESTIMONIAL_LIMITS.rating.min, "Must be between 0.5 and 5.")
+    .max(TESTIMONIAL_LIMITS.rating.max, "Must be between 0.5 and 5."),
 
   url: z
     .string()

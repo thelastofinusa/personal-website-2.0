@@ -3,11 +3,7 @@
 
 import { motion } from "motion/react";
 import type React from "react";
-import {
-  MdOutlineStar,
-  MdOutlineStarBorder,
-  MdOutlineStarHalf,
-} from "react-icons/md";
+import { VscStarEmpty, VscStarFull, VscStarHalf } from "react-icons/vsc";
 import { Link4Newicons } from "reicon-react";
 import { Frame, FramePanel } from "@/components/reusable/reui/frame";
 import {
@@ -50,15 +46,15 @@ export const Testimonial: React.FC<{
           {preview ? (
             <span>
               {diff >= 1 ? (
-                <MdOutlineStar
+                <VscStarFull
                   className={cn("text-primary size-3.5", preview && "size-4")}
                 />
               ) : diff > 0 ? (
-                <MdOutlineStarHalf
+                <VscStarHalf
                   className={cn("text-primary size-3.5", preview && "size-4")}
                 />
               ) : (
-                <MdOutlineStarBorder
+                <VscStarEmpty
                   className={cn(
                     "text-muted-foreground size-3.5",
                     preview && "size-4",
@@ -71,18 +67,18 @@ export const Testimonial: React.FC<{
               {/* Mobile Default View (Shows real rating color immediately) */}
               <span className="md:hidden">
                 {diff >= 1 ? (
-                  <MdOutlineStar className="text-primary size-3.5" />
+                  <VscStarFull className="text-primary size-3.5" />
                 ) : diff > 0 ? (
-                  <MdOutlineStarHalf className="text-primary size-3.5" />
+                  <VscStarHalf className="text-primary size-3.5" />
                 ) : (
-                  <MdOutlineStarBorder className="text-muted-foreground size-3.5" />
+                  <VscStarEmpty className="text-muted-foreground size-3.5" />
                 )}
               </span>
 
               {/* Desktop View (Empty by default -> Fills on card hover based on rating) */}
               <span className="hidden md:inline-flex">
                 {/* Base Empty Star */}
-                <MdOutlineStarBorder
+                <VscStarEmpty
                   className={cn("text-muted-foreground size-3.5", delayClass)}
                 />
 
@@ -95,9 +91,9 @@ export const Testimonial: React.FC<{
                     )}
                   >
                     {diff >= 1 ? (
-                      <MdOutlineStar className="text-primary size-3.5" />
+                      <VscStarFull className="text-primary size-3.5" />
                     ) : (
-                      <MdOutlineStarHalf className="text-primary size-3.5" />
+                      <VscStarHalf className="text-primary size-3.5" />
                     )}
                   </span>
                 )}
@@ -118,7 +114,7 @@ export const Testimonial: React.FC<{
       key={testimonial._id}
       variants={itemVariants}
       className={cn(
-        "group inline-block w-full break-inside-avoid rounded-[20px]! shadow-2xs transition-all duration-300 ease-out",
+        "group inline-block w-full break-inside-avoid rounded-3xl shadow-2xs transition-all duration-300 ease-out",
         preview
           ? "shadow-[0_5px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]"
           : "hover:shadow-[0_5px_20px_rgba(0,0,0,0.05)] hover:dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]",
@@ -127,9 +123,9 @@ export const Testimonial: React.FC<{
     >
       <Frame
         variant="inverse"
-        className="bg-background dark:bg-card flex flex-col justify-between overflow-hidden rounded-[20px]"
+        className="bg-background dark:bg-card flex flex-col justify-between overflow-hidden rounded-3xl"
       >
-        <FramePanel className="bg-background group relative flex flex-col gap-8 overflow-y-auto rounded-2xl px-4 py-3">
+        <FramePanel className="bg-background group relative flex flex-col gap-8 overflow-y-auto rounded-[20px] px-4 py-3">
           {!preview && (
             <div className="from-primary/10 pointer-events-none absolute inset-0 bg-linear-to-br via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
           )}
@@ -141,13 +137,11 @@ export const Testimonial: React.FC<{
 
             <p className="font-heading text-xs font-normal">
               {testimonial.rating?.toFixed(1)}{" "}
-              <span className="text-muted-foreground">Star Rating</span>
+              <span className="text-muted-foreground">Stars</span>
             </p>
           </div>
 
-          <blockquote
-            className={cn("text-sm font-normal", preview && "text-[15px]")}
-          >
+          <blockquote className="text-sm font-normal">
             “{testimonial.content}”
           </blockquote>
         </FramePanel>
@@ -159,7 +153,7 @@ export const Testimonial: React.FC<{
           className="flex flex-col gap-0.5 px-4 py-2"
         >
           <div className="flex items-center gap-1.5">
-            <Avatar size="xs">
+            <Avatar size="xs" className="size-4!">
               <AvatarImage src={avatar} alt={testimonial.name as string} />
               <AvatarFallback>
                 {getInitials(testimonial.name as string)}
@@ -169,7 +163,6 @@ export const Testimonial: React.FC<{
             <p
               className={cn(
                 "text-sm font-medium transition-colors duration-150",
-                preview && "text-[15px]",
                 testimonial.url && "group-hover:text-primary",
               )}
             >
@@ -179,12 +172,7 @@ export const Testimonial: React.FC<{
             {testimonial.url && <Link4Newicons className="ml-1 size-3.5" />}
           </div>
 
-          <p
-            className={cn(
-              "text-muted-foreground text-xs font-normal",
-              preview && "text-[13px]",
-            )}
-          >
+          <p className="text-muted-foreground text-xs font-normal">
             {testimonial.role}
             {testimonial.company ? ` at ${testimonial.company}` : ""}
           </p>

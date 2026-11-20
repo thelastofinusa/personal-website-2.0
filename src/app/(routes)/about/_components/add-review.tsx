@@ -4,11 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
 import React from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import {
-  MdOutlineStar,
-  MdOutlineStarBorder,
-  MdOutlineStarHalf,
-} from "react-icons/md";
+import { VscStarEmpty, VscStarFull, VscStarHalf } from "react-icons/vsc";
 import { Add, CircleInfo, Send4 } from "reicon-react";
 import type { z } from "zod";
 import { submitTestimonial } from "@/actions/testimonial.action";
@@ -108,7 +104,7 @@ const VisibilityToggle = ({
     className="focus-visible:ring-primary flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-1 py-1.5 text-left outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
   >
     <div className="space-y-0.5">
-      <p className="text-foreground text-xs font-medium">
+      <p className="text-foreground text-[11px] font-medium sm:text-[13px]">
         Show publicly on the site
       </p>
       <p className="text-muted-foreground text-[11px] leading-snug">
@@ -187,7 +183,7 @@ export const AddReview = () => {
       company: "",
       role: "",
       url: "",
-      rating: 5,
+      rating: 4.5,
       content: "",
       consentToDisplay: true,
     },
@@ -265,14 +261,14 @@ export const AddReview = () => {
           size="md"
           className="flex-1 overflow-y-auto pt-10 pb-20 md:pt-16 md:pb-20"
         >
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-5 md:gap-16 xl:grid-cols-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-5 xl:grid-cols-8">
             <form
               onSubmit={handleSubmit(onSubmit)}
               className="md:col-span-3 xl:col-span-5"
             >
               <Frame
                 className={cn(
-                  "bg-background dark:bg-card rounded-[20px]!",
+                  "bg-background dark:bg-card rounded-3xl",
                   "shadow-[0_5px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_5px_20px_rgba(0,0,0,0.8)]",
                 )}
               >
@@ -287,7 +283,7 @@ export const AddReview = () => {
                   </div>
                 </div>
 
-                <FramePanel className="bg-background rounded-2xl">
+                <FramePanel className="bg-background rounded-[20px]!">
                   {status === "sent" ? (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
@@ -483,11 +479,11 @@ export const AddReview = () => {
                                   <InputGroup className="bg-card">
                                     <InputGroupAddon className="transition-colors">
                                       {isEmpty ? (
-                                        <MdOutlineStarBorder className="text-muted-foreground/50 size-4" />
+                                        <VscStarEmpty className="text-muted-foreground/50 size-4" />
                                       ) : isDecimal ? (
-                                        <MdOutlineStarHalf className="text-muted-foreground/50 size-4" />
+                                        <VscStarHalf className="text-muted-foreground/50 size-4" />
                                       ) : (
-                                        <MdOutlineStar className="text-muted-foreground/50 size-4" />
+                                        <VscStarFull className="text-muted-foreground/50 size-4" />
                                       )}
                                     </InputGroupAddon>
 
