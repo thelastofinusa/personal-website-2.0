@@ -175,7 +175,7 @@ export function GitHubContributions({
       <ContributionGraphCalendar
         calendarRef={calendarRef}
         className={cn(
-          "no-scrollbar fade-edges-x text-[10px] uppercase transition-opacity duration-300 sm:text-xs",
+          "no-scrollbar fade-edges-x text-[11px] uppercase transition-opacity duration-300 sm:text-xs",
           ready ? "opacity-100" : "opacity-0",
         )}
         title="GitHub Contributions"
