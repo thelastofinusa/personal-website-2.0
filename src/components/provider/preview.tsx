@@ -178,7 +178,7 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
     <Frame ref={previewRef} className="rounded-[20px]! opacity-0">
       <div
         style={{ width: `${maxWidth}px` }}
-        className="overflow-hidden rounded-2xl border border-border/60 bg-background"
+        className="border-border/60 bg-background overflow-hidden rounded-2xl border"
       >
         {/* Browser chrome */}
         <div className="bg-muted/70">
@@ -190,7 +190,7 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
               <span className="size-2 rounded-full border border-[#1aab29] bg-[#28c840]" />
             </div>
 
-            <div className="relative flex h-6 max-w-32.5 flex-1 items-center gap-1.5 rounded-t-sm bg-card px-2">
+            <div className="bg-card relative flex h-6 max-w-32.5 flex-1 items-center gap-1.5 rounded-t-sm px-2">
               <CustomImage
                 src={siteConfig.author.avatar}
                 alt={siteConfig.author.name}
@@ -199,34 +199,34 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
                 className="size-2.5 rounded-sm"
               />
 
-              <span className="flex-1 truncate font-medium text-[9px] text-muted-foreground">
+              <span className="text-muted-foreground flex-1 truncate text-[9px] font-medium">
                 {activeIndex !== null
                   ? images[activeIndex]?.alt || "Preview"
                   : "New tab"}
               </span>
 
-              <Xmark className="ml-auto size-3 text-muted-foreground" />
+              <Xmark className="text-muted-foreground ml-auto size-3" />
 
               <span className="absolute -bottom-1 left-0 h-2 w-full bg-inherit" />
             </div>
 
-            <Plus className="my-auto ml-2 size-3 text-muted-foreground" />
+            <Plus className="text-muted-foreground my-auto ml-2 size-3" />
 
-            <div className="ml-auto flex size-5 items-center justify-center rounded-sm bg-card">
-              <ChevronDown className="size-3 text-muted-foreground" />
+            <div className="bg-card ml-auto flex size-5 items-center justify-center rounded-sm">
+              <ChevronDown className="text-muted-foreground size-3" />
             </div>
           </div>
 
           {/* Address bar */}
-          <div className="flex items-center gap-2 bg-card px-2 py-1.5">
-            <ChevronLeft className="size-3 text-muted-foreground" />
-            <ChevronRight className="size-3 text-muted-foreground/60" />
-            <ArrowRotate className="size-3 text-muted-foreground" />
+          <div className="bg-card flex items-center gap-2 px-2 py-1.5">
+            <ChevronLeft className="text-muted-foreground size-3" />
+            <ChevronRight className="text-muted-foreground/60 size-3" />
+            <ArrowRotate className="text-muted-foreground size-3" />
 
-            <div className="flex h-6 min-w-0 flex-1 items-center gap-1.5 rounded-sm bg-muted px-2">
-              <Lock className="size-2.5 shrink-0 text-muted-foreground" />
+            <div className="bg-muted flex h-6 min-w-0 flex-1 items-center gap-1.5 rounded-sm px-2">
+              <Lock className="text-muted-foreground size-2.5 shrink-0" />
 
-              <span className="min-w-0 flex-1 overflow-hidden truncate font-light text-[10px] text-muted-foreground">
+              <span className="text-muted-foreground min-w-0 flex-1 truncate overflow-hidden text-[10px] font-light">
                 {activeIndex !== null
                   ? images[activeIndex]?.url || images[activeIndex]?.ogUrl
                   : "preview.local"}
@@ -234,7 +234,7 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
             </div>
 
             <div className="ml-auto flex size-5 shrink-0 items-center justify-center">
-              <EllipsisVerticalIcon className="size-3 text-muted-foreground" />
+              <EllipsisVerticalIcon className="text-muted-foreground size-3" />
             </div>
           </div>
         </div>
@@ -242,7 +242,7 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
         {/* Browser viewport */}
         <FramePanel
           ref={panelRef}
-          className="relative h-28 overflow-hidden rounded-none border-0! bg-card"
+          className="bg-card relative h-28 overflow-hidden rounded-none border-0!"
         >
           <div ref={imageTrackRef} className="absolute top-0 left-0 w-full">
             {images.map((img) => (

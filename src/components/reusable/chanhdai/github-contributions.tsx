@@ -166,16 +166,16 @@ export function GitHubContributions({
 
   return (
     <ContributionGraph
-      className={cn("mx-auto bg-background py-2", className)}
+      className={cn("mx-auto bg-background pt-2", className)}
       data={result.data}
-      blockSize={isMobile ? 10 : 12}
-      blockMargin={3}
-      blockRadius={3}
+      blockSize={isMobile ? 14 : 15}
+      blockMargin={2}
+      blockRadius={10}
     >
       <ContributionGraphCalendar
         calendarRef={calendarRef}
         className={cn(
-          "no-scrollbar fade-edges-x px-2 text-[11px] uppercase transition-opacity duration-300 sm:text-xs",
+          "no-scrollbar fade-edges-x text-[10px] uppercase transition-opacity duration-300 sm:text-xs",
           ready ? "opacity-100" : "opacity-0",
         )}
         title="GitHub Contributions"
@@ -204,13 +204,13 @@ export function GitHubContributions({
           </Tooltip>
         )}
       </ContributionGraphCalendar>
-      <ContributionGraphFooter className="px-2 text-sm font-light">
+      <ContributionGraphFooter className="px-2 text-xs font-light sm:text-sm">
         <ContributionGraphTotalCount>
           {({ totalCount, year }) => (
             <div className="text-muted-foreground">
               {totalCount.toLocaleString("en")} contributions in {year} on{" "}
               <LinkPreview
-                className="text-primary! underline"
+                className="text-primary! underline underline-offset-2"
                 href={githubProfileUrl}
                 target="_blank"
                 rel="noopener noreferrer"

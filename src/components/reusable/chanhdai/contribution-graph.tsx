@@ -68,11 +68,18 @@ const DEFAULT_LABELS: Labels = {
 };
 
 const THEME = cn(
+  // Light mode
   'data-[level="0"]:fill-primary/10',
-  'data-[level="1"]:fill-primary/30',
+  'data-[level="1"]:fill-primary/35',
   'data-[level="2"]:fill-primary/50',
-  'data-[level="3"]:fill-primary/75',
+  'data-[level="3"]:fill-primary/80',
   'data-[level="4"]:fill-primary',
+  // Dark mode (works if using Tailwind `dark:` variant / class strategy)
+  'dark:data-[level="0"]:fill-primary/10',
+  'dark:data-[level="1"]:fill-primary/30',
+  'dark:data-[level="2"]:fill-primary/40',
+  'dark:data-[level="3"]:fill-primary/70',
+  'dark:data-[level="4"]:fill-primary',
 );
 
 type ContributionGraphContextType = {
@@ -330,21 +337,42 @@ export const ContributionGraphBlock = ({
     );
   }
 
+  const x = (blockSize + blockMargin) * weekIndex;
+  const y = labelHeight + (blockSize + blockMargin) * dayIndex;
+
+  const cx = x + blockSize / 2;
+  const cy = y + blockSize / 2;
+
   return (
-    <rect
-      onMouseEnter={() => play("hover")}
-      className={cn(THEME, className)}
-      data-count={activity.count}
-      data-date={activity.date}
-      data-level={activity.level}
-      height={blockSize}
-      rx={blockRadius}
-      ry={blockRadius}
-      width={blockSize}
-      x={(blockSize + blockMargin) * weekIndex}
-      y={labelHeight + (blockSize + blockMargin) * dayIndex}
-      {...props}
-    />
+    <g onMouseEnter={() => play("hover")}>
+      <rect
+        className={cn(THEME, className)}
+        data-count={activity.count}
+        data-date={activity.date}
+        data-level={activity.level}
+        height={blockSize}
+        rx={blockRadius}
+        ry={blockRadius}
+        width={blockSize}
+        x={x}
+        y={y}
+        {...props}
+      />
+      {activity.count > 0 && (
+        <text
+          x={cx}
+          y={cy}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fill="currentColor"
+          fontSize={Math.max(8, blockSize * 0.55)}
+          fontWeight={600}
+          className="pointer-events-none text-white tabular-nums select-none"
+        >
+          {activity.count}
+        </text>
+      )}
+    </g>
   );
 };
 
@@ -506,21 +534,21 @@ export const ContributionGraphLegend = ({
           <div
             key={level}
             style={{
-              width: `${blockSize + 1}`,
-              height: `${blockSize + 1}`,
+              width: `${blockSize - 1}`,
+              height: `${blockSize - 1}`,
               borderRadius: blockRadius,
             }}
-            className="border-background bg-background z-10 -mx-1 flex items-center justify-center border-2 last-of-type:mr-0"
+            className="border-background bg-background z-10 -mx-1.25 flex items-center justify-center border-2 last-of-type:mr-0"
           >
-            <svg height={blockSize} width={blockSize}>
+            <svg height={blockSize - 1} width={blockSize - 1}>
               <title>{`${level} contributions`}</title>
               <rect
                 className={cn(THEME)}
                 data-level={level}
-                height={blockSize}
                 rx={blockRadius}
                 ry={blockRadius}
-                width={blockSize}
+                height={blockSize - 1}
+                width={blockSize - 1}
               />
             </svg>
           </div>
