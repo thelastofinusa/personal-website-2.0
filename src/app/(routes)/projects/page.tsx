@@ -1,15 +1,12 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: just ignore */
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Skeleton } from "@/components/reusable/shadcn/skeleton";
-import { Container } from "@/components/shared/container";
-import { CurveThingy } from "@/components/shared/curve-thingy";
 import { siteConfig } from "@/config/site.config";
 import { navLinksData } from "@/constants/navigation";
 import { getOgImage } from "@/lib/og";
 import { fetchAllProjects } from "@/sanity/queries/project.query";
 import { fetchAllProjectFilters } from "@/sanity/queries/projectFilter.query";
 import { ProjectsPageClient } from "./_components/client";
+import { ProjectsPageLoading } from "./_components/page-loading";
 
 const nav = navLinksData("/projects");
 
@@ -55,65 +52,8 @@ export default async function Projects() {
   const projectFilters = await fetchAllProjectFilters();
 
   return (
-    <Suspense fallback={<PageLoading />}>
+    <Suspense fallback={<ProjectsPageLoading />}>
       <ProjectsPageClient initialProjects={projects} filters={projectFilters} />
     </Suspense>
   );
 }
-
-const PageLoading = () => {
-  return (
-    <>
-      <section className="bg-background sticky top-0 pt-26 pb-16 md:py-30 lg:pt-36">
-        <Container size="sm">
-          <div className="flex flex-col gap-1.5">
-            <div className="mb-4 flex w-max items-center gap-2">
-              <Skeleton className="size-4 rounded-full" />
-              <Skeleton className="h-3 w-24 rounded-full" />
-            </div>
-
-            <Skeleton className="h-10 w-94 rounded-full" />
-
-            <Skeleton className="mt-2.5 h-4 w-full max-w-md rounded-full" />
-          </div>
-        </Container>
-
-        <Container size="sm" className="mt-5">
-          <div className="flex flex-wrap items-center gap-2">
-            <Skeleton className="h-9 w-28 rounded-full" />
-            <Skeleton className="h-9 w-32 rounded-full" />
-            <Skeleton className="h-9 w-36 rounded-full" />
-            <Skeleton className="h-9 w-24 rounded-full" />
-          </div>
-        </Container>
-      </section>
-      <CurveThingy tCurve hash="showcase">
-        <div className="flex flex-col gap-8 pt-20 sm:pt-30 md:gap-12 md:pt-36">
-          <Container size="sm">
-            <Skeleton className="mb-2 ml-4 h-3 w-full max-w-sm rounded-full" />
-            <Skeleton className="h-11 w-full max-w-md rounded-full" />
-          </Container>
-          <div className="flex flex-col">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="border-t last:border-b">
-                <Container size="md" className="py-5 md:py-7">
-                  <div className="flex items-start justify-between gap-6 md:items-center">
-                    <div className="flex min-w-0 flex-1 flex-col gap-2 md:gap-3">
-                      <Skeleton className="h-8 w-2/3 max-w-xs md:h-10 lg:h-12" />
-                      <div className="flex items-center gap-2">
-                        <Skeleton className="h-3 w-16" />
-                        <Skeleton className="h-5 w-14 rounded-full" />
-                        <Skeleton className="h-5 w-14 rounded-full" />
-                      </div>
-                    </div>
-                    <Skeleton className="hidden h-4 w-40 lg:block" />
-                  </div>
-                </Container>
-              </div>
-            ))}
-          </div>
-        </div>
-      </CurveThingy>
-    </>
-  );
-};

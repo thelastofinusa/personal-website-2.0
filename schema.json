@@ -69,13 +69,6 @@
         },
         "optional": true
       },
-      "approve": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "boolean"
-        },
-        "optional": true
-      },
       "content": {
         "type": "objectAttribute",
         "value": {
@@ -84,6 +77,34 @@
         "optional": true
       },
       "url": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "consentToDisplay": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
+      "approve": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "boolean"
+        },
+        "optional": true
+      },
+      "approvalEmailRequestedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "approvalEmailSentAt": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -1893,6 +1914,23 @@
               "name": "projectFilter.reference"
             }
           }
+        },
+        "optional": true
+      },
+      "importance": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "important"
+            },
+            {
+              "type": "string",
+              "value": "less-important"
+            }
+          ]
         },
         "optional": true
       }

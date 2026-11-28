@@ -38,7 +38,7 @@ export const TabFilter: React.FC<{
           }}
           i18nIsDynamicList={true}
         >
-          <SelectTrigger className="rounded-full bg-background! hover:bg-background/90!">
+          <SelectTrigger className="bg-background! hover:bg-background/90! rounded-full">
             <SelectValue>
               {(() => {
                 const activeFilter =

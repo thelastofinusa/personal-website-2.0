@@ -10,6 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/reusable/shadcn/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -23,12 +24,26 @@ export type OptionMenuItem<T extends string> = {
   icon: React.ElementType;
 };
 
-type OptionMenuProps<T extends string> = {
-  options: readonly OptionMenuItem<T>[];
+export type OptionMenuSection<T extends string = string> = {
+  id: string;
+  label: string;
   value: T;
   onValueChange: (value: T) => void;
-  /** Heading inside the open menu. */
-  label: string;
+  options: readonly OptionMenuItem<T>[];
+};
+
+type OptionMenuProps<T extends string> = {
+  options?: readonly OptionMenuItem<T>[];
+  value?: T;
+  onValueChange?: (value: T) => void;
+  /** Multiple labeled radio groups separated by a divider. */
+  sections?: readonly OptionMenuSection<string>[];
+  /** Override the trigger icon when using `sections`. */
+  triggerIcon?: React.ElementType;
+  /** Override the trigger label when using `sections`. */
+  triggerLabel?: string;
+  /** Heading inside the open menu when using single `options`. */
+  label?: string;
   ariaLabel: string;
   /** Extra word after the trigger text on `md+` screens, e.g. "View". */
   suffix?: string;
@@ -38,11 +53,14 @@ type OptionMenuProps<T extends string> = {
   reverse?: boolean;
 };
 
-/** A button that opens a single-choice dropdown with sound feedback. */
+/** A button that opens a single-choice or multi-section dropdown with sound feedback. */
 export function OptionMenu<T extends string>({
-  options,
-  value,
-  onValueChange,
+  options = [],
+  value = "" as T,
+  onValueChange = () => {},
+  sections,
+  triggerIcon,
+  triggerLabel,
   label,
   ariaLabel,
   suffix,
@@ -55,7 +73,18 @@ export function OptionMenu<T extends string>({
   const isSelecting = React.useRef(false);
 
   const active = options.find((option) => option.value === value) ?? options[0];
-  const ActiveIcon = active.icon;
+  const ActiveIcon = triggerIcon ?? active?.icon;
+  const displayText = triggerLabel ?? active?.short;
+
+  const resolvedSections: readonly OptionMenuSection<string>[] = sections ?? [
+    {
+      id: "default",
+      label: label ?? "",
+      value,
+      onValueChange: (next) => onValueChange(next as T),
+      options,
+    },
+  ];
 
   const handleOpenChange = (next: boolean) => {
     // Picking an item closes the menu; its "select" sound already played.
@@ -69,13 +98,16 @@ export function OptionMenu<T extends string>({
     setOpen(next);
   };
 
-  const handleValueChange = (next: string) => {
-    const option = options.find((item) => item.value === next);
+  const handleSectionValueChange = (
+    section: OptionMenuSection<string>,
+    next: string,
+  ) => {
+    const option = section.options.find((item) => item.value === next);
     if (!option) return;
 
     isSelecting.current = true;
     play("select");
-    onValueChange(option.value);
+    section.onValueChange(option.value);
   };
 
   return (
@@ -86,14 +118,16 @@ export function OptionMenu<T extends string>({
           size={collapsed ? "icon" : "default"}
           aria-label={ariaLabel}
           className={cn(
-            "bg-background! text-foreground",
+            "bg-background! text-foreground text-[10px]",
             reverse && "flex-row-reverse",
           )}
         >
-          <ActiveIcon
-            aria-hidden="true"
-            className="motion-safe:animate-bell-ring"
-          />
+          {ActiveIcon && (
+            <ActiveIcon
+              aria-hidden="true"
+              className="motion-safe:animate-bell-ring size-3.5"
+            />
+          )}
 
           <span
             className={cn(
@@ -101,38 +135,49 @@ export function OptionMenu<T extends string>({
                 "absolute translate-x-6 opacity-0 transition-all duration-300 ease-in-out",
             )}
           >
-            {active.short}
-            {suffix && (
-              <span className="ml-1 hidden md:inline-block">{suffix}</span>
-            )}
+            {displayText}
+            {suffix && <span className="ml-1">{suffix}</span>}
           </span>
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align={align} className="w-52">
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>{label}</DropdownMenuLabel>
+      <DropdownMenuContent align={align} className="w-56">
+        {resolvedSections.map((section, sectionIndex) => (
+          <React.Fragment key={section.id}>
+            {sectionIndex > 0 && <DropdownMenuSeparator />}
+            <DropdownMenuGroup>
+              {section.label && (
+                <DropdownMenuLabel className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
+                  {section.label}
+                </DropdownMenuLabel>
+              )}
 
-          <DropdownMenuRadioGroup
-            value={value}
-            onValueChange={handleValueChange}
-          >
-            {options.map(({ value: itemValue, name, icon: Icon }) => (
-              <DropdownMenuRadioItem
-                key={itemValue}
-                value={itemValue}
-                // Re-picking the current item doesn't fire onValueChange, but
-                // still closes the menu, so mark it as a selection too.
-                onClick={() => {
-                  isSelecting.current = true;
-                }}
+              <DropdownMenuRadioGroup
+                value={section.value}
+                onValueChange={(next) =>
+                  handleSectionValueChange(section, next)
+                }
               >
-                <Icon />
-                <span>{name}</span>
-              </DropdownMenuRadioItem>
-            ))}
-          </DropdownMenuRadioGroup>
-        </DropdownMenuGroup>
+                {section.options.map(
+                  ({ value: itemValue, name, icon: Icon }) => (
+                    <DropdownMenuRadioItem
+                      key={itemValue}
+                      value={itemValue}
+                      // Re-picking the current item doesn't fire onValueChange, but
+                      // still closes the menu, so mark it as a selection too.
+                      onClick={() => {
+                        isSelecting.current = true;
+                      }}
+                    >
+                      <Icon />
+                      <span>{name}</span>
+                    </DropdownMenuRadioItem>
+                  ),
+                )}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuGroup>
+          </React.Fragment>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -26,15 +26,32 @@ import { Reicon } from "./reicon";
 
 type Project = ProjectsListQueryResult[number];
 
+type ProjectImportance = "important" | "less-important";
+
+type AnnotatedProject = {
+  item: Project;
+  originalIndex: number;
+  importance: ProjectImportance;
+};
+
 type ProjectItemProps = {
   item: Project;
-  index: number;
+  displayIndex: number;
+  previewIndex: number;
+  importance: ProjectImportance;
   activeTab?: string;
   projects: ProjectsListQueryResult;
   tabFilters: ProjectFiltersListQueryResult;
 };
 
-// Shared animation configuration
+type ProjectsViewProps = {
+  view?: ISearchFilterProps["view"];
+  projects: ProjectsListQueryResult;
+  activeTab?: string;
+  tabFilters: ProjectFiltersListQueryResult;
+  isFiltered?: boolean;
+};
+
 const MOTION_ITEM_PROPS = {
   variants: workItemVariants,
   initial: "hidden" as const,
@@ -46,12 +63,54 @@ const MOTION_ITEM_PROPS = {
 
 const MotionLink = motion.create(Link);
 
-/**
- * Shared click behaviour for list rows and grid cards:
- * - the project already open in the live preview is inert
- * - ⌘/Ctrl + click opens the live preview (desktop only)
- * - a plain click falls through to the link and opens a new tab
- */
+function getProjectImportance(item: Project): ProjectImportance {
+  const raw = item as Record<string, unknown>;
+  const candidate =
+    raw.importance ??
+    raw.priority ??
+    raw.importanceLabel ??
+    raw.label ??
+    raw.tier;
+
+  if (typeof candidate === "string") {
+    const normalized = candidate
+      .trim()
+      .toLowerCase()
+      .replace(/[\s_]+/g, "-");
+    if (
+      normalized === "less-important" ||
+      normalized === "lessimportant" ||
+      normalized === "low" ||
+      normalized === "secondary"
+    ) {
+      return "less-important";
+    }
+  }
+
+  return "important";
+}
+
+function groupProjectsByImportance(projects: ProjectsListQueryResult) {
+  const important: AnnotatedProject[] = [];
+  const lessImportant: AnnotatedProject[] = [];
+
+  projects.forEach((item, originalIndex) => {
+    const importance = getProjectImportance(item);
+    const entry = { item, originalIndex, importance };
+    if (importance === "less-important") {
+      lessImportant.push(entry);
+    } else {
+      important.push(entry);
+    }
+  });
+
+  return {
+    important,
+    lessImportant,
+    combined: [...important, ...lessImportant],
+  };
+}
+
 function useProjectCardClick(item: Project, projects: ProjectsListQueryResult) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { openPreview, currentProject } = useLivePreview();
@@ -77,10 +136,30 @@ const getFilterIcon = (
   activeTab?: string,
 ) => tabFilters.find((filter) => filter.slug === activeTab)?.icon;
 
-// List row
+const SectionHeader: React.FC<{ title: string; count: number }> = ({
+  title,
+  count,
+}) => (
+  <div className="pt-4 pb-2 md:pt-6 md:pb-3">
+    <Container size="md">
+      <div className="flex items-center gap-3">
+        <span className="font-serif text-xs font-medium tracking-[0.08em] lowercase">
+          {title}
+        </span>
+        <span className="text-muted-foreground/60 font-mono text-[11px]">
+          ({count})
+        </span>
+        <span className="bg-border/70 h-px flex-1" />
+      </div>
+    </Container>
+  </div>
+);
+
 const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
   item,
-  index,
+  displayIndex,
+  previewIndex,
+  importance,
   isLast,
   activeTab,
   projects,
@@ -89,17 +168,17 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
   const { handleMouseEnter, handleMouseLeave } = useImagePreview();
   const { isActive, onClick } = useProjectCardClick(item, projects);
   const icon = getFilterIcon(tabFilters, activeTab);
-
-  // Format index as 01, 02, 03...
-  const formattedIndex = String(index + 1).padStart(2, "0");
+  const formattedIndex = String(displayIndex + 1).padStart(2, "0");
+  const isLessImportant = importance === "less-important";
 
   return (
     <motion.div
-      custom={index}
+      custom={displayIndex}
       {...MOTION_ITEM_PROPS}
       onClick={onClick}
       className={cn(
-        "group relative transition-colors duration-500 hover:bg-muted/40 dark:hover:bg-accent/10",
+        "group relative transition-colors duration-300 hover:bg-muted/35 dark:hover:bg-accent/10",
+        isLessImportant && "opacity-90 hover:opacity-100",
         isActive && "pointer-events-none opacity-50!",
       )}
     >
@@ -108,73 +187,63 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
           href={(item.url ?? "#") as Route}
           target="_blank"
           rel="noreferrer"
-          onMouseEnter={() => handleMouseEnter(index)}
+          onMouseEnter={() => handleMouseEnter(previewIndex)}
           onMouseLeave={handleMouseLeave}
+          className="block"
         >
           <FadeLine orientation="horizontal" className="top-0" />
           {isLast && <FadeLine orientation="horizontal" className="bottom-0" />}
 
-          <Container size="md" className="py-6 md:py-8">
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-center lg:gap-8">
-              {/* Left Column: Index, Icon, Title & Tags */}
-              <div className="flex items-start gap-4 lg:col-span-7 lg:gap-6">
-                {/* Index + Icon Stack */}
-                <div className="mt-1.5 hidden flex-col items-center gap-1 md:block">
-                  <span className="text-muted-foreground group-hover:text-primary font-mono text-xs font-normal transition-colors">
+          <Container
+            size="md"
+            className={cn(isLessImportant ? "py-5 md:py-6" : "py-7 md:py-9")}
+          >
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:items-baseline md:gap-6">
+              <div className="flex items-center justify-between md:col-span-2 md:flex-col md:items-start md:gap-1.5">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-muted-foreground group-hover:text-primary font-mono text-xs transition-colors">
                     {formattedIndex}
                   </span>
                   <Reicon
                     name={icon}
-                    className="text-muted-foreground group-hover:text-primary size-4 transition-transform duration-300 group-hover:scale-110"
+                    className="text-muted-foreground/70 group-hover:text-primary size-3.5 transition-colors"
                   />
                 </div>
+                <span className="text-muted-foreground/70 font-mono text-xs">
+                  {formatDate(item.date as string)}
+                </span>
+              </div>
 
-                {/* Title & Micro Metadata */}
-                <div className="flex flex-1 flex-col gap-2 transition-transform duration-300 ease-out lg:group-hover:translate-x-2">
-                  <div className="flex items-center gap-2">
-                    <Reicon
-                      name={icon}
-                      className="text-muted-foreground group-hover:text-primary mb-0.5 block size-5 transition-transform duration-300 group-hover:scale-110 md:hidden"
-                    />
-                    <h1 className="group-hover:text-primary font-serif text-[28px] font-light tracking-tight transition-colors duration-300 md:text-[32px] lg:text-[40px]">
-                      {item.name}
-                    </h1>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-muted-foreground/70 font-mono text-xs">
-                      {formatDate(item.date as string)}
-                    </span>
-
-                    {item.tags && item.tags.length > 0 && (
-                      <>
-                        <span className="text-muted-foreground/30 text-xs">
-                          •
-                        </span>
-                        {item.tags.map((badge) => (
-                          <Badge
-                            key={badge}
-                            variant="secondary"
-                            className="text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary"
-                          >
-                            {badge}
-                          </Badge>
-                        ))}
-                      </>
+              <div className="flex flex-col gap-2 md:col-span-6">
+                <div className="flex items-center gap-3 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
+                  <h2
+                    className={cn(
+                      "group-hover:text-primary font-serif font-light tracking-tight transition-colors text-2xl md:text-3xl",
+                      // isLessImportant
+                      //   ? "text-2xl md:text-3xl"
+                      //   : "text-[28px] md:text-[34px] lg:text-[38px]",
                     )}
-                  </div>
+                  >
+                    {item.name}
+                  </h2>
+                </div>
 
-                  {/* Mobile Description */}
-                  <div className="text-muted-foreground/80 mt-2 text-sm leading-relaxed font-light lg:hidden">
-                    <InlineMarkdown>{item.description}</InlineMarkdown>
-                  </div>
+                <div className="text-muted-foreground/85 group-hover:text-foreground/90 text-sm leading-relaxed font-light transition-colors">
+                  <InlineMarkdown>{item.description}</InlineMarkdown>
                 </div>
               </div>
 
-              {/* Right Column: Desktop Description */}
-              <div className="hidden lg:col-span-5 lg:flex lg:items-center lg:justify-between lg:gap-6">
-                <div className="text-muted-foreground/80 group-hover:text-foreground text-right text-sm leading-relaxed font-light transition-colors duration-300">
-                  <InlineMarkdown>{item.description}</InlineMarkdown>
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1 md:col-span-4 md:justify-end md:pt-0">
+                <div className="flex flex-wrap items-center gap-1.5 md:justify-end">
+                  {item.tags?.map((badge) => (
+                    <Badge
+                      key={badge}
+                      variant="secondary"
+                      className="text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary font-normal transition-colors"
+                    >
+                      {badge}
+                    </Badge>
+                  ))}
                 </div>
               </div>
             </div>
@@ -185,100 +254,154 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
   );
 };
 
-// Grid card
 const ProjectGridItem: React.FC<ProjectItemProps> = ({
   item,
-  index,
+  displayIndex,
+  previewIndex,
+  importance,
   activeTab,
   projects,
   tabFilters,
 }) => {
   const { isActive, onClick } = useProjectCardClick(item, projects);
   const icon = getFilterIcon(tabFilters, activeTab);
+  const isLessImportant = importance === "less-important";
 
   return (
     <MotionLink
       href={(item.url ?? "#") as Route}
       target="_blank"
       rel="noreferrer"
-      custom={index}
+      custom={displayIndex}
       {...MOTION_ITEM_PROPS}
       onClick={onClick}
       className={cn(
-        "group relative flex flex-col transition-all duration-500 ease-out",
+        "group relative flex flex-col rounded-3xl border border-border/60 bg-card/40 p-3 transition-all duration-300 ease-out hover:border-border hover:bg-muted/30",
+        isLessImportant && "opacity-90 hover:opacity-100",
         isActive && "pointer-events-none opacity-50!",
       )}
     >
       <Frame
         variant="inverse"
-        className="rounded-3xl transition-transform duration-500 ease-out group-hover:-translate-y-1"
+        className="rounded-2xl transition-transform duration-500 ease-out group-hover:-translate-y-0.5"
       >
-        <div className="border-border/60 bg-muted/20 relative h-auto overflow-hidden rounded-[20px]! border">
+        <div className="border-border/50 bg-muted/20 relative overflow-hidden rounded-[16px]! border">
           <CustomImage
             src={item.mainImage?.image as string}
             ogUrl={item.url as string}
             alt={item.name as string}
             unoptimized
-            className="size-auto object-contain transition-transform duration-700 ease-out group-hover:scale-105"
+            className="size-auto object-contain transition-transform duration-700 ease-out group-hover:scale-[1.03]"
           />
-
-          {/* Gradient Overlay with Glassmorphic Badges */}
-          <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 via-black/30 to-transparent px-5 pt-12 pb-4">
-            <div className="flex flex-wrap items-center gap-1.5">
-              {item.tags?.map((badge) => (
-                <Badge
-                  key={badge}
-                  className="border border-white/20 bg-black/40 text-white/90 backdrop-blur-md transition-colors duration-300 group-hover:border-white/40"
-                >
-                  {badge}
-                </Badge>
-              ))}
-            </div>
-          </div>
         </div>
       </Frame>
 
-      <div className="flex flex-col gap-0.5 px-4 py-5 md:px-8">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 px-2 pt-4 pb-2">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Reicon name={icon} className="mb-0.5 size-4" />
-            <p className="font-serif text-lg font-normal">{item.name}</p>
+            <Reicon
+              name={icon}
+              className="text-muted-foreground group-hover:text-primary size-4 shrink-0 transition-colors"
+            />
+            <h3 className="group-hover:text-primary font-serif text-xl font-normal tracking-tight transition-colors">
+              {item.name}
+            </h3>
           </div>
 
-          <p className="text-sm font-light">
+          <span className="text-muted-foreground shrink-0 font-mono text-xs">
             {formatDate(item.date as string)}
-          </p>
+          </span>
         </div>
 
-        <div className="text-[13px] leading-relaxed font-normal">
+        <div className="text-muted-foreground text-sm leading-relaxed font-light">
           <InlineMarkdown>{item.description}</InlineMarkdown>
         </div>
-      </div>
 
-      <FadeLine orientation="horizontal" className="bottom-0 mx-auto w-[85%]" />
+        {item.tags && item.tags.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            {item.tags.map((badge) => (
+              <Badge
+                key={badge}
+                variant="secondary"
+                className="text-muted-foreground text-[11px] font-normal"
+              >
+                {badge}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
     </MotionLink>
   );
 };
 
-// One masonry layout per breakpoint; CSS decides which one is visible.
 const GRID_LAYOUTS = [
-  // Mobile (1 column)
-  { columns: 1, className: "group/list flex flex-col gap-6 md:hidden" },
-  // Tablet (2 columns)
+  { columns: 1, className: "group/list flex flex-col gap-5 md:hidden" },
   {
     columns: 2,
-    className: "group/list hidden items-start gap-4 md:flex lg:hidden",
+    className: "group/list hidden items-start gap-5 md:flex lg:hidden",
   },
-  // Desktop (3 columns)
-  { columns: 3, className: "group/list hidden items-start gap-4 lg:flex" },
+  { columns: 3, className: "group/list hidden items-start gap-6 lg:flex" },
 ] as const;
 
-export const ProjectsView: React.FC<{
-  view?: ISearchFilterProps["view"];
+const GridBlock: React.FC<{
+  entries: AnnotatedProject[];
   projects: ProjectsListQueryResult;
-  activeTab?: string;
   tabFilters: ProjectFiltersListQueryResult;
-}> = ({ view = "list", projects, tabFilters, activeTab }) => {
+  activeTab?: string;
+}> = ({ entries, projects, tabFilters, activeTab }) => {
+  const items = React.useMemo(
+    () => entries.map((entry) => entry.item),
+    [entries],
+  );
+
+  return (
+    <Container>
+      {GRID_LAYOUTS.map(({ columns, className }) => {
+        const columnsData = splitIntoColumns(items, columns);
+
+        return (
+          <div key={columns} className={className}>
+            {columnsData.map((column, colIndex) => (
+              <div
+                key={colIndex}
+                className={cn("flex flex-col gap-6", columns > 1 && "flex-1")}
+              >
+                {column.map(({ item, originalIndex: entryIndex }) => {
+                  const entry = entries[entryIndex];
+                  const importance =
+                    entry?.importance ?? getProjectImportance(item);
+                  const previewIndex = entry?.originalIndex ?? entryIndex;
+
+                  return (
+                    <ProjectGridItem
+                      key={item.url ?? previewIndex}
+                      item={item}
+                      displayIndex={entryIndex}
+                      previewIndex={previewIndex}
+                      importance={importance}
+                      projects={projects}
+                      tabFilters={tabFilters}
+                      activeTab={activeTab}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        );
+      })}
+    </Container>
+  );
+};
+
+export const ProjectsView: React.FC<ProjectsViewProps> = ({
+  view = "list",
+  projects,
+  tabFilters,
+  activeTab,
+  isFiltered = false,
+}) => {
   const { handleMouseLeave } = useImagePreview();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: just ignore
@@ -286,44 +409,111 @@ export const ProjectsView: React.FC<{
     handleMouseLeave();
   }, [view, handleMouseLeave]);
 
-  const itemProps = { projects, tabFilters, activeTab };
+  const { important, lessImportant, combined } = React.useMemo(
+    () => groupProjectsByImportance(projects),
+    [projects],
+  );
+
+  const showSections =
+    !isFiltered && important.length > 0 && lessImportant.length > 0;
 
   return (
     <AnimatePresence mode="popLayout">
       {view === "list" ? (
-        <div className="group/list flex flex-col">
-          {projects.map((item, index) => (
-            <ProjectListItem
-              key={item.url}
-              item={item}
-              index={index}
-              isLast={index === projects.length - 1}
-              {...itemProps}
+        showSections ? (
+          <div className="flex flex-col gap-4">
+            <section className="flex flex-col">
+              <SectionHeader title="Important" count={important.length} />
+              <div className="group/list flex flex-col">
+                {important.map(({ item, originalIndex, importance }, index) => (
+                  <ProjectListItem
+                    key={item.url ?? originalIndex}
+                    item={item}
+                    displayIndex={index}
+                    previewIndex={originalIndex}
+                    importance={importance}
+                    isLast={index === important.length - 1}
+                    projects={projects}
+                    tabFilters={tabFilters}
+                    activeTab={activeTab}
+                  />
+                ))}
+              </div>
+            </section>
+
+            <section className="flex flex-col">
+              <SectionHeader
+                title="Less Important"
+                count={lessImportant.length}
+              />
+              <div className="group/list flex flex-col">
+                {lessImportant.map(
+                  ({ item, originalIndex, importance }, index) => (
+                    <ProjectListItem
+                      key={item.url ?? originalIndex}
+                      item={item}
+                      displayIndex={index}
+                      previewIndex={originalIndex}
+                      importance={importance}
+                      isLast={index === lessImportant.length - 1}
+                      projects={projects}
+                      tabFilters={tabFilters}
+                      activeTab={activeTab}
+                    />
+                  ),
+                )}
+              </div>
+            </section>
+          </div>
+        ) : (
+          <div className="group/list flex flex-col">
+            {combined.map(({ item, originalIndex, importance }, index) => (
+              <ProjectListItem
+                key={item.url ?? originalIndex}
+                item={item}
+                displayIndex={index}
+                previewIndex={originalIndex}
+                importance={importance}
+                isLast={index === combined.length - 1}
+                projects={projects}
+                tabFilters={tabFilters}
+                activeTab={activeTab}
+              />
+            ))}
+          </div>
+        )
+      ) : showSections ? (
+        <div className="flex flex-col gap-12">
+          <section className="flex flex-col gap-4">
+            <SectionHeader title="Important" count={important.length} />
+            <GridBlock
+              entries={important}
+              projects={projects}
+              tabFilters={tabFilters}
+              activeTab={activeTab}
             />
-          ))}
+          </section>
+
+          <section className="flex flex-col gap-4">
+            <SectionHeader
+              title="Less Important"
+              count={lessImportant.length}
+            />
+            <GridBlock
+              entries={lessImportant}
+              projects={projects}
+              tabFilters={tabFilters}
+              activeTab={activeTab}
+            />
+          </section>
         </div>
       ) : (
-        <Container>
-          {GRID_LAYOUTS.map(({ columns, className }) => (
-            <div key={columns} className={className}>
-              {splitIntoColumns(projects, columns).map((column, colIndex) => (
-                <div
-                  key={colIndex}
-                  className={cn("flex flex-col gap-6", columns > 1 && "flex-1")}
-                >
-                  {column.map(({ item, originalIndex }) => (
-                    <ProjectGridItem
-                      key={item.url}
-                      item={item}
-                      index={originalIndex}
-                      {...itemProps}
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          ))}
-        </Container>
+        <GridBlock
+          entries={combined}
+          projects={projects}
+          tabFilters={tabFilters}
+          activeTab={activeTab}
+        />
       )}
     </AnimatePresence>
   );

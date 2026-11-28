@@ -26,9 +26,12 @@ export type Testimonial = {
   role?: string;
   company?: string;
   rating?: number;
-  approve?: boolean;
   content?: string;
   url?: string;
+  consentToDisplay?: boolean;
+  approve?: boolean;
+  approvalEmailRequestedAt?: string;
+  approvalEmailSentAt?: string;
 };
 
 export type SanityImageAssetReference = {
@@ -334,6 +337,7 @@ export type Project = {
       _key: string;
     } & ProjectFilterReference
   >;
+  importance?: "important" | "less-important";
 };
 
 export type MediaFolderReference = {
@@ -823,12 +827,13 @@ export type DailyAppListQueryResult = Array<{
 
 // Source: src/sanity/queries/project.query.ts
 // Variable: projectsListQuery
-// Query: *[_type == "project"] | order(date desc) {  _id,name,url,embeddable,"mainImage": {  "image": mainImage.asset->url,  "width": mainImage.asset->metadata.dimensions.width,  "height": mainImage.asset->metadata.dimensions.height},date,description,tags,"filters": filters[]->value.current}
+// Query: *[_type == "project"] | order(date desc) {  _id,name,url,embeddable,importance,"mainImage": {  "image": mainImage.asset->url,  "width": mainImage.asset->metadata.dimensions.width,  "height": mainImage.asset->metadata.dimensions.height},date,description,tags,"filters": filters[]->value.current}
 export type ProjectsListQueryResult = Array<{
   _id: string;
   name: string | null;
   url: string | null;
   embeddable: boolean | null;
+  importance: "important" | "less-important" | null;
   mainImage: {
     image: string | null;
     width: number | null;
@@ -842,12 +847,13 @@ export type ProjectsListQueryResult = Array<{
 
 // Source: src/sanity/queries/project.query.ts
 // Variable: featuredProjectsQuery
-// Query: *[_type == "project" && featured == true]  | order(_createdAt desc)[0...4] {    _id,name,url,embeddable,"mainImage": {  "image": mainImage.asset->url,  "width": mainImage.asset->metadata.dimensions.width,  "height": mainImage.asset->metadata.dimensions.height},date,description,tags,"filters": filters[]->value.current  }
+// Query: *[_type == "project" && featured == true]  | order(_createdAt desc)[0...4] {    _id,name,url,embeddable,importance,"mainImage": {  "image": mainImage.asset->url,  "width": mainImage.asset->metadata.dimensions.width,  "height": mainImage.asset->metadata.dimensions.height},date,description,tags,"filters": filters[]->value.current  }
 export type FeaturedProjectsQueryResult = Array<{
   _id: string;
   name: string | null;
   url: string | null;
   embeddable: boolean | null;
+  importance: "important" | "less-important" | null;
   mainImage: {
     image: string | null;
     width: number | null;
@@ -884,7 +890,7 @@ export type SnapshotQueryResult = {
 
 // Source: src/sanity/queries/testimonial.query.ts
 // Variable: testimonialsListQuery
-// Query: *[_type == "testimonial" && approve == true] | order(_createdAt desc) {      _id,  name,  role,  company,  rating,  approve,  content,  url  }
+// Query: *[_type == "testimonial" && approve == true && consentToDisplay == true] | order(_createdAt desc) {      _id,  name,  role,  company,  rating,  approve,  content,  url,  consentToDisplay  }
 export type TestimonialsListQueryResult = Array<{
   _id: string;
   name: string | null;
@@ -894,11 +900,12 @@ export type TestimonialsListQueryResult = Array<{
   approve: true;
   content: string | null;
   url: string | null;
+  consentToDisplay: true;
 }>;
 
 // Source: src/sanity/queries/testimonial.query.ts
 // Variable: latestTestimonialsQuery
-// Query: *[_type == "testimonial" && approve == true] | order(_createdAt desc)[0...5] {      _id,  name,  role,  company,  rating,  approve,  content,  url  }
+// Query: *[_type == "testimonial" && approve == true && consentToDisplay == true] | order(_createdAt desc)[0...5] {      _id,  name,  role,  company,  rating,  approve,  content,  url,  consentToDisplay  }
 export type LatestTestimonialsQueryResult = Array<{
   _id: string;
   name: string | null;
@@ -908,6 +915,7 @@ export type LatestTestimonialsQueryResult = Array<{
   approve: true;
   content: string | null;
   url: string | null;
+  consentToDisplay: true;
 }>;
 
 // Source: src/sanity/queries/timeline.query.ts
@@ -1063,12 +1071,12 @@ declare module "@sanity/client" {
     '\n  *[_type == "article" && slug.current == $slug][0] {\n    \n  _id,\n  title,\n  "slug": slug.current,\n  description,\n  publishedAt,\n  pinned,\n  isAiGenerated,\n\n  body[] {\n    ...,\n\n    _type == "image" => {\n      ...,\n      "asset": asset-> {\n        "_id": _id,\n        "url": url,\n        "width": metadata.dimensions.width,\n        "height": metadata.dimensions.height\n      }\n    }\n  },\n\n  "mainImage": {\n    "image": mainImage.asset->url,\n    "width": mainImage.asset->metadata.dimensions.width,\n    "height": mainImage.asset->metadata.dimensions.height\n  },\n\n  }\n': ArticleBySlugQueryResult;
     '\n*[_type == "articleUrl"] | order(_createdAt asc) {\n  \n_id,\nname,\nurl,\n\n}': ArticleUrlsListQueryResult;
     '\n  *[_type == "dailyApp"] | order(_createdAt desc) {\n    _id,\n    name,\n    description,\n    category,\n\n    "logo": select(\n      logo.type == "url" => {\n        "type": "url",\n        "value": logo.url\n      },\n      logo.type == "upload" => {\n        "type": "upload",\n        "value": logo.image.asset->url\n      },\n      logo.type == "icon" => {\n        "type": "icon",\n        "value": logo.icon\n      }\n    ),\n\n    url,\n\n    "button": {\n      "label": button.label,\n      "backgroundColor": button.backgroundColor.hex,\n      "textColor": button.textColor.hex\n    }\n  }\n': DailyAppListQueryResult;
-    '\n*[_type == "project"] | order(date desc) {\n  \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n}': ProjectsListQueryResult;
-    '\n  *[_type == "project" && featured == true]\n  | order(_createdAt desc)[0...4] {\n    \n_id,\nname,\nurl,\nembeddable,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n  }\n': FeaturedProjectsQueryResult;
+    '\n*[_type == "project"] | order(date desc) {\n  \n_id,\nname,\nurl,\nembeddable,\nimportance,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n}': ProjectsListQueryResult;
+    '\n  *[_type == "project" && featured == true]\n  | order(_createdAt desc)[0...4] {\n    \n_id,\nname,\nurl,\nembeddable,\nimportance,\n\n"mainImage": {\n  "image": mainImage.asset->url,\n  "width": mainImage.asset->metadata.dimensions.width,\n  "height": mainImage.asset->metadata.dimensions.height\n},\n\ndate,\ndescription,\ntags,\n\n"filters": filters[]->value.current\n\n  }\n': FeaturedProjectsQueryResult;
     '\n*[_type == "projectFilter"] | order(_createdAt asc) {\n  \n_id,\nname,\n"slug": value.current,\ndescription,\nicon,\n\n}': ProjectFiltersListQueryResult;
     '\n  *[_type == "snapshot" && _id == "aboutPageSnapshots"][0] {\n    _id,\n    "images": images[] {\n      "url": asset->url,\n      "width": asset->metadata.dimensions.width,\n      "height": asset->metadata.dimensions.height\n    }\n  }\n': SnapshotQueryResult;
-    '\n  *[_type == "testimonial" && approve == true] | order(_createdAt desc) {\n    \n  _id,\n  name,\n  role,\n  company,\n  rating,\n  approve,\n  content,\n  url\n\n  }\n': TestimonialsListQueryResult;
-    '\n  *[_type == "testimonial" && approve == true] | order(_createdAt desc)[0...5] {\n    \n  _id,\n  name,\n  role,\n  company,\n  rating,\n  approve,\n  content,\n  url\n\n  }\n': LatestTestimonialsQueryResult;
+    '\n  *[_type == "testimonial" && approve == true && consentToDisplay == true] | order(_createdAt desc) {\n    \n  _id,\n  name,\n  role,\n  company,\n  rating,\n  approve,\n  content,\n  url,\n  consentToDisplay\n\n  }\n': TestimonialsListQueryResult;
+    '\n  *[_type == "testimonial" && approve == true && consentToDisplay == true] | order(_createdAt desc)[0...5] {\n    \n  _id,\n  name,\n  role,\n  company,\n  rating,\n  approve,\n  content,\n  url,\n  consentToDisplay\n\n  }\n': LatestTestimonialsQueryResult;
     '\n *[_type == "timeline"] {\n  \n_id,\ncategory,\norganization,\n\n"logo": select(\n  logo.type == "url" => { "type": "url", "value": logo.url },\n  logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },\n  logo.type == "icon" => { "type": "icon", "value": logo.icon }\n),\n\nwebsite,\nisCurrent,\nfeatured,\n\nitems[] {\n  _key,\n  title,\n  period {\n    start,\n    end\n  },\n  "images": images[]{\n    "url": asset->url,\n    "width": asset->metadata.dimensions.width,\n    "height": asset->metadata.dimensions.height,\n    "alt": coalesce(asset->altText, "")\n  },\n  type,\n  icon,\n  description,\n  skills,\n  isExpanded\n},\n\n"timelineStart": items[0].period.start,\n"timelineEnd": items[0].period.end\n\n } | order(timelineStart desc, timelineEnd desc)\n': TimelineListQueryResult;
     '\n *[_type == "timeline" && featured == true] {\n  \n_id,\ncategory,\norganization,\n\n"logo": select(\n  logo.type == "url" => { "type": "url", "value": logo.url },\n  logo.type == "upload" => { "type": "upload", "value": logo.image.asset->url },\n  logo.type == "icon" => { "type": "icon", "value": logo.icon }\n),\n\nwebsite,\nisCurrent,\nfeatured,\n\nitems[] {\n  _key,\n  title,\n  period {\n    start,\n    end\n  },\n  "images": images[]{\n    "url": asset->url,\n    "width": asset->metadata.dimensions.width,\n    "height": asset->metadata.dimensions.height,\n    "alt": coalesce(asset->altText, "")\n  },\n  type,\n  icon,\n  description,\n  skills,\n  isExpanded\n},\n\n"timelineStart": items[0].period.start,\n"timelineEnd": items[0].period.end\n\n } | order(timelineStart desc, timelineEnd desc)[0...4]\n': LatestTimelinesQueryResult;
   }

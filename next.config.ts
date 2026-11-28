@@ -48,7 +48,9 @@ const nextConfig: NextConfig = {
   ],
 
   allowedDevOrigins:
-    process.env.NODE_ENV === "development" ? ["192.168.18.*"] : undefined,
+    process.env.NODE_ENV === "development"
+      ? ["192.168.18.*", "169.254.164.*"]
+      : undefined,
 
   images: {
     unoptimized: process.env.NODE_ENV === "development",

@@ -156,6 +156,7 @@ const LiveTestimonialPreview = React.memo(({ control }: { control: any }) => {
           rating: rating || 5,
           role: displayRole,
           url: url || null,
+          consentToDisplay: consent,
         }}
       />
     </div>

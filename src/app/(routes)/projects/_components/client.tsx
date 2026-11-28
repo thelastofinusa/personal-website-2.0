@@ -12,17 +12,10 @@ const LivePreviewProvider = dynamic(
     import("@/components/provider/live-preview").then(
       (mod) => mod.LivePreviewProvider,
     ),
-  { ssr: false, loading: () => <ProjectsPageSkeleton /> },
+  { ssr: false, loading: () => <ProjectsPageLoading /> },
 );
 
-const ImagePreviewProvider = dynamic(
-  () =>
-    import("@/components/provider/preview").then(
-      (mod) => mod.ImagePreviewProvider,
-    ),
-  { ssr: false, loading: () => null },
-);
-
+import { ImagePreviewProvider } from "@/components/provider/preview";
 import {
   Empty,
   EmptyDescription,
@@ -44,14 +37,19 @@ import {
   type ProjectSort,
   sortProjects,
 } from "@/lib/project-sort";
-import type { ISearchFilterProps } from "@/types";
+import type { ISearchFilterProps, TProjectImportanceFilter } from "@/types";
 import type {
   ProjectFiltersListQueryResult,
   ProjectsListQueryResult,
 } from "~/sanity.types";
+import { ProjectsPageLoading } from "./page-loading";
 import { SearchFilter } from "./search-filter";
-import { ProjectsPageSkeleton } from "./skeleton";
 import { TabFilter } from "./tab-filter";
+
+function normalizeImportance(project: ProjectsListQueryResult[number]) {
+  const value = (project as { importance?: unknown }).importance;
+  return value === "less-important" ? "less-important" : "important";
+}
 
 export const ProjectsPageClient: React.FC<{
   initialProjects: ProjectsListQueryResult;
@@ -71,9 +69,16 @@ export const ProjectsPageClient: React.FC<{
   const sortParam = searchParams.get("sort");
   const sort = isProjectSort(sortParam) ? sortParam : DEFAULT_PROJECT_SORT;
 
+  const importanceParam = searchParams.get("importance");
+  const importance: TProjectImportanceFilter =
+    importanceParam === "important" || importanceParam === "less-important"
+      ? importanceParam
+      : "all";
+
   const hasActiveFilters =
     Boolean(query) ||
     Boolean(tab && tab !== "all") ||
+    importance !== "all" ||
     sort !== DEFAULT_PROJECT_SORT;
 
   const tabFilters = React.useMemo(
@@ -99,11 +104,16 @@ export const ProjectsPageClient: React.FC<{
       const matchesTab =
         !tab || tab === "all" || project.filters?.includes(tab);
       if (!matchesTab) return false;
+
+      if (importance !== "all" && normalizeImportance(project) !== importance) {
+        return false;
+      }
+
       return projectMatchesSearch(project, searchValue);
     });
 
     return sortProjects(matches, sort);
-  }, [props.initialProjects, tab, searchValue, sort]);
+  }, [props.initialProjects, tab, importance, searchValue, sort]);
 
   const scrollToShowcase = React.useCallback(() => {
     document
@@ -118,10 +128,18 @@ export const ProjectsPageClient: React.FC<{
       tab: string;
       view: ISearchFilterProps["view"];
       sort: ProjectSort;
+      importance: TProjectImportanceFilter;
       query: string;
     }> = {},
   ) => {
-    const merged = { tab, view, sort, query: searchValue, ...next };
+    const merged = {
+      tab,
+      view,
+      sort,
+      importance,
+      query: searchValue,
+      ...next,
+    };
     const params = new URLSearchParams(searchParams.toString());
 
     const sync = (key: string, value?: string) => {
@@ -132,6 +150,10 @@ export const ProjectsPageClient: React.FC<{
     sync("query", merged.query);
     sync("tab", merged.tab && merged.tab !== "all" ? merged.tab : undefined);
     sync("view", merged.view !== "list" ? merged.view : undefined);
+    sync(
+      "importance",
+      merged.importance !== "all" ? merged.importance : undefined,
+    );
     sync(
       "sort",
       merged.sort !== DEFAULT_PROJECT_SORT ? merged.sort : undefined,
@@ -157,6 +179,11 @@ export const ProjectsPageClient: React.FC<{
 
   const handleSortChange = (newSort: ProjectSort) => {
     pushParams(buildParams({ sort: newSort }));
+    scrollToShowcase();
+  };
+
+  const handleImportanceChange = (newImportance: TProjectImportanceFilter) => {
+    pushParams(buildParams({ importance: newImportance }));
     scrollToShowcase();
   };
 
@@ -196,6 +223,14 @@ export const ProjectsPageClient: React.FC<{
         description: `Couldn't find anything matching “${searchValue}”.`,
       };
     }
+    if (importance !== "all") {
+      const tierLabel =
+        importance === "important" ? "important" : "less important";
+      return {
+        title: `No ${tierLabel} projects`,
+        description: "Nothing in this tier matches the current view.",
+      };
+    }
     if (tab && tab !== "all") {
       const filter = tabFilters.find((item) => item.slug === tab);
       return {
@@ -207,7 +242,7 @@ export const ProjectsPageClient: React.FC<{
       title: "No projects",
       description: "Apparently I have misplaced the entire shelf.",
     };
-  }, [props.initialProjects.length, searchValue, tab, tabFilters]);
+  }, [props.initialProjects.length, searchValue, importance, tab, tabFilters]);
 
   const handleClearFilters = React.useCallback(() => {
     setSearchValue("");
@@ -266,6 +301,8 @@ export const ProjectsPageClient: React.FC<{
                 setView={handleViewChange}
                 sort={sort}
                 setSort={handleSortChange}
+                importance={importance}
+                setImportance={handleImportanceChange}
                 onClear={handleClearFilters}
               />
             </Container>
@@ -277,6 +314,7 @@ export const ProjectsPageClient: React.FC<{
                   view={view}
                   activeTab={tab ?? "all"}
                   tabFilters={tabFilters}
+                  isFiltered={hasActiveFilters}
                 />
               </ImagePreviewProvider>
             ) : (

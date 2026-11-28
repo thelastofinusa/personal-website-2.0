@@ -7,6 +7,7 @@ import type { ContainerVariantsType } from "../components/shared/container";
 import type { ProjectSort } from "../lib/project-sort";
 
 export type TProjectView = "grid" | "list";
+export type TProjectImportanceFilter = "all" | "important" | "less-important";
 
 export interface IProject {
   href: string;
@@ -46,6 +47,8 @@ export interface ISearchFilterProps {
   hasActiveFilters: boolean;
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
   projects: ProjectsListQueryResult;
+  importance: TProjectImportanceFilter;
+  setImportance: (importance: TProjectImportanceFilter) => void;
   view: TProjectView;
   setView: (view: TProjectView) => void;
   sort: ProjectSort;

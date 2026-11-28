@@ -102,6 +102,21 @@ export const projectSchema = defineType({
       options: { layout: "tags" },
       validation: (Rule) => Rule.max(3).error("You can add up to 3 filters"),
     }),
+    defineField({
+      name: "importance",
+      type: "string",
+      title: "Importance",
+      description:
+        "Important projects appear first; less important projects are grouped below.",
+      initialValue: "important",
+      options: {
+        list: [
+          { title: "Important", value: "important" },
+          { title: "Less Important", value: "less-important" },
+        ],
+        layout: "radio",
+      },
+    }),
   ],
   preview: {
     select: {

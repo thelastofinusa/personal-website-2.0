@@ -1,6 +1,13 @@
 import React from "react";
 import { BiSortAZ, BiSortDown, BiSortUp, BiSortZA } from "react-icons/bi";
-import { SliderHorizontal2, SliderVertical2, Xmark } from "reicon-react";
+import {
+  Filter,
+  Layers,
+  SliderHorizontal2,
+  SliderVertical2,
+  Sparkles,
+  Xmark,
+} from "reicon-react";
 import { Button } from "@/components/reusable/shadcn/button";
 import {
   InputGroup,
@@ -12,8 +19,16 @@ import { Kbd } from "@/components/reusable/shadcn/kbd";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useOperatingSystem } from "@/hooks/use-operating-system";
 import type { ProjectSort } from "@/lib/project-sort";
-import type { ISearchFilterProps, TProjectView } from "@/types";
-import { OptionMenu, type OptionMenuItem } from "./option-menu";
+import type {
+  ISearchFilterProps,
+  TProjectImportanceFilter,
+  TProjectView,
+} from "@/types";
+import {
+  OptionMenu,
+  type OptionMenuItem,
+  type OptionMenuSection,
+} from "./option-menu";
 
 const views: OptionMenuItem<TProjectView>[] = [
   {
@@ -27,6 +42,27 @@ const views: OptionMenuItem<TProjectView>[] = [
     name: "Spread 'Em Out",
     short: "Grid",
     icon: SliderHorizontal2,
+  },
+];
+
+const importanceOptions: OptionMenuItem<TProjectImportanceFilter>[] = [
+  {
+    value: "all",
+    name: "Everything",
+    short: "All",
+    icon: Filter,
+  },
+  {
+    value: "important",
+    name: "The Highlights",
+    short: "Important",
+    icon: Sparkles,
+  },
+  {
+    value: "less-important",
+    name: "Side Quests",
+    short: "Less Important",
+    icon: Layers,
   },
 ];
 
@@ -56,19 +92,50 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
   tab,
   view,
   sort,
+  importance,
   hasActiveFilters,
   setView,
   setSort,
+  setImportance,
   onClear,
 }) => {
   const os = useOperatingSystem();
   const isMobile = useMediaQuery("(max-width: 767px)");
 
   const modifierKey = os === "mac" ? "⌘" : "Ctrl";
-  const collapsed = isMobile && hasActiveFilters;
+
+  const activeSort = sorts.find((item) => item.value === sort) ?? sorts[0];
+  const activeImportance =
+    importanceOptions.find((item) => item.value === importance) ??
+    importanceOptions[0];
+
+  const rightSections: readonly OptionMenuSection<string>[] = React.useMemo(
+    () => [
+      {
+        id: "sort",
+        label: "Pecking Order",
+        value: sort,
+        onValueChange: (val) => setSort(val as ProjectSort),
+        options: sorts,
+      },
+      {
+        id: "importance",
+        label: "Priority Tier",
+        value: importance,
+        onValueChange: (val) => setImportance(val as TProjectImportanceFilter),
+        options: importanceOptions,
+      },
+    ],
+    [sort, importance, setSort, setImportance],
+  );
+
+  const rightTriggerLabel =
+    importance !== "all"
+      ? `${activeSort.short} · ${activeImportance.short}`
+      : activeSort.short;
 
   const resultText = React.useMemo(() => {
-    if (!query && !tab && view === "list") {
+    if (!query && !tab && importance === "all" && view === "list") {
       return `${projects.length} in total`;
     }
 
@@ -77,39 +144,38 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
     }
 
     return `${projects.length} ${projects.length === 1 ? "result" : "results"}`;
-  }, [projects.length, query, tab, view]);
+  }, [projects.length, query, tab, importance, view]);
 
   return (
-    <div className="flex w-full flex-col gap-2">
-      <p className="hidden px-4 font-medium text-muted-foreground text-xs leading-relaxed md:block">
-        <span className="font-semibold text-foreground">Pro tip:</span> Hold{" "}
+    <div className="flex w-full flex-col gap-2.5 md:gap-2">
+      <p className="text-muted-foreground hidden px-4 text-xs leading-relaxed font-medium md:block">
+        <span className="text-foreground font-semibold">Pro tip:</span> Hold{" "}
         <Kbd>{modifierKey}</Kbd> and click on any project to peek at a live
         preview
       </p>
 
-      <div className="flex w-full items-center gap-2">
-        <div className="wrapper flex w-full max-w-md items-center">
-          {/* View selector */}
-          <OptionMenu
-            options={views}
-            value={view}
-            onValueChange={setView}
-            label="Fancy Arrangement"
-            ariaLabel="Change project view"
-            suffix="View"
-            collapsed={collapsed}
-          />
+      <div className="flex w-full flex-col gap-2 md:flex-row md:items-center">
+        {/* Desktop: View + Search together | Mobile: Full-width Search row */}
+        <div className="wrapper flex w-full items-center md:w-auto md:max-w-md md:flex-1">
+          <div className="hidden md:flex md:items-center">
+            <OptionMenu
+              options={views}
+              value={view}
+              onValueChange={setView}
+              label="Fancy Arrangement"
+              ariaLabel="Change project view"
+              suffix="View"
+              align="start"
+            />
+          </div>
 
-          {/* Search */}
-          <InputGroup className="rounded-full bg-background! text-foreground">
+          <InputGroup className="bg-background! text-foreground w-full rounded-full">
             <InputGroupInput
               value={searchValue}
               onChange={(event) => {
                 setSearchValue(event.target.value);
               }}
-              placeholder={
-                isMobile ? "Type to search..." : "Search the collection..."
-              }
+              placeholder="Search the collection.."
               aria-label="Search projects"
               className="shadow-none!"
             />
@@ -119,7 +185,6 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
             </InputGroupAddon>
           </InputGroup>
 
-          {/* Clear filters */}
           {hasActiveFilters && (
             <Button
               type="button"
@@ -127,24 +192,37 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
               variant="ghost"
               size="icon"
               aria-label="Clear filters"
+              className="shrink-0 rounded-full"
             >
               <Xmark aria-hidden="true" />
             </Button>
           )}
         </div>
 
-        {/* Sort selector */}
-        <div className="wrapper ml-auto flex items-center">
-          <OptionMenu
-            options={sorts}
-            value={sort}
-            onValueChange={setSort}
-            label="Pecking Order"
-            ariaLabel="Sort projects"
-            collapsed={collapsed}
-            align="end"
-            reverse
-          />
+        {/* Mobile: View (left) + Sort/Importance (right) | Desktop: Right menu */}
+        <div className="flex w-full items-center justify-between gap-2 md:ml-auto md:w-auto md:justify-end">
+          <div className="wrapper flex items-center md:hidden">
+            <OptionMenu
+              options={views}
+              value={view}
+              onValueChange={setView}
+              label="Fancy Arrangement"
+              ariaLabel="Change project view"
+              suffix="View"
+              align="start"
+            />
+          </div>
+
+          <div className="wrapper ml-auto flex items-center">
+            <OptionMenu
+              sections={rightSections}
+              triggerIcon={activeSort.icon}
+              triggerLabel={rightTriggerLabel}
+              ariaLabel="Sort and filter projects by importance"
+              align="end"
+              reverse
+            />
+          </div>
         </div>
       </div>
     </div>

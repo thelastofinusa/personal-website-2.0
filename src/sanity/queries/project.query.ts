@@ -7,6 +7,7 @@ _id,
 name,
 url,
 embeddable,
+importance,
 
 "mainImage": {
   "image": mainImage.asset->url,
