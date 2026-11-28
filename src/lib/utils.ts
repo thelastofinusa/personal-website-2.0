@@ -64,3 +64,13 @@ export function generateAvatar(value: string) {
 
   return dataUri;
 }
+
+export function isMacPlatform() {
+  if (typeof navigator === "undefined") return false;
+
+  const platform =
+    (navigator as Navigator & { userAgentData?: { platform?: string } })
+      .userAgentData?.platform ?? navigator.platform;
+
+  return /mac|iphone|ipad|ipod/i.test(platform);
+}

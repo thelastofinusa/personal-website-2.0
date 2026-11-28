@@ -15,8 +15,21 @@ import { CustomImage } from "@/components/shared/image";
 import { siteConfig } from "@/config/site.config";
 import { cn } from "@/lib/utils";
 
-export type BrowserStyle = "auto" | "chrome" | "safari";
-export type ResolvedBrowserStyle = "chrome" | "safari";
+/**
+ * Rendering engine the frame imitates.
+ * - webkit   → Safari-like (Safari, and every browser on iOS)
+ * - chromium → Chrome-like (Chrome, Edge, Brave, Opera, Vivaldi, Arc…)
+ * - firefox  → Firefox-like (Gecko)
+ * "chrome" / "safari" are kept as deprecated aliases of chromium / webkit.
+ */
+export type BrowserStyle =
+  | "auto"
+  | "webkit"
+  | "chromium"
+  | "firefox"
+  | "chrome"
+  | "safari";
+export type ResolvedBrowserStyle = "webkit" | "chromium" | "firefox";
 
 export type WindowTrafficButton = {
   label: string;
@@ -68,27 +81,55 @@ const DEFAULT_TRAFFIC_DOTS: readonly WindowTrafficButton[] = [
 ];
 
 function detectBrowserStyle(): ResolvedBrowserStyle {
-  if (typeof window === "undefined") return "chrome";
+  if (typeof window === "undefined") return "chromium";
 
-  const uaDataBrands = (
+  const ua = navigator.userAgent;
+
+  // Every browser on iOS/iPadOS is WebKit under the hood.
+  const isIOS =
+    /iphone|ipad|ipod/i.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (isIOS) return "webkit";
+
+  // Gecko
+  if (/firefox|fxios/i.test(ua)) return "firefox";
+
+  // Blink
+  const brands = (
     navigator as Navigator & {
       userAgentData?: { brands?: Array<{ brand: string }> };
     }
   ).userAgentData?.brands;
-
-  if (uaDataBrands?.length) {
-    const isChromiumBrand = uaDataBrands.some(({ brand }) =>
+  if (
+    brands?.some(({ brand }) =>
       /chromium|google chrome|microsoft edge|brave|opera|vivaldi/i.test(brand),
-    );
-    if (isChromiumBrand) return "chrome";
+    ) ||
+    /chrome|chromium|crios|edg|opr|brave/i.test(ua)
+  ) {
+    return "chromium";
   }
 
-  const ua = navigator.userAgent;
-  const isSafari =
-    /safari/i.test(ua) &&
-    !/chrome|chromium|crios|fxios|edg|opr|brave/i.test(ua);
+  // Desktop Safari and other WebKit builds
+  if (/safari|applewebkit/i.test(ua)) return "webkit";
 
-  return isSafari ? "safari" : "chrome";
+  return "chromium";
+}
+
+function resolveEngine(
+  browser: BrowserStyle,
+  detected: ResolvedBrowserStyle,
+): ResolvedBrowserStyle {
+  switch (browser) {
+    case "auto":
+      return detected;
+    case "safari":
+    case "webkit":
+      return "webkit";
+    case "firefox":
+      return "firefox";
+    default:
+      return "chromium";
+  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -160,7 +201,7 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
   className,
 }) => {
   const [detectedBrowser, setDetectedBrowser] =
-    useState<ResolvedBrowserStyle>("chrome");
+    useState<ResolvedBrowserStyle>("chromium");
 
   useEffect(() => {
     if (browser === "auto") {
@@ -168,9 +209,7 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
     }
   }, [browser]);
 
-  const resolvedBrowser: ResolvedBrowserStyle =
-    browser === "auto" ? detectedBrowser : browser;
-  const isSafari = resolvedBrowser === "safari";
+  const engine = resolveEngine(browser, detectedBrowser);
   const isWindow = variant === "window";
   const dots =
     isWindow && trafficButtons ? trafficButtons : DEFAULT_TRAFFIC_DOTS;
@@ -185,9 +224,9 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
   };
 
   /* ------------------------------------------------------------------------ */
-  /*  Safari: one unified, translucent toolbar. Host centred in a quiet pill. */
+  /*  WebKit (Safari): one unified, translucent toolbar. Host centred in a quiet pill. */
   /* ------------------------------------------------------------------------ */
-  if (isSafari) {
+  if (engine === "webkit") {
     const safariBtn = cn(
       "flex items-center justify-center rounded-md text-[#6e6e73] transition-colors hover:bg-black/6 hover:text-[#1d1d1f] disabled:pointer-events-none disabled:opacity-30 dark:text-[#98989d] dark:hover:bg-white/10 dark:hover:text-white",
       "size-6",
@@ -304,7 +343,172 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
   }
 
   /* ------------------------------------------------------------------------ */
-  /*  Chrome: tab strip + toolbar share one surface via an inverted-corner tab */
+  /*  Gecko (Firefox): floating rounded tab, squarer controls, flat URL bar   */
+  /* ------------------------------------------------------------------------ */
+  if (engine === "firefox") {
+    const ffBtn = cn(
+      "flex shrink-0 items-center justify-center rounded-md text-[#5b5b66] transition-colors hover:bg-[#0000001a] disabled:pointer-events-none disabled:opacity-35 dark:text-[#fbfbfe] dark:hover:bg-[#ffffff1a]",
+      isWindow ? "size-7" : "size-5",
+    );
+
+    return (
+      <div
+        {...dragProps}
+        className={cn(
+          "flex shrink-0 flex-col select-none",
+          "[--f-frame:#f0f0f4] [--f-tab:#ffffff] [--f-bar:#f9f9fb] [--f-field:#f0f0f4]",
+          "dark:[--f-frame:#1c1b22] dark:[--f-tab:#42414d] dark:[--f-bar:#2b2a33] dark:[--f-field:#1c1b22]",
+          "bg-(--f-frame)",
+          isDraggable && "cursor-grab active:cursor-grabbing",
+          className,
+        )}
+      >
+        {/* Tab strip */}
+        <div
+          className={cn(
+            "flex items-center gap-1.5 px-2.5",
+            isWindow ? "h-10 py-1.5" : "h-7.5 py-1",
+          )}
+        >
+          <div className={cn(isWindow ? "mr-2" : "mr-1")}>
+            <TrafficLights buttons={dots} interactive={isWindow} />
+          </div>
+
+          <div
+            className={cn(
+              "flex h-full min-w-0 flex-1 items-center gap-2 rounded-md bg-(--f-tab) shadow-[0_1px_2px_rgba(0,0,0,0.18)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.45)]",
+              isWindow ? "max-w-52 px-2.5" : "max-w-34 px-2",
+            )}
+          >
+            <CustomImage
+              src={siteConfig.author.avatar}
+              alt={siteConfig.author.name}
+              width={14}
+              height={14}
+              className={cn(
+                "shrink-0 rounded-sm",
+                isWindow ? "size-3.5" : "size-2.5",
+              )}
+            />
+            <span
+              className={cn(
+                "flex-1 truncate text-[#15141a] dark:text-[#fbfbfe]",
+                isWindow ? "text-[12px]" : "text-[9px]",
+              )}
+            >
+              {title}
+            </span>
+            {isWindow && onCloseTab && (
+              <button
+                type="button"
+                onClick={onCloseTab}
+                aria-label="Close tab"
+                className="flex size-4.5 shrink-0 cursor-pointer items-center justify-center rounded-sm text-[#5b5b66] transition-colors hover:bg-[#0000001a] dark:text-[#fbfbfe] dark:hover:bg-[#ffffff1a]"
+              >
+                <Xmark className="size-2.5" />
+              </button>
+            )}
+          </div>
+
+          {isWindow && onNewTab && (
+            <button
+              type="button"
+              onClick={onNewTab}
+              aria-label="Open in new tab"
+              title="Open in new tab"
+              className={ffBtn}
+            >
+              <Plus className="size-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Toolbar */}
+        <div
+          className={cn(
+            "flex items-center gap-1 bg-(--f-bar) px-2",
+            isWindow
+              ? "h-10 border-y border-black/10 dark:border-white/10"
+              : "h-8 border-t border-black/10 dark:border-white/10",
+          )}
+        >
+          <button
+            type="button"
+            onClick={onPrev}
+            disabled={!isWindow || !hasPrev}
+            aria-label="Previous project"
+            title={hasPrev ? "Previous project" : "First project"}
+            className={cn(ffBtn, !isWindow && "opacity-50")}
+          >
+            <ChevronLeft className={isWindow ? "size-4" : "size-3"} />
+          </button>
+          <button
+            type="button"
+            onClick={onNext}
+            disabled={!isWindow || !hasNext}
+            aria-label="Next project"
+            title={hasNext ? "Next project" : "Last project"}
+            className={cn(ffBtn, !isWindow && "opacity-50")}
+          >
+            <ChevronRight className={isWindow ? "size-4" : "size-3"} />
+          </button>
+          <button
+            type="button"
+            onClick={onReload}
+            disabled={!isWindow}
+            aria-label="Reload frame"
+            title="Reload frame"
+            className={cn(ffBtn, !isWindow && "opacity-50")}
+          >
+            <ArrowRotate
+              className={cn(
+                isWindow ? "size-3.5" : "size-2.5",
+                isReloading && "animate-spin",
+              )}
+            />
+          </button>
+
+          {/* URL bar */}
+          <div
+            className={cn(
+              "mx-1 flex min-w-0 flex-1 items-center rounded-md bg-(--f-field) text-[#15141a] dark:text-[#fbfbfe]",
+              isWindow ? "h-7 gap-2 px-2.5" : "h-5 gap-1.5 px-1.5",
+            )}
+          >
+            <Lock
+              className={cn(
+                "shrink-0 text-[#5b5b66] dark:text-[#cfcfd8]",
+                isWindow ? "size-3" : "size-2",
+              )}
+            />
+            <span
+              className={cn(
+                "truncate",
+                isWindow ? "text-[12px]" : "text-[9px]",
+              )}
+            >
+              {displayUrl}
+            </span>
+          </div>
+
+          {isWindow && onOpenExternal && (
+            <button
+              type="button"
+              onClick={onOpenExternal}
+              aria-label="Open in new window"
+              title="Open in new window"
+              className={ffBtn}
+            >
+              <SquareTopDown className="size-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /*  Chromium (Chrome): tab strip + toolbar share one surface via an inverted-corner tab */
   /* ------------------------------------------------------------------------ */
   const chromeBtn = cn(
     "flex shrink-0 items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-black/8 dark:text-[#bdc1c6] dark:hover:bg-white/10",

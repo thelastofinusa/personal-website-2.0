@@ -6,7 +6,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import React from "react";
 import { workItemVariants } from "@/constants/variants";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { usePeekShortcut } from "@/hooks/use-peek-shortcut";
 import { splitIntoColumns } from "@/lib/masonry";
 import { cn, formatDate } from "@/lib/utils";
 import type { ISearchFilterProps } from "@/types";
@@ -111,8 +111,35 @@ function groupProjectsByImportance(projects: ProjectsListQueryResult) {
   };
 }
 
+/**
+ * Read at click time (never during render), so there is no hydration mismatch
+ * and no state to keep in sync.
+ */
+function isMacPlatform() {
+  if (typeof navigator === "undefined") return false;
+
+  const platform =
+    (navigator as Navigator & { userAgentData?: { platform?: string } })
+      .userAgentData?.platform ?? navigator.platform;
+
+  return /mac|iphone|ipad|ipod/i.test(platform);
+}
+
+/**
+ * A "peek" is the platform's open-in-new-tab shortcut: Cmd+click on macOS,
+ * Ctrl+click elsewhere. Any extra modifier (Shift = new window, Alt = download)
+ * is left to the browser.
+ */
+function isPeekClick(event: React.MouseEvent) {
+  if (event.shiftKey || event.altKey) return false;
+
+  return isMacPlatform()
+    ? event.metaKey && !event.ctrlKey
+    : event.ctrlKey && !event.metaKey;
+}
+
 function useProjectCardClick(item: Project, projects: ProjectsListQueryResult) {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const { canPeek } = usePeekShortcut();
   const { openPreview, currentProject } = useLivePreview();
   const isActive = currentProject?.url === item.url;
 
@@ -122,7 +149,7 @@ function useProjectCardClick(item: Project, projects: ProjectsListQueryResult) {
       return;
     }
 
-    if (isDesktop && (event.metaKey || event.ctrlKey)) {
+    if (canPeek && isPeekClick(event)) {
       event.preventDefault();
       openPreview(item, event.currentTarget.getBoundingClientRect(), projects);
     }
@@ -175,7 +202,6 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
     <motion.div
       custom={displayIndex}
       {...MOTION_ITEM_PROPS}
-      onClick={onClick}
       className={cn(
         "group relative transition-colors duration-300 hover:bg-muted/35 dark:hover:bg-accent/10",
         isLessImportant && "opacity-90 hover:opacity-100",
@@ -187,6 +213,7 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
           href={(item.url ?? "#") as Route}
           target="_blank"
           rel="noreferrer"
+          onClick={onClick}
           onMouseEnter={() => handleMouseEnter(previewIndex)}
           onMouseLeave={handleMouseLeave}
           className="block"
@@ -250,7 +277,6 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
 const ProjectGridItem: React.FC<ProjectItemProps> = ({
   item,
   displayIndex,
-  previewIndex,
   importance,
   activeTab,
   projects,

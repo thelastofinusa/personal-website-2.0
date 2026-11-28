@@ -16,8 +16,7 @@ import {
   InputGroupText,
 } from "@/components/reusable/shadcn/input-group";
 import { Kbd } from "@/components/reusable/shadcn/kbd";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { useOperatingSystem } from "@/hooks/use-operating-system";
+import { usePeekShortcut } from "@/hooks/use-peek-shortcut";
 import type { ProjectSort } from "@/lib/project-sort";
 import type {
   ISearchFilterProps,
@@ -99,10 +98,7 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
   setImportance,
   onClear,
 }) => {
-  const os = useOperatingSystem();
-  const isMobile = useMediaQuery("(max-width: 767px)");
-
-  const modifierKey = os === "mac" ? "⌘" : "Ctrl";
+  const { canPeek, modifierLabel } = usePeekShortcut();
 
   const activeSort = sorts.find((item) => item.value === sort) ?? sorts[0];
   const activeImportance =
@@ -148,11 +144,13 @@ export const SearchFilter: React.FC<ISearchFilterProps> = ({
 
   return (
     <div className="flex w-full flex-col gap-2.5 md:gap-2">
-      <p className="text-muted-foreground hidden px-4 text-xs leading-relaxed font-medium md:block">
-        <span className="text-foreground font-semibold">Pro tip:</span> Hold{" "}
-        <Kbd>{modifierKey}</Kbd> and click on any project to peek at a live
-        preview
-      </p>
+      {canPeek && (
+        <p className="text-muted-foreground hidden px-4 text-xs leading-relaxed font-medium md:block">
+          <span className="text-foreground font-semibold">Pro tip:</span> Hold{" "}
+          <Kbd>{modifierLabel}</Kbd> and click on any project to peek at a live
+          preview
+        </p>
+      )}
 
       <div className="flex w-full flex-col gap-2 md:flex-row md:items-center">
         {/* Desktop: View + Search together | Mobile: Full-width Search row */}

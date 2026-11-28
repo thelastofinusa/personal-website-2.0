@@ -339,8 +339,8 @@ export const ProjectsPageClient: React.FC<{
               <span className="bg-border h-px w-8" />
 
               <p className="text-muted-foreground/60 max-w-sm text-center text-sm font-normal italic md:text-base">
-                Preview frames match your browser—Safari gets a pill bar,
-                Chromium gets classic tabs.
+                Preview frames match your browser engine—WebKit gets a pill bar,
+                Chromium gets classic tabs, Firefox gets floating ones.
               </p>
             </div>
           )}
