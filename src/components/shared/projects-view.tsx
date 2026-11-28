@@ -216,14 +216,7 @@ const ProjectListItem: React.FC<ProjectItemProps & { isLast: boolean }> = ({
 
               <div className="flex flex-col gap-2 md:col-span-6">
                 <div className="flex items-center gap-3 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
-                  <h2
-                    className={cn(
-                      "group-hover:text-primary font-serif font-light tracking-tight transition-colors text-2xl md:text-3xl",
-                      // isLessImportant
-                      //   ? "text-2xl md:text-3xl"
-                      //   : "text-[28px] md:text-[34px] lg:text-[38px]",
-                    )}
-                  >
+                  <h2 className="group-hover:text-primary font-serif text-2xl font-light tracking-tight transition-colors md:text-3xl lg:text-[34px]">
                     {item.name}
                   </h2>
                 </div>

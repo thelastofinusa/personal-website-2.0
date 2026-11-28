@@ -55,7 +55,7 @@ export const HomeHero = () => {
 
         <motion.h1
           variants={itemVariants}
-          className="relative max-w-xl text-3xl sm:text-4xl md:mx-auto md:text-center md:text-5xl lg:max-w-3xl lg:text-6xl"
+          className="relative max-w-xl text-[32px] leading-[1.2] sm:text-4xl sm:leading-[1.111111] md:mx-auto md:text-center md:text-5xl lg:max-w-3xl lg:text-6xl"
         >
           <i className="text-background dark:text-foreground">
             <Highlighter action="highlight" color="var(--primary)">

@@ -20,23 +20,16 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { ChevronExpandY, Minus, SquareTopDown, Xmark } from "reicon-react";
 import {
-  ArrowRotate,
-  ChevronExpandY,
-  ChevronLeft,
-  ChevronRight,
-  Lock,
-  Minus,
-  Plus,
-  SquareTopDown,
-  Xmark,
-} from "reicon-react";
-import { CustomImage } from "@/components/shared/image";
-import { siteConfig } from "@/config/site.config";
+  BrowserWindow,
+  type WindowTrafficButton,
+} from "@/components/shared/browser-window";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import type { ProjectsListQueryResult } from "~/sanity.types";
 import { Button } from "../reusable/shadcn/button";
+import { Skeleton } from "../reusable/shadcn/skeleton";
 import { FadeLine } from "../shared/fade-line";
 import { useSoundFx } from "./sound-fx";
 
@@ -99,18 +92,14 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
     }
   }, [projects]);
 
-  // Handle the Genie Minimize Animation & Drag Reset
   useEffect(() => {
     if (isMinimized) {
-      const targetX = window.innerWidth / 2 - 80;
-      const targetY = window.innerHeight / 2 - 40;
-
-      animate(x, targetX, {
+      animate(x, window.innerWidth / 2 - 80, {
         type: "spring",
         stiffness: 250,
         damping: 25,
       } as any);
-      animate(y, targetY, {
+      animate(y, window.innerHeight / 2 - 40, {
         type: "spring",
         stiffness: 200,
         damping: 25,
@@ -122,7 +111,6 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
     }
   }, [expanded, project, isMinimized, x, y]);
 
-  // Play continuous loading sound when iframe starts loading & clean up on unload
   useEffect(() => {
     if (project && !iframeLoaded && project.embeddable !== false) {
       loadingSoundRef.current = play("connecting");
@@ -235,6 +223,12 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
     setReloadKey((prev) => prev + 1);
   }, []);
 
+  const handleOpenExternal = useCallback(() => {
+    if (!project?.url) return;
+    window.open(project.url, "_blank", "noopener,noreferrer");
+    closePreview();
+  }, [project?.url, closePreview]);
+
   const handleHeaderPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (expanded) return;
     const target = e.target as HTMLElement;
@@ -261,13 +255,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [project, closePreview, handlePrev, handleNext]);
 
-  const value: ILivePreviewContextType = {
-    currentProject: project,
-    openPreview,
-    closePreview,
-  };
-
-  const windowButtons = [
+  const windowButtons: WindowTrafficButton[] = [
     {
       label: "Close preview",
       title: "Close",
@@ -301,14 +289,15 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
   ];
 
   return (
-    <LivePreviewContext.Provider value={value}>
+    <LivePreviewContext.Provider
+      value={{ currentProject: project, openPreview, closePreview }}
+    >
       {children}
       {mounted &&
         createPortal(
           <AnimatePresence>
             {project && (
               <React.Fragment key={project.url}>
-                {/* Backdrop overlay for expanded mode */}
                 {expanded && !isMinimized && (
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -319,7 +308,6 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                   />
                 )}
 
-                {/* Main Preview Window */}
                 <motion.div
                   layout
                   style={{ x, y }}
@@ -338,7 +326,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   className={cn(
-                    "fixed z-100 hidden flex-col overflow-hidden rounded-2xl border border-border/60 bg-background md:flex",
+                    "border-border/60 bg-background fixed z-100 hidden flex-col overflow-hidden rounded-2xl border md:flex",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.8)]",
                     expanded
                       ? "top-[6vh] left-[6vw] h-[88vh] w-[88vw]"
@@ -349,141 +337,31 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                   aria-modal="true"
                   aria-label={`Live preview of ${project.name}`}
                 >
-                  {/* Browser Chrome Header */}
-                  <div
-                    onPointerDown={handleHeaderPointerDown}
-                    className={cn(
-                      "flex shrink-0 select-none flex-col border-b bg-muted/70 backdrop-blur-md",
-                      !expanded && "cursor-grab active:cursor-grabbing",
-                    )}
-                  >
-                    {/* Tab Bar */}
-                    <div className="flex h-9 items-center gap-2 px-3 pt-1.5">
-                      <div className="group/btn flex cursor-default items-center gap-1.5 pr-2">
-                        {windowButtons.map((button) => (
-                          <button
-                            key={button.title}
-                            type="button"
-                            onClick={button.onClick}
-                            aria-label={button.label}
-                            title={button.title}
-                            className={cn(
-                              "flex size-3 items-center justify-center rounded-full border",
-                              "transition-transform active:scale-90",
-                              button.className,
-                            )}
-                          >
-                            {button.icon}
-                          </button>
-                        ))}
-                      </div>
+                  <BrowserWindow
+                    variant="window"
+                    title={project.name || "Preview"}
+                    url={project.url ?? undefined}
+                    isDraggable={!expanded}
+                    onHeaderPointerDown={handleHeaderPointerDown}
+                    trafficButtons={windowButtons}
+                    onCloseTab={closePreview}
+                    onNewTab={handleOpenExternal}
+                    hasPrev={hasPrev}
+                    hasNext={hasNext}
+                    onPrev={handlePrev}
+                    onNext={handleNext}
+                    onReload={handleReload}
+                    isReloading={!iframeLoaded && project.embeddable !== false}
+                    onOpenExternal={handleOpenExternal}
+                  />
 
-                      {/* Active Tab */}
-                      <div className="bg-background relative flex h-7 max-w-48 flex-1 cursor-default items-center gap-1.5 rounded-t-lg px-2.5 shadow-sm">
-                        <CustomImage
-                          src={siteConfig.author.avatar}
-                          alt={siteConfig.author.name}
-                          className="size-2.5 rounded-sm"
-                          width={10}
-                          height={10}
-                        />
-                        <span className="text-foreground truncate text-[11px] font-medium">
-                          {project.name}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={closePreview}
-                          className="text-muted-foreground hover:bg-muted hover:text-foreground ml-auto flex size-4 cursor-pointer items-center justify-center rounded-full"
-                        >
-                          <Xmark className="size-2.5" />
-                        </button>
-                        <span className="bg-background absolute -bottom-1 left-0 h-2 w-full" />
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          window.open(project.url as string, "_blank")
-                        }
-                        className="text-muted-foreground hover:bg-background/60 hover:text-foreground flex size-6 items-center justify-center rounded-md transition-colors"
-                        title="Open in new tab"
-                      >
-                        <Plus className="size-3.5" />
-                      </button>
-                    </div>
-
-                    {/* Address Toolbar */}
-                    <div className="border-border/40 bg-background flex h-8 cursor-default items-center gap-1.5 border-t px-2.5 py-1">
-                      <div className="text-muted-foreground flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={handlePrev}
-                          disabled={!hasPrev}
-                          aria-label="Previous project"
-                          title={hasPrev ? "Previous project" : "First project"}
-                          className="hover:bg-muted hover:text-foreground flex size-5 items-center justify-center rounded transition-colors disabled:pointer-events-none disabled:opacity-30"
-                        >
-                          <ChevronLeft className="size-3" />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={handleNext}
-                          disabled={!hasNext}
-                          aria-label="Next project"
-                          title={hasNext ? "Next project" : "Last project"}
-                          className="hover:bg-muted hover:text-foreground flex size-5 items-center justify-center rounded transition-colors disabled:pointer-events-none disabled:opacity-30"
-                        >
-                          <ChevronRight className="size-3" />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={handleReload}
-                          title="Reload frame"
-                          className="hover:bg-muted hover:text-foreground flex size-5 items-center justify-center rounded transition-colors"
-                        >
-                          <ArrowRotate
-                            className={cn(
-                              "size-3",
-                              !iframeLoaded &&
-                                project.embeddable !== false &&
-                                "animate-spin",
-                            )}
-                          />
-                        </button>
-                      </div>
-
-                      <div className="bg-muted/60 flex h-6 min-w-0 flex-1 items-center gap-1.5 rounded-md px-2.5 text-xs">
-                        <Lock className="text-muted-foreground size-2.5 shrink-0" />
-                        <span className="text-muted-foreground truncate text-[11px]">
-                          {project.url}
-                        </span>
-                      </div>
-
-                      <a
-                        href={project.url as string}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={closePreview}
-                        title="Open in new window"
-                        className="text-muted-foreground hover:bg-muted hover:text-foreground flex size-6 shrink-0 items-center justify-center rounded-md transition-colors"
-                      >
-                        <SquareTopDown className="size-3.5" />
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Browser Viewport */}
+                  {/* Viewport */}
                   <div className="bg-card relative flex-1">
                     {project.embeddable === false ? (
                       <div className="bg-background relative flex size-full flex-col items-center justify-center overflow-hidden p-6">
-                        {/* Glowing Background Blob */}
                         <div className="bg-primary/15 pointer-events-none absolute size-96 animate-pulse rounded-full blur-3xl" />
 
-                        {/* Fine-line architectural frame */}
                         <div className="bg-background relative flex w-full max-w-md flex-col items-start p-8 md:p-10">
-                          {/* Corner Crosshairs */}
                           <FadeLine
                             orientation="horizontal"
                             className="top-0 -mx-6"
@@ -501,13 +379,11 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                             className="right-0 -my-6"
                           />
 
-                          {/* Header Status */}
                           <div className="text-muted-foreground/60 flex w-full items-center justify-between font-mono text-[10px] tracking-widest uppercase">
                             <span>01 / FRAME_RESTRICTED</span>
                             <span className="bg-primary/60 size-1.5 rounded-full" />
                           </div>
 
-                          {/* Content */}
                           <h3 className="text-foreground mt-8 font-serif text-3xl font-light tracking-tight md:text-4xl">
                             {project.name}
                           </h3>
@@ -517,7 +393,6 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                             the project directly in a primary window.
                           </p>
 
-                          {/* Footer Action */}
                           <div className="border-border/40 mt-8 flex w-full items-center justify-between border-t pt-6">
                             <Link
                               href={project.url as Route}
@@ -539,145 +414,29 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                         </div>
                       </div>
                     ) : (
-                      /* Embeddable / Loading State */
                       <>
                         {!iframeLoaded && (
-                          <motion.div
-                            initial={{ opacity: 1 }}
-                            animate={{ opacity: 1 }}
-                            className="bg-background absolute inset-0 z-10 overflow-hidden"
-                          >
-                            {/* Fake page */}
-                            <div className="mx-auto w-full max-w-5xl px-6 py-10 sm:px-10">
-                              {/* Fake navigation */}
+                          <div className="bg-background absolute inset-0 z-10 overflow-hidden p-8">
+                            <div className="mx-auto flex max-w-2xl flex-col gap-6">
                               <div className="flex items-center justify-between">
-                                <motion.div
-                                  animate={{ opacity: [0.35, 0.7, 0.35] }}
-                                  transition={{
-                                    duration: 1.8,
-                                    repeat: Number.POSITIVE_INFINITY,
-                                    ease: "easeInOut",
-                                  }}
-                                  className="bg-muted h-7 w-7 rounded-md"
-                                />
-
-                                <div className="flex items-center gap-2">
-                                  {[48, 36, 52].map((width, index) => (
-                                    <motion.div
-                                      key={width}
-                                      initial={{ opacity: 0.3 }}
-                                      animate={{ opacity: [0.25, 0.55, 0.25] }}
-                                      transition={{
-                                        duration: 1.8,
-                                        delay: index * 0.15,
-                                        repeat: Number.POSITIVE_INFINITY,
-                                        ease: "easeInOut",
-                                      }}
-                                      className="bg-muted h-2 rounded-full"
-                                      style={{ width }}
-                                    />
-                                  ))}
-                                </div>
+                                <Skeleton className="h-6 w-24 rounded-full" />
+                                <Skeleton className="h-6 w-36 rounded-full" />
                               </div>
-
-                              {/* Hero */}
-                              <div className="mt-24 max-w-2xl">
-                                <motion.div
-                                  animate={{ width: ["35%", "55%", "35%"] }}
-                                  transition={{
-                                    duration: 2.4,
-                                    repeat: Number.POSITIVE_INFINITY,
-                                    ease: "easeInOut",
-                                  }}
-                                  className="bg-muted h-3 rounded-full"
-                                />
-
-                                <div className="mt-5 space-y-3">
-                                  {[100, 88, 62].map((width, index) => (
-                                    <motion.div
-                                      key={width}
-                                      animate={{ opacity: [0.25, 0.55, 0.25] }}
-                                      transition={{
-                                        duration: 1.8,
-                                        delay: index * 0.12,
-                                        repeat: Number.POSITIVE_INFINITY,
-                                        ease: "easeInOut",
-                                      }}
-                                      className="bg-muted h-2 rounded-full"
-                                      style={{ width: `${width}%` }}
-                                    />
-                                  ))}
-                                </div>
-
-                                {/* Fake buttons */}
-                                <div className="mt-8 flex gap-3">
-                                  <motion.div
-                                    animate={{ opacity: [0.3, 0.65, 0.3] }}
-                                    transition={{
-                                      duration: 1.6,
-                                      repeat: Number.POSITIVE_INFINITY,
-                                      ease: "easeInOut",
-                                    }}
-                                    className="bg-muted h-9 w-24 rounded-md"
-                                  />
-
-                                  <motion.div
-                                    animate={{ opacity: [0.2, 0.5, 0.2] }}
-                                    transition={{
-                                      duration: 1.6,
-                                      delay: 0.2,
-                                      repeat: Number.POSITIVE_INFINITY,
-                                      ease: "easeInOut",
-                                    }}
-                                    className="border-border h-9 w-20 rounded-md border"
-                                  />
-                                </div>
-                              </div>
-
-                              {/* Fake cards */}
-                              <div className="mt-24 grid grid-cols-3 gap-4">
-                                {[1, 2, 3].map((card, index) => (
-                                  <motion.div
-                                    key={card}
-                                    animate={{ opacity: [0.3, 0.6, 0.3] }}
-                                    transition={{
-                                      duration: 2,
-                                      delay: index * 0.2,
-                                      repeat: Number.POSITIVE_INFINITY,
-                                      ease: "easeInOut",
-                                    }}
-                                    className="border-border/60 overflow-hidden rounded-xl border"
-                                  >
-                                    <div className="bg-muted/60 aspect-video" />
-
-                                    <div className="space-y-3 p-4">
-                                      <div className="bg-muted h-2.5 w-2/3 rounded-full" />
-                                      <div className="bg-muted/70 h-2 w-full rounded-full" />
-                                      <div className="bg-muted/70 h-2 w-4/5 rounded-full" />
-                                    </div>
-                                  </motion.div>
-                                ))}
+                              <Skeleton className="h-44 w-full rounded-2xl" />
+                              <div className="grid grid-cols-3 gap-4">
+                                <Skeleton className="h-24 rounded-xl" />
+                                <Skeleton className="h-24 rounded-xl" />
+                                <Skeleton className="h-24 rounded-xl" />
                               </div>
                             </div>
 
-                            {/* Subtle loading message */}
                             {expanded && !iframeSlow && (
-                              <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-                                <motion.div
-                                  animate={{ opacity: [0.45, 1, 0.45] }}
-                                  transition={{
-                                    duration: 1.5,
-                                    repeat: Number.POSITIVE_INFINITY,
-                                    ease: "easeInOut",
-                                  }}
-                                  className="border-border/60 bg-background/80 text-muted-foreground flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] shadow-sm backdrop-blur"
-                                >
-                                  <span className="size-1.5 rounded-full bg-current" />
-                                  Preparing {project.name}
-                                </motion.div>
+                              <div className="border-border/60 bg-background/85 text-muted-foreground absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border px-3.5 py-1.5 text-[11px] shadow-sm backdrop-blur">
+                                <span className="bg-primary size-1.5 animate-pulse rounded-full" />
+                                Preparing {project.name}
                               </div>
                             )}
-                          </motion.div>
+                          </div>
                         )}
 
                         {iframeSlow && !iframeLoaded && (
@@ -734,9 +493,7 @@ export const LivePreviewProvider: React.FC<LivePreviewProviderProps> = ({
                         size="sm"
                         variant="default"
                         aria-label={`Restore live preview of ${project.name}`}
-                        className={cn(
-                          "shadow-[0_10px_30px_rgba(0,0,0,0.15)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)]",
-                        )}
+                        className="shadow-[0_10px_30px_rgba(0,0,0,0.15)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
                       >
                         <span className="relative flex size-2">
                           <span className="absolute inset-0 animate-ping rounded-full bg-white opacity-75" />

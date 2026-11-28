@@ -153,7 +153,7 @@ export const ProjectsPageLoading: React.FC = () => {
               <Skeleton className="h-3 w-24 rounded-full" />
             </div>
 
-            <Skeleton className="h-10 w-94 rounded-full" />
+            <Skeleton className="h-10 w-72 rounded-full" />
 
             <Skeleton className="mt-2.5 h-4 w-full max-w-md rounded-full" />
           </div>

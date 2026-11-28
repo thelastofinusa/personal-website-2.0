@@ -1,7 +1,6 @@
 "use client";
 
 import gsap from "gsap";
-import { EllipsisVerticalIcon } from "lucide-react";
 import { motion, useMotionValue, useSpring } from "motion/react";
 import React, {
   createContext,
@@ -11,23 +10,14 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import {
-  ArrowRotate,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Lock,
-  Plus,
-  Xmark,
-} from "reicon-react";
-import { siteConfig } from "@/config/site.config";
+import { BrowserWindow } from "@/components/shared/browser-window";
+import { CustomImage } from "@/components/shared/image";
 import type {
   IImagePreviewContextType,
   IImagePreviewPortalProps,
   IImagePreviewProviderProps,
 } from "@/types";
 import { Frame, FramePanel } from "../reusable/reui/frame";
-import { CustomImage } from "../shared/image";
 import { useSoundFx } from "./sound-fx";
 
 const ImagePreviewContext = createContext<IImagePreviewContextType | null>(
@@ -84,7 +74,6 @@ export const ImagePreviewProvider = ({
     const targetImage = track.children[activeIndex] as HTMLElement;
     if (!targetImage) return;
 
-    // Slide track vertically to active image
     gsap.to(track, {
       y: -targetImage.offsetTop,
       duration: 0.8,
@@ -92,7 +81,6 @@ export const ImagePreviewProvider = ({
       overwrite: true,
     });
 
-    // Dynamically adjust container height to match active image height
     gsap.to(panelRef.current, {
       height: targetImage.offsetHeight,
       duration: 0.8,
@@ -109,7 +97,6 @@ export const ImagePreviewProvider = ({
       if (!previewRef.current) return;
 
       gsap.killTweensOf(previewRef.current);
-
       gsap.to(previewRef.current, {
         opacity: 1,
         scale: 1,
@@ -127,7 +114,6 @@ export const ImagePreviewProvider = ({
     if (!previewRef.current) return;
 
     gsap.killTweensOf(previewRef.current);
-
     gsap.to(previewRef.current, {
       opacity: 0,
       scale: 0.92,
@@ -148,13 +134,10 @@ export const ImagePreviewProvider = ({
     springY,
   };
 
-  const previewProvider: IImagePreviewContextType = {
-    handleMouseEnter,
-    handleMouseLeave,
-  };
-
   return (
-    <ImagePreviewContext.Provider value={previewProvider}>
+    <ImagePreviewContext.Provider
+      value={{ handleMouseEnter, handleMouseLeave }}
+    >
       {children}
       {mounted && createPortal(<ImagePortal {...portalProps} />, document.body)}
     </ImagePreviewContext.Provider>
@@ -170,97 +153,52 @@ const ImagePortal: React.FC<IImagePreviewPortalProps> = ({
   images,
   panelRef,
   imageTrackRef,
-}) => (
-  <motion.div
-    style={{ x: springX, y: springY }}
-    className="pointer-events-none fixed top-0 left-0 z-50 hidden md:block"
-  >
-    <Frame ref={previewRef} className="rounded-[20px]! opacity-0">
-      <div
-        style={{ width: `${maxWidth}px` }}
-        className="border-border/60 bg-background overflow-hidden rounded-2xl border"
-      >
-        {/* Browser chrome */}
-        <div className="bg-muted/70">
-          {/* Tab */}
-          <div className="flex items-center px-2.5 pt-1 pb-0.5">
-            <div className="mr-2 flex items-center gap-1">
-              <span className="size-2 rounded-full border border-[#e0443e] bg-[#ff5f57]" />
-              <span className="size-2 rounded-full border border-[#d89e24] bg-[#febc2e]" />
-              <span className="size-2 rounded-full border border-[#1aab29] bg-[#28c840]" />
-            </div>
+}) => {
+  const activeImage = activeIndex !== null ? images[activeIndex] : undefined;
 
-            <div className="bg-card relative flex h-6 max-w-32.5 flex-1 items-center gap-1.5 rounded-t-sm px-2">
-              <CustomImage
-                src={siteConfig.author.avatar}
-                alt={siteConfig.author.name}
-                width={10}
-                height={10}
-                className="size-2.5 rounded-sm"
-              />
-
-              <span className="text-muted-foreground flex-1 truncate text-[9px] font-medium">
-                {activeIndex !== null
-                  ? images[activeIndex]?.alt || "Preview"
-                  : "New tab"}
-              </span>
-
-              <Xmark className="text-muted-foreground ml-auto size-3" />
-
-              <span className="absolute -bottom-1 left-0 h-2 w-full bg-inherit" />
-            </div>
-
-            <Plus className="text-muted-foreground my-auto ml-2 size-3" />
-
-            <div className="bg-card ml-auto flex size-5 items-center justify-center rounded-sm">
-              <ChevronDown className="text-muted-foreground size-3" />
-            </div>
-          </div>
-
-          {/* Address bar */}
-          <div className="bg-card flex items-center gap-2 px-2 py-1.5">
-            <ChevronLeft className="text-muted-foreground size-3" />
-            <ChevronRight className="text-muted-foreground/60 size-3" />
-            <ArrowRotate className="text-muted-foreground size-3" />
-
-            <div className="bg-muted flex h-6 min-w-0 flex-1 items-center gap-1.5 rounded-sm px-2">
-              <Lock className="text-muted-foreground size-2.5 shrink-0" />
-
-              <span className="text-muted-foreground min-w-0 flex-1 truncate overflow-hidden text-[10px] font-light">
-                {activeIndex !== null
-                  ? images[activeIndex]?.url || images[activeIndex]?.ogUrl
-                  : "preview.local"}
-              </span>
-            </div>
-
-            <div className="ml-auto flex size-5 shrink-0 items-center justify-center">
-              <EllipsisVerticalIcon className="text-muted-foreground size-3" />
-            </div>
-          </div>
-        </div>
-
-        {/* Browser viewport */}
-        <FramePanel
-          ref={panelRef}
-          className="bg-card relative h-28 overflow-hidden rounded-none border-0!"
+  return (
+    <motion.div
+      style={{ x: springX, y: springY }}
+      className="pointer-events-none fixed top-0 left-0 z-50 hidden md:block"
+    >
+      <Frame ref={previewRef} className="rounded-[20px]! opacity-0">
+        <div
+          style={{ width: `${maxWidth}px` }}
+          className="border-border/60 bg-background overflow-hidden rounded-2xl border"
         >
-          <div ref={imageTrackRef} className="absolute top-0 left-0 w-full">
-            {images.map((img) => (
-              <div key={img.alt ?? img.url} className="relative h-auto w-full">
-                <CustomImage
-                  src={img.url}
-                  ogUrl={img.ogUrl}
-                  alt={img.alt ?? img.url}
-                  className="block h-auto w-full object-cover"
-                  width={img.width}
-                  height={img.height}
-                  unoptimized
-                />
-              </div>
-            ))}
-          </div>
-        </FramePanel>
-      </div>
-    </Frame>
-  </motion.div>
-);
+          <BrowserWindow
+            variant="compact"
+            title={
+              activeImage?.alt || (activeIndex !== null ? "Preview" : "New tab")
+            }
+            url={activeImage?.url || activeImage?.ogUrl}
+          />
+
+          <FramePanel
+            ref={panelRef}
+            className="bg-card relative h-28 overflow-hidden rounded-none border-0!"
+          >
+            <div ref={imageTrackRef} className="absolute top-0 left-0 w-full">
+              {images.map((img, index) => (
+                <div
+                  key={`${img.url}-${img.alt ?? index}`}
+                  className="relative h-auto w-full"
+                >
+                  <CustomImage
+                    src={img.url}
+                    ogUrl={img.ogUrl}
+                    alt={img.alt ?? img.url}
+                    className="block h-auto w-full object-cover"
+                    width={img.width}
+                    height={img.height}
+                    unoptimized
+                  />
+                </div>
+              ))}
+            </div>
+          </FramePanel>
+        </div>
+      </Frame>
+    </motion.div>
+  );
+};
