@@ -91,6 +91,55 @@ function detectBrowserStyle(): ResolvedBrowserStyle {
   return isSafari ? "safari" : "chrome";
 }
 
+/* -------------------------------------------------------------------------- */
+/*  Shared bits                                                               */
+/* -------------------------------------------------------------------------- */
+
+function TrafficLights({
+  buttons,
+  interactive,
+}: {
+  buttons: readonly WindowTrafficButton[];
+  interactive: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex shrink-0 items-center",
+        interactive ? "group/btn cursor-default gap-2" : "gap-1.5",
+      )}
+    >
+      {buttons.map((button) =>
+        interactive ? (
+          <button
+            key={button.title}
+            type="button"
+            onClick={button.onClick}
+            aria-label={button.label}
+            title={button.title}
+            className={cn(
+              "flex size-3 items-center justify-center rounded-full border shadow-[inset_0_0_0_0.5px_rgba(0,0,0,0.12)] transition-transform active:scale-90",
+              button.className,
+            )}
+          >
+            {button.icon}
+          </button>
+        ) : (
+          <span
+            key={button.title}
+            aria-hidden="true"
+            className={cn("size-2 rounded-full border", button.className)}
+          />
+        ),
+      )}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Component                                                                 */
+/* -------------------------------------------------------------------------- */
+
 export const BrowserWindow: React.FC<BrowserWindowProps> = ({
   title,
   url,
@@ -125,168 +174,154 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
   const isWindow = variant === "window";
   const dots =
     isWindow && trafficButtons ? trafficButtons : DEFAULT_TRAFFIC_DOTS;
+
   const displayUrl = url
     ? url.replace(/^https?:\/\//, "").replace(/\/$/, "")
     : "preview.local";
+  const displayHost = displayUrl.split("/")[0];
 
-  const renderTrafficLights = () => (
-    <div
-      className={cn(
-        "flex shrink-0 items-center",
-        isWindow ? "group/btn cursor-default gap-1.5" : "gap-1",
-      )}
-    >
-      {dots.map((button) =>
-        isWindow ? (
-          <button
-            key={button.title}
-            type="button"
-            onClick={button.onClick}
-            aria-label={button.label}
-            title={button.title}
-            className={cn(
-              "flex size-3 items-center justify-center rounded-full border transition-transform active:scale-90",
-              button.className,
-            )}
-          >
-            {button.icon}
-          </button>
-        ) : (
-          <span
-            key={button.title}
-            aria-hidden="true"
-            className={cn("size-2 rounded-full border", button.className)}
-          />
-        ),
-      )}
-    </div>
-  );
+  const dragProps = {
+    onPointerDown: onHeaderPointerDown,
+  };
 
-  const renderNavButtons = () =>
-    isWindow ? (
-      <div className="text-muted-foreground flex shrink-0 items-center gap-0.5">
-        <button
-          type="button"
-          onClick={onPrev}
-          disabled={!hasPrev}
-          aria-label="Previous project"
-          title={hasPrev ? "Previous project" : "First project"}
-          className="hover:bg-muted/80 hover:text-foreground flex size-6 items-center justify-center rounded-md transition-colors disabled:pointer-events-none disabled:opacity-30"
-        >
-          <ChevronLeft className="size-3.5" />
-        </button>
-
-        <button
-          type="button"
-          onClick={onNext}
-          disabled={!hasNext}
-          aria-label="Next project"
-          title={hasNext ? "Next project" : "Last project"}
-          className="hover:bg-muted/80 hover:text-foreground flex size-6 items-center justify-center rounded-md transition-colors disabled:pointer-events-none disabled:opacity-30"
-        >
-          <ChevronRight className="size-3.5" />
-        </button>
-      </div>
-    ) : (
-      <div className="text-muted-foreground/60 flex shrink-0 items-center gap-0.5">
-        <ChevronLeft className="size-3" />
-        <ChevronRight className="size-3 opacity-35" />
-      </div>
+  /* ------------------------------------------------------------------------ */
+  /*  Safari: one unified, translucent toolbar. Host centred in a quiet pill. */
+  /* ------------------------------------------------------------------------ */
+  if (isSafari) {
+    const safariBtn = cn(
+      "flex items-center justify-center rounded-md text-[#6e6e73] transition-colors hover:bg-black/6 hover:text-[#1d1d1f] disabled:pointer-events-none disabled:opacity-30 dark:text-[#98989d] dark:hover:bg-white/10 dark:hover:text-white",
+      "size-6",
     );
 
-  const renderWindowActions = () =>
-    isWindow ? (
-      <div className="flex shrink-0 items-center gap-0.5">
-        {onOpenExternal && (
-          <button
-            type="button"
-            onClick={onOpenExternal}
-            aria-label="Open in new window"
-            title="Open in new window"
-            className="text-muted-foreground hover:bg-muted/80 hover:text-foreground flex size-6 items-center justify-center rounded-md transition-colors"
-          >
-            <SquareTopDown className="size-3.5" />
-          </button>
-        )}
-        {onNewTab && (
-          <button
-            type="button"
-            onClick={onNewTab}
-            aria-label="Open in new tab"
-            title="Open in new tab"
-            className="text-muted-foreground hover:bg-muted/80 hover:text-foreground flex size-6 items-center justify-center rounded-md transition-colors"
-          >
-            <Plus className="size-3.5" />
-          </button>
-        )}
-      </div>
-    ) : null;
-
-  if (isSafari) {
     return (
       <div
-        onPointerDown={onHeaderPointerDown}
+        {...dragProps}
         className={cn(
-          "bg-muted/50 border-border/50 flex shrink-0 items-center justify-between gap-2 border-b backdrop-blur-md select-none",
-          isWindow ? "h-10 px-3" : "h-8 px-2.5",
+          "grid w-full shrink-0 items-center gap-3 select-none",
+          "border-b border-black/10 bg-[#f5f5f7]/90 backdrop-blur-xl dark:border-white/10 dark:bg-[#2c2c2e]/90",
+          isWindow
+            ? "h-11 grid-cols-[1fr_minmax(0,30rem)_1fr] px-3.5"
+            : "h-8 grid-cols-[1fr_minmax(0,13rem)_1fr] px-2.5",
           isDraggable && "cursor-grab active:cursor-grabbing",
           className,
         )}
       >
-        <div className="flex shrink-0 items-center gap-2">
-          {renderTrafficLights()}
-          {renderNavButtons()}
-        </div>
-
-        {/* Clean Safari pill bar */}
-        <div
-          className={cn(
-            "bg-background/90 border-border/60 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full border px-3 shadow-2xs",
-            isWindow ? "h-6.5 max-w-sm" : "h-5.5",
-          )}
-        >
-          <Lock className="text-muted-foreground/70 size-2.5 shrink-0" />
-          <span
-            className={cn(
-              "text-foreground truncate font-medium",
-              isWindow ? "text-[11px]" : "text-[9.5px]",
-            )}
-          >
-            {title || displayUrl}
-          </span>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-1">
-          {isWindow ? (
-            <>
+        {/* Left */}
+        <div className="flex items-center gap-3">
+          <TrafficLights buttons={dots} interactive={isWindow} />
+          {isWindow && (
+            <div className="flex items-center">
               <button
                 type="button"
-                onClick={onReload}
-                aria-label="Reload frame"
-                title="Reload frame"
-                className="text-muted-foreground hover:bg-muted/80 hover:text-foreground flex size-6 items-center justify-center rounded-md transition-colors"
+                onClick={onPrev}
+                disabled={!hasPrev}
+                aria-label="Previous project"
+                title={hasPrev ? "Previous project" : "First project"}
+                className={safariBtn}
               >
-                <ArrowRotate
-                  className={cn("size-3", isReloading && "animate-spin")}
-                />
+                <ChevronLeft className="size-4" />
               </button>
-              {renderWindowActions()}
-            </>
+              <button
+                type="button"
+                onClick={onNext}
+                disabled={!hasNext}
+                aria-label="Next project"
+                title={hasNext ? "Next project" : "Last project"}
+                className={safariBtn}
+              >
+                <ChevronRight className="size-4" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Centre: address pill */}
+        <div
+          title={title}
+          className={cn(
+            "relative flex min-w-0 items-center justify-center rounded-lg bg-black/5 text-[#1d1d1f] dark:bg-white/8 dark:text-[#f5f5f7]",
+            isWindow ? "h-7 px-8 text-[12px]" : "h-5 px-5 text-[9px]",
+          )}
+        >
+          <Lock
+            className={cn(
+              "mr-1.5 shrink-0 text-[#86868b]",
+              isWindow ? "size-3" : "size-2",
+            )}
+          />
+          <span className="truncate font-medium tracking-[-0.01em]">
+            {displayHost}
+          </span>
+          {isWindow && onReload ? (
+            <button
+              type="button"
+              onClick={onReload}
+              aria-label="Reload frame"
+              title="Reload frame"
+              className="absolute right-1 flex size-5 items-center justify-center rounded-md text-[#86868b] transition-colors hover:bg-black/6 hover:text-[#1d1d1f] dark:hover:bg-white/10 dark:hover:text-white"
+            >
+              <ArrowRotate
+                className={cn("size-3", isReloading && "animate-spin")}
+              />
+            </button>
           ) : (
-            <ArrowRotate className="text-muted-foreground/60 size-2.5" />
+            <ArrowRotate
+              className={cn(
+                "absolute shrink-0 text-[#86868b]",
+                isWindow ? "right-2.5 size-3" : "right-1.5 size-2",
+              )}
+            />
+          )}
+        </div>
+
+        {/* Right */}
+        <div className="flex items-center justify-end gap-0.5">
+          {isWindow && onOpenExternal && (
+            <button
+              type="button"
+              onClick={onOpenExternal}
+              aria-label="Open in new window"
+              title="Open in new window"
+              className={safariBtn}
+            >
+              <SquareTopDown className="size-3.5" />
+            </button>
+          )}
+          {isWindow && onNewTab && (
+            <button
+              type="button"
+              onClick={onNewTab}
+              aria-label="Open in new tab"
+              title="Open in new tab"
+              className={safariBtn}
+            >
+              <Plus className="size-4" />
+            </button>
           )}
         </div>
       </div>
     );
   }
 
-  // Clean Chrome / Chromium layout
+  /* ------------------------------------------------------------------------ */
+  /*  Chrome: tab strip + toolbar share one surface via an inverted-corner tab */
+  /* ------------------------------------------------------------------------ */
+  const chromeBtn = cn(
+    "flex shrink-0 items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-black/8 dark:text-[#bdc1c6] dark:hover:bg-white/10",
+    isWindow ? "size-6.5" : "size-5",
+  );
+
+  // radius of the concave tab corners
+  const corner = isWindow ? "size-2" : "size-1.5";
+
   return (
     <div
-      onPointerDown={onHeaderPointerDown}
+      {...dragProps}
       className={cn(
-        "bg-muted/60 flex shrink-0 flex-col select-none",
-        isWindow && "border-b backdrop-blur-md",
+        "flex shrink-0 flex-col select-none",
+        "[--c-frame:#dee1e6] [--c-surface:#ffffff] [--c-field:#f1f3f4]",
+        "dark:[--c-frame:#202124] dark:[--c-surface:#35363a] dark:[--c-field:#202124]",
+        "bg-(--c-frame)",
         isDraggable && "cursor-grab active:cursor-grabbing",
         className,
       )}
@@ -294,31 +329,59 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
       {/* Tab strip */}
       <div
         className={cn(
-          "flex items-end gap-1.5 px-2.5",
-          isWindow ? "h-8.5 pt-1.5" : "h-6.5 pt-1",
+          "flex items-end gap-1 px-3 pt-1.5",
+          isWindow ? "h-9.5" : "h-7",
         )}
       >
-        <div className={cn("self-center", isWindow ? "mr-1" : "mr-0.5")}>
-          {renderTrafficLights()}
+        <div className={cn("self-center", isWindow ? "mr-2" : "mr-1")}>
+          <TrafficLights buttons={dots} interactive={isWindow} />
         </div>
 
+        {/* Active tab */}
         <div
           className={cn(
-            "bg-background border-border/50 flex min-w-0 flex-1 items-center gap-1.5 rounded-t-lg border-t border-x px-2.5",
-            isWindow ? "h-7 max-w-44" : "h-5.5 max-w-30",
+            "relative flex min-w-0 flex-1 items-center gap-2 rounded-t-md bg-(--c-surface)",
+            isWindow ? "h-full max-w-56 px-3" : "h-full max-w-36 px-2",
           )}
         >
+          {/* concave corners */}
+          <span
+            aria-hidden="true"
+            className={cn(
+              "pointer-events-none absolute bottom-0 -left-2",
+              corner,
+            )}
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 0 0, transparent 70%, var(--c-surface) 72%)",
+            }}
+          />
+          <span
+            aria-hidden="true"
+            className={cn(
+              "pointer-events-none absolute bottom-0 -right-2",
+              corner,
+            )}
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 100% 0, transparent 70%, var(--c-surface) 72%)",
+            }}
+          />
+
           <CustomImage
             src={siteConfig.author.avatar}
             alt={siteConfig.author.name}
-            width={10}
-            height={10}
-            className="size-2.5 shrink-0 rounded-full"
+            width={14}
+            height={14}
+            className={cn(
+              "shrink-0 rounded-full",
+              isWindow ? "size-3.5" : "size-2.5",
+            )}
           />
           <span
             className={cn(
-              "text-foreground flex-1 truncate font-medium",
-              isWindow ? "text-[11px]" : "text-[9px]",
+              "flex-1 truncate font-normal text-[#202124] dark:text-[#e8eaed]",
+              isWindow ? "text-[12px]" : "text-[9px]",
             )}
           >
             {title}
@@ -328,9 +391,9 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
               type="button"
               onClick={onCloseTab}
               aria-label="Close tab"
-              className="text-muted-foreground hover:bg-muted hover:text-foreground flex size-3.5 cursor-pointer items-center justify-center rounded-full"
+              className="flex size-4.5 shrink-0 cursor-pointer items-center justify-center rounded-full text-[#5f6368] transition-colors hover:bg-black/10 dark:text-[#bdc1c6] dark:hover:bg-white/15"
             >
-              <Xmark className="size-2" />
+              <Xmark className="size-2.5" />
             </button>
           )}
         </div>
@@ -341,56 +404,107 @@ export const BrowserWindow: React.FC<BrowserWindowProps> = ({
             onClick={onNewTab}
             aria-label="Open in new tab"
             title="Open in new tab"
-            className="text-muted-foreground hover:bg-background/70 hover:text-foreground mb-0.5 flex size-5.5 items-center justify-center rounded-full transition-colors"
+            className={cn(chromeBtn, "mb-1 ml-1")}
           >
-            <Plus className="size-3" />
+            <Plus className="size-3.5" />
           </button>
         )}
       </div>
 
-      {/* Pill omnibox bar */}
+      {/* Toolbar */}
       <div
         className={cn(
-          "bg-background border-border/40 flex items-center gap-1.5 border-t px-2.5",
-          isWindow ? "h-8" : "h-7",
+          "flex items-center gap-1 bg-(--c-surface) px-2.5",
+          isWindow ? "h-10 border-b border-black/8 dark:border-white/8" : "h-8",
         )}
       >
-        {renderNavButtons()}
-
-        {isWindow ? (
-          <button
-            type="button"
-            onClick={onReload}
-            aria-label="Reload frame"
-            title="Reload frame"
-            className="text-muted-foreground hover:bg-muted/80 hover:text-foreground flex size-5.5 shrink-0 items-center justify-center rounded-full transition-colors"
-          >
-            <ArrowRotate
-              className={cn("size-3", isReloading && "animate-spin")}
-            />
-          </button>
-        ) : (
-          <ArrowRotate className="text-muted-foreground/60 size-2.5 shrink-0" />
-        )}
-
-        <div
+        <button
+          type="button"
+          onClick={onPrev}
+          disabled={!isWindow || !hasPrev}
+          aria-label="Previous project"
+          title={hasPrev ? "Previous project" : "First project"}
           className={cn(
-            "bg-muted/60 flex min-w-0 flex-1 items-center gap-1.5 rounded-full px-2.5",
-            isWindow ? "h-6" : "h-5",
+            chromeBtn,
+            "disabled:pointer-events-none",
+            isWindow ? "disabled:opacity-35" : "opacity-50",
           )}
         >
-          <Lock className="text-muted-foreground/70 size-2.5 shrink-0" />
+          <ChevronLeft className={isWindow ? "size-4" : "size-3"} />
+        </button>
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={!isWindow || !hasNext}
+          aria-label="Next project"
+          title={hasNext ? "Next project" : "Last project"}
+          className={cn(
+            chromeBtn,
+            "disabled:pointer-events-none",
+            isWindow ? "disabled:opacity-35" : "opacity-50",
+          )}
+        >
+          <ChevronRight className={isWindow ? "size-4" : "size-3"} />
+        </button>
+        <button
+          type="button"
+          onClick={onReload}
+          disabled={!isWindow}
+          aria-label="Reload frame"
+          title="Reload frame"
+          className={cn(
+            chromeBtn,
+            !isWindow && "pointer-events-none opacity-50",
+          )}
+        >
+          <ArrowRotate
+            className={cn(
+              isWindow ? "size-3.5" : "size-2.5",
+              isReloading && "animate-spin",
+            )}
+          />
+        </button>
+
+        {/* Omnibox */}
+        <div
+          className={cn(
+            "mx-1 flex min-w-0 flex-1 items-center rounded-full bg-(--c-field)",
+            isWindow ? "h-7 gap-2 pr-3 pl-1" : "h-5 gap-1.5 pr-2 pl-0.5",
+          )}
+        >
           <span
             className={cn(
-              "text-muted-foreground truncate",
-              isWindow ? "text-[11px]" : "text-[9px]",
+              "flex shrink-0 items-center justify-center rounded-full bg-black/6 text-[#5f6368] dark:bg-white/10 dark:text-[#bdc1c6]",
+              isWindow ? "size-5.5" : "size-4",
+            )}
+          >
+            <Lock className={isWindow ? "size-3" : "size-2"} />
+          </span>
+          <span
+            className={cn(
+              "truncate text-[#202124] dark:text-[#e8eaed]",
+              isWindow ? "text-[12px]" : "text-[9px]",
             )}
           >
             {displayUrl}
           </span>
         </div>
 
-        {renderWindowActions()}
+        {isWindow && (
+          <div className="flex shrink-0 items-center gap-0.5">
+            {onOpenExternal && (
+              <button
+                type="button"
+                onClick={onOpenExternal}
+                aria-label="Open in new window"
+                title="Open in new window"
+                className={chromeBtn}
+              >
+                <SquareTopDown className="size-3.5" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
